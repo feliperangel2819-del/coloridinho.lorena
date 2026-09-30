@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coloridinho — Professora Lorena</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Ícones Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;650;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; }
+        
+        [contenteditable][data-placeholder]:empty:before {
+            content: attr(data-placeholder);
+            color: #d97792;
+            opacity: 0.7;
+            pointer-events: none;
+            display: block;
+        }
+
+        @keyframes desenharCirculo {
+            0% { transform: scale(0.8) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.05) rotate(3deg); opacity: 0.8; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .circulo-ia {
+            animation: desenharCirculo 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            border: 3px dashed #db2777;
+            background-color: rgba(255, 182, 193, 0.15);
+            box-shadow: 0 0 15px rgba(219, 39, 119, 0.3);
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body { 
+                background-color: #FCE8ED !important; 
+                padding: 0 !important; 
+            }
+            button, .no-print { 
+                display: none !important; 
+            }
+            #conteudoParaPdf { 
+                box-shadow: none !important; 
+                border: 1px solid #f472b6 !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                background-color: #ffffff !important;
+            }
+            .folha-rosa {
+                background-color: #FFD1DC !important;
+            }
+            .folha-interna {
+                background-color: #FFE4E9 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#FCE8ED] min-h-screen text-slate-700 flex flex-col items-center p-4 md:p-8">
+
+    <div id="conteudoParaPdf" class="w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border border-pink-200 p-6 md:p-8">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs">
+                    <i data-lucide="heart" class="w-6 h-6 fill-pink-500 text-pink-500"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 text-xs text-pink-600 font-semibold uppercase tracking-wider">
+                        <span>✨ Criado com carinho para</span>
+                        <span>•</span>
+                        <span class="bg-pink-100 px-2.5 py-0.5 rounded-full text-pink-700 font-bold">Professora Lorena</span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Coloridinho Digital 💖</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-500 bg-pink-50 px-3 py-2 rounded-full border border-pink-100 shadow-xs no-print">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-pink-600"></i> Salvo automaticamente
+            </div>
+        </div>
+
+        <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 mb-6 flex flex-wrap items-center gap-2 md:gap-4 shadow-xs no-print">
+            <div class="flex items-center gap-1">
+                <span class="text-xs font-bold text-slate-500">Fonte</span>
+                <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-xs text-slate-700 focus:outline-none">
+                    <option value="Quicksand, sans-serif">Padrão</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                </select>
+            </div>
+
+            <div class="h-5 w-[1px] bg-pink-200"></div>
+
+            <div class="flex items-center gap-1">
+                <span class="text-xs font-bold text-slate-500">Tam</span>
+                <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-xs text-slate-700 focus:outline-none">
+                    <option value="14px">14</option>
+                    <option value="16px" selected>16</option>
+                    <option value="18px">18</option>
+                    <option value="20px">20</option>
+                    <option value="24px">24</option>
+                    <option value="32px">32</option>
+                </select>
+            </div>
+
+            <div class="h-5 w-[1px] bg-pink-200"></div>
+
+            <div class="flex items-center gap-1">
+                <button onclick="formatar('bold')" class="p-1.5 hover:bg-pink-200 rounded-lg transition font-bold text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">N</button>
+                <button onclick="formatar('italic')" class="p-1.5 hover:bg-pink-200 rounded-lg transition italic text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">I</button>
+                <button onclick="formatar('underline')" class="p-1.5 hover:bg-pink-200 rounded-lg transition underline text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">S</button>
+            </div>
+
+            <div class="h-5 w-[1px] bg-pink-200"></div>
+
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-500">Cor</span>
+                <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-7 h-7 rounded border border-pink-200 cursor-pointer p-0 bg-transparent">
+            </div>
+        </div>
+
+        <div class="folha-rosa bg-[#FFD1DC] border-2 border-pink-300 rounded-2xl p-6 md:p-8 min-h-[420px] shadow-md relative flex flex-col">
+            <h2 class="text-xl font-bold text-slate-900 mb-4 outline-none border-b border-pink-300/60 pb-2" 
+                contenteditable="true" 
+                id="tituloColoridinho" 
+                data-placeholder="Título..."></h2>
+            
+            <div id="editorTexto" 
+                 contenteditable="true" 
+                 class="folha-interna flex-1 outline-none text-slate-900 leading-relaxed min-h-[285px] bg-[#FFE4E9]/70 p-4 rounded-xl border border-pink-300/40" 
+                 data-placeholder="Escreva suas anotações ou plano de aula aqui...">
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-pink-900 font-semibold mt-4 pt-3 border-t border-pink-300/50">
+                <span id="contadorPalavras">0 palavras • 0 caracteres</span>
+                <span class="italic">Coloridinho feito com muito carinho para a Profª Lorena 💖</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-center gap-3 mt-6 no-print">
+        <button onclick="ativarCirculoMagico()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-5 py-3 rounded-full shadow-md transition flex items-center gap-2 cursor-pointer">
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Círculo Mágico IA
+        </button>
+        
+        <button onclick="gerarPDFParaSlide()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-5 py-3 rounded-full shadow-md transition flex items-center gap-2 cursor-pointer">
+            <i data-lucide="file-down" class="w-4 h-4"></i> Salvar como PDF / Slide
+        </button>
+
+        <button onclick="baixarTxt()" class="bg-white hover:bg-pink-50 text-slate-700 border border-pink-300 text-xs font-semibold px-4 py-3 rounded-full transition flex items-center gap-2 cursor-pointer">
+            <i data-lucide="download" class="w-4 h-4"></i> Baixar .txt
+        </button>
+
+        <button onclick="limparFolha()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-4 py-3 rounded-full transition flex items-center gap-2 cursor-pointer">
+            <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar folha
+        </button>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const editor = document.getElementById('editorTexto');
+        const titulo = document.getElementById('tituloColoridinho');
+        const contador = document.getElementById('contadorPalavras');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const salvo = localStorage.getItem('coloridinho_lorena_texto');
+            const tituloSalvo = localStorage.getItem('coloridinho_lorena_titulo');
+            if (salvo) editor.innerHTML = salvo;
+            if (tituloSalvo) titulo.innerText = tituloSalvo;
+            atualizarContador();
+        });
+
+        editor.addEventListener('input', () => {
+            atualizarContador();
+            localStorage.setItem('coloridinho_lorena_texto', editor.innerHTML);
+        });
+
+        titulo.addEventListener('input', (e) => {
+            localStorage.setItem('coloridinho_lorena_titulo', e.target.innerText);
+        });
+
+        function atualizarContador() {
+            const texto = editor.innerText.trim();
+            const palavras = texto === '' ? 0 : texto.split(/\s+/).length;
+            const caracteres = texto.length;
+            contador.innerText = `${palavras} palavras • ${caracteres} caracteres`;
+        }
+
+        function formatar(comando) {
+            document.execCommand(comando, false, null);
+            editor.focus();
+        }
+
+        function mudarCorTexto(cor) {
+            document.execCommand('foreColor', false, cor);
+            editor.focus();
+        }
+
+        function mudarFonte() {
+            const fonte = document.getElementById('fontSelector').value;
+            editor.style.fontFamily = fonte;
+        }
+
+        function mudarTamanho() {
+            const tamanho = document.getElementById('sizeSelector').value;
+            editor.style.fontSize = tamanho;
+        }
+
+        function limparFolha() {
+            if(confirm('Deseja realmente limpar todo o conteúdo deste Coloridinho?')) {
+                editor.innerHTML = '';
+                titulo.innerText = '';
+                localStorage.removeItem('coloridinho_lorena_texto');
+                localStorage.removeItem('coloridinho_lorena_titulo');
+                atualizarContador();
+            }
+        }
+
+        function baixarTxt() {
+            const nomeTitulo = titulo.innerText.trim() || "Coloridinho_Lorena";
+            const texto = editor.innerText;
+            const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${nomeTitulo}.txt`;
+            link.click();
+        }
+
+        function gerarPDFParaSlide() {
+            window.print();
+        }
+
+        function ativarCirculoMagico() {
+            const selecao = window.getSelection();
+            if (!selecao.rangeCount || selecao.isCollapsed) {
+                alert('✨ Dica do Círculo Mágico: Selecione uma palavra ou frase com o mouse dentro do texto e clique no botão para a IA circular em volta!');
+                return;
+            }
+
+            const range = selecao.getRangeAt(0);
+            const span = document.createElement('span');
+            span.className = 'circulo-ia px-2 py-1 rounded-full inline-block font-semibold';
+            
+            try {
+                range.surroundContents(span);
+                editor.focus();
+                alert('✨ Pronto! A IA circulou o texto selecionado perfeitamente.');
+            } catch (e) {
+                alert('Por favor, selecione o texto dentro da área principal de escrita.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -3,151 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coloridinho Digital — Professora Lorena</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Coloridinho — Professora Lorena</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Ícones Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;650;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilo para repetir o texto "Boa aula de português" nas laterais */
-        body {
-            background-color: #fce7f3;
-            position: relative;
-            overflow-x: hidden;
-        }
-        .side-text-left, .side-text-right {
-            position: fixed;
-            top: 0;
-            width: 180px;
-            height: 100vh;
-            overflow: hidden;
+        body { font-family: 'Quicksand', sans-serif; }
+        
+        [contenteditable][data-placeholder]:empty:before {
+            content: attr(data-placeholder);
+            color: #d97792;
+            opacity: 0.7;
             pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            font-weight: bold;
-            color: #db2777;
-            opacity: 0.25;
-            font-size: 1.1rem;
-            white-space: nowrap;
-            z-index: 0;
+            display: block;
         }
-        .side-text-left { left: 10px; }
-        .side-text-right { right: 10px; }
 
-        /* Ajuste para o conteúdo principal ficar acima das faixas laterais */
-        .main-content {
-            position: relative;
-            z-index: 10;
+        @keyframes desenharCirculo {
+            0% { transform: scale(0.8) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.05) rotate(3deg); opacity: 0.8; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .circulo-ia {
+            animation: desenharCirculo 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            border: 3px dashed #db2777;
+            background-color: rgba(255, 182, 193, 0.15);
+            box-shadow: 0 0 15px rgba(219, 39, 119, 0.3);
         }
 
         @media print {
-            .no-print { display: none !important; }
-            body { background-color: #fff !important; }
-            .side-text-left, .side-text-right { display: none !important; }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body { 
+                background-color: #FCE8ED !important; 
+                padding: 0 !important; 
+            }
+            button, .no-print { 
+                display: none !important; 
+            }
+            #conteudoParaPdf { 
+                box-shadow: none !important; 
+                border: 1px solid #f472b6 !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                background-color: #ffffff !important;
+            }
+            .folha-rosa {
+                background-color: #FFD1DC !important;
+            }
+            .folha-interna {
+                background-color: #FFE4E9 !important;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-4">
+<body class="bg-[#FCE8ED] min-h-screen text-slate-700 flex flex-col items-center p-4 md:p-8">
 
-    <!-- Textos repetidos nas laterais -->
-    <div class="side-text-left">
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-    </div>
-
-    <div class="side-text-right">
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-        <span>Boa aula de português</span>
-    </div>
-
-    <!-- Conteúdo Principal -->
-    <div class="main-content w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 flex flex-col gap-4 border border-pink-200">
+    <div id="conteudoParaPdf" class="w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border border-pink-200 p-6 md:p-8">
         
-        <!-- Cabeçalho -->
-        <div class="flex justify-between items-center border-b pb-3">
-            <h1 class="text-2xl font-bold text-pink-600">Coloridinho Digital</h1>
-            <button onclick="window.print()" class="no-print bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl font-medium transition shadow-md">
-                🖨️ Salvar em PDF / Imprimir
-            </button>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs">
+                    <i data-lucide="heart" class="w-6 h-6 fill-pink-500 text-pink-500"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 text-xs text-pink-600 font-semibold uppercase tracking-wider">
+                        <span>✨ Criado com carinho para</span>
+                        <span>•</span>
+                        <span class="bg-pink-100 px-2.5 py-0.5 rounded-full text-pink-700 font-bold">Professora Lorena</span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Coloridinho Digital 💖</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-500 bg-pink-50 px-3 py-2 rounded-full border border-pink-100 shadow-xs no-print">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-pink-600"></i> Salvo automaticamente
+            </div>
         </div>
 
-        <!-- Aviso de restrição para computador -->
-        <div class="no-print text-xs text-center text-pink-500 italic">
-            (Esta função de salvar em PDF / imprimir só funciona para computador)
+        <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 mb-6 flex flex-wrap items-center gap-2 md:gap-4 shadow-xs no-print">
+            <div class="flex items-center gap-1">
+                <span class="text-xs font-bold text-slate-500">Fonte</span>
+                <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-xs text-slate-700 focus:outline-none">
+                    <option value="Quicksand, sans-serif">Padrão</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                </select>
+            </div>
+
+            <div class="h-5 w-[1px] bg-pink-200"></div>
+
+            <div class="flex items-center gap-1">
+                <span class="text-xs font-bold text-slate-500">Tam</span>
+                <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-xs text-slate-700 focus:outline-none">
+                    <option value="14px">14</option>
+                    <option value="16px" selected>16</option>
+                    <option value="18px">18</option>
+                    <option value="20px">20</option>
+                    <option value="24px">24</option>
+                    <option value="32px">32</option>
+                </select>
+            </div>
+
+            <div class="h-5 w-[1px] bg-pink-200"></div>
+
+            <div class="flex items-center gap-1">
+                <button onclick="formatar('bold')" class="p-1.5 hover:bg-pink-200 rounded-lg transition font-bold text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">N</button>
+                <button onclick="formatar('italic')" class="p-1.5 hover:bg-pink-200 rounded-lg transition italic text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">I</button>
+                <button onclick="formatar('underline')" class="p-1.5 hover:bg-pink-200 rounded-lg transition underline text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">S</button>
+            </div>
+
+            <div class="h-5 w-[1px] bg-pink-200"></div>
+
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-500">Cor</span>
+                <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-7 h-7 rounded border border-pink-200 cursor-pointer p-0 bg-transparent">
+            </div>
         </div>
 
-        <!-- Barra de Ferramentas do Editor -->
-        <div class="no-print flex flex-wrap gap-2 items-center bg-pink-50 p-2 rounded-lg border border-pink-100">
-            <select id="fontSize" onchange="formatText('fontSize', this.value)" class="text-sm border rounded p-1 bg-white text-gray-700">
-                <option value="3">Título...</option>
-                <option value="1">Pequeno</option>
-                <option value="3">Normal</option>
-                <option value="5">Grande</option>
-                <option value="7">Muito Grande</option>
-            </select>
-            <button onclick="formatText('bold', null)" class="px-2 py-1 bg-white border rounded font-bold text-gray-700 hover:bg-pink-100">B</button>
-            <button onclick="formatText('italic', null)" class="px-2 py-1 bg-white border rounded italic text-gray-700 hover:bg-pink-100">I</button>
-            <button onclick="formatText('underline', null)" class="px-2 py-1 bg-white border rounded underline text-gray-700 hover:bg-pink-100">U</button>
-            <button onclick="ativarCirculoMagico()" class="px-3 py-1 bg-pink-600 text-white rounded-lg text-sm font-medium hover:bg-pink-700 transition">✨ Círculo Mágico</button>
-        </div>
+        <div class="folha-rosa bg-[#FFD1DC] border-2 border-pink-300 rounded-2xl p-6 md:p-8 min-h-[420px] shadow-md relative flex flex-col">
+            <h2 class="text-xl font-bold text-slate-900 mb-4 outline-none border-b border-pink-300/60 pb-2" 
+                contenteditable="true" 
+                id="tituloColoridinho" 
+                data-placeholder="Título..."></h2>
+            
+            <div id="editorTexto" 
+                 contenteditable="true" 
+                 class="folha-interna flex-1 outline-none text-slate-900 leading-relaxed min-h-[285px] bg-[#FFE4E9]/70 p-4 rounded-xl border border-pink-300/40" 
+                 data-placeholder="Escreva suas anotações ou plano de aula aqui...">
+            </div>
 
-        <!-- Área de Edição -->
-        <div id="editor" contenteditable="true" class="w-full h-80 border border-pink-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-pink-400 overflow-y-auto bg-white text-gray-800">
-            Escreva seu conteúdo aqui, Professora Lorena...
-        </div>
-
-        <!-- Rodapé do Aplicativo -->
-        <div class="flex justify-between items-center text-xs text-pink-400 pt-2 border-t">
-            <span id="wordCount">0 palavras • 0 caracteres</span>
-            <span>Criado com muito carinho para a Profª Lorena 💖</span>
+            <div class="flex justify-between items-center text-xs text-pink-900 font-semibold mt-4 pt-3 border-t border-pink-300/50">
+                <span id="contadorPalavras">0 palavras • 0 caracteres</span>
+                <span class="italic">Coloridinho feito com muito carinho para a Profª Lorena 💖</span>
+            </div>
         </div>
     </div>
 
-    <footer class="no-print mt-4 text-xs text-pink-600">
-        Coloridinho App v1.0
-    </footer>
+    <div class="flex flex-wrap items-center justify-center gap-3 mt-6 no-print">
+        <button onclick="ativarCirculoMagico()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-5 py-3 rounded-full shadow-md transition flex items-center gap-2 cursor-pointer">
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Círculo Mágico IA
+        </button>
+        
+        <button onclick="gerarPDFParaSlide()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-5 py-3 rounded-full shadow-md transition flex items-center gap-2 cursor-pointer">
+            <i data-lucide="file-down" class="w-4 h-4"></i> Salvar como PDF / Slide
+        </button>
+
+        <button onclick="baixarTxt()" class="bg-white hover:bg-pink-50 text-slate-700 border border-pink-300 text-xs font-semibold px-4 py-3 rounded-full transition flex items-center gap-2 cursor-pointer">
+            <i data-lucide="download" class="w-4 h-4"></i> Baixar .txt
+        </button>
+
+        <button onclick="limparFolha()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-4 py-3 rounded-full transition flex items-center gap-2 cursor-pointer">
+            <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar folha
+        </button>
+    </div>
 
     <script>
-        // Função de formatação do texto
-        function formatText(command, value) {
-            document.execCommand(command, false, value);
-            document.getElementById('editor').focus();
-        }
+        lucide.createIcons();
 
-        // Contador de palavras e caracteres dinâmico
-        const editor = document.getElementById('editor');
-        const wordCount = document.getElementById('wordCount');
+        const editor = document.getElementById('editorTexto');
+        const titulo = document.getElementById('tituloColoridinho');
+        const contador = document.getElementById('contadorPalavras');
 
-        editor.addEventListener('input', () => {
-            const text = editor.innerText.trim();
-            const words = text ? text.split(/\s+/).length : 0;
-            const chars = text.length;
-            wordCount.innerText = `${words} palavras • ${chars} caracteres`;
+        window.addEventListener('DOMContentLoaded', () => {
+            const salvo = localStorage.getItem('coloridinho_lorena_texto');
+            const tituloSalvo = localStorage.getItem('coloridinho_lorena_titulo');
+            if (salvo) editor.innerHTML = salvo;
+            if (tituloSalvo) titulo.innerText = tituloSalvo;
+            atualizarContador();
         });
 
-        // Função do Círculo Mágico (destaque interativo)
+        editor.addEventListener('input', () => {
+            atualizarContador();
+            localStorage.setItem('coloridinho_lorena_texto', editor.innerHTML);
+        });
+
+        titulo.addEventListener('input', (e) => {
+            localStorage.setItem('coloridinho_lorena_titulo', e.target.innerText);
+        });
+
+        function atualizarContador() {
+            const texto = editor.innerText.trim();
+            const palavras = texto === '' ? 0 : texto.split(/\s+/).length;
+            const caracteres = texto.length;
+            contador.innerText = `${palavras} palavras • ${caracteres} caracteres`;
+        }
+
+        function formatar(comando) {
+            document.execCommand(comando, false, null);
+            editor.focus();
+        }
+
+        function mudarCorTexto(cor) {
+            document.execCommand('foreColor', false, cor);
+            editor.focus();
+        }
+
+        function mudarFonte() {
+            const fonte = document.getElementById('fontSelector').value;
+            editor.style.fontFamily = fonte;
+        }
+
+        function mudarTamanho() {
+            const tamanho = document.getElementById('sizeSelector').value;
+            editor.style.fontSize = tamanho;
+        }
+
+        function limparFolha() {
+            if(confirm('Deseja realmente limpar todo o conteúdo deste Coloridinho?')) {
+                editor.innerHTML = '';
+                titulo.innerText = '';
+                localStorage.removeItem('coloridinho_lorena_texto');
+                localStorage.removeItem('coloridinho_lorena_titulo');
+                atualizarContador();
+            }
+        }
+
+        function baixarTxt() {
+            const nomeTitulo = titulo.innerText.trim() || "Coloridinho_Lorena";
+            const texto = editor.innerText;
+            const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${nomeTitulo}.txt`;
+            link.click();
+        }
+
+        function gerarPDFParaSlide() {
+            window.print();
+        }
+
         function ativarCirculoMagico() {
-            const selection = window.getSelection();
-            if (!selection.isCollapsed) {
-                const range = selection.getRangeAt(0);
-                const span = document.createElement('span');
-                span.style.border = '2px dashed #ec4899';
-                span.style.borderRadius = '20px';
-                span.style.padding = '2px 6px';
-                span.style.backgroundColor = 'rgba(252, 231, 243, 0.5)';
+            const selecao = window.getSelection();
+            if (!selecao.rangeCount || selecao.isCollapsed) {
+                alert('✨ Dica do Círculo Mágico: Selecione uma palavra ou frase com o mouse dentro do texto e clique no botão para a IA circular em volta!');
+                return;
+            }
+
+            const range = selecao.getRangeAt(0);
+            const span = document.createElement('span');
+            span.className = 'circulo-ia px-2 py-1 rounded-full inline-block font-semibold';
+            
+            try {
                 range.surroundContents(span);
-            } else {
-                alert('Selecione um trecho de texto primeiro para usar o Círculo Mágico!');
+                editor.focus();
+                alert('✨ Pronto! A IA circulou o texto selecionado perfeitamente.');
+            } catch (e) {
+                alert('Por favor, selecione o texto dentro da área principal de escrita.');
             }
         }
     </script>

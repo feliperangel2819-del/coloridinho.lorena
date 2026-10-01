@@ -130,13 +130,13 @@
             <!-- Barra de Ferramentas -->
             <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 md:p-4 mb-6 flex flex-wrap items-center gap-2.5 md:gap-4 shadow-xs no-print relative z-30">
                 
-                <!-- Botões Desfazer / Refazer (Voltar e Avançar) -->
+                <!-- Botões Desfazer / Refazer Globais -->
                 <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-2 py-1 rounded-xl shadow-xs">
-                    <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Desfazer (Voltar)">
+                    <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Desfazer (Voltar no tempo)">
                         ↩ Desfazer
                     </button>
                     <div class="h-4 w-[1px] bg-pink-200"></div>
-                    <button onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Refazer (Avançar)">
+                    <button onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Refazer (Avançar no tempo)">
                         ↪ Refazer
                     </button>
                 </div>
@@ -198,7 +198,7 @@
                 <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
 
                 <!-- Botão Post-it -->
-                <button onclick="adicionarPostIt()" class="bg-amber-200 hover:bg-amber-300 text-amber-900 border border-amber-300 font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+                <button onclick="adicionarPostIt(); registrarHistorico();" class="bg-amber-200 hover:bg-amber-300 text-amber-900 border border-amber-300 font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
                     <span>📌 Novo Post-it</span>
                 </button>
 
@@ -220,7 +220,7 @@
                     <span class="text-[11px] font-extrabold text-pink-700 mr-1">Atalhos:</span>
                     <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-base p-1">📍</button>
                     <button onclick="inserirEmoji('⬆️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬆️</button>
-                    <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base p-1">➡️️</button>
+                    <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base p-1">➡</button>
                     <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬇️</button>
                     <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬅️</button>
                     <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base p-1">👩🏽‍🏫</button>
@@ -358,15 +358,98 @@
         atualizarDataHora();
         setInterval(atualizarDataHora, 30000);
 
-        // --- FUNÇÕES DE DESFAZER E REFAZER (VOLTAR E AVANÇAR) ---
-        function desfazerAcao() {
-            document.execCommand('undo', false, null);
+        // --- SISTEMA DE HISTÓRICO GLOBAL (TIME TRAVEL) PARA TUDO ---
+        let pilhaHistorico = [];
+        let indiceHistorico = -1;
+        let bloquearRegistroHistorico = false;
+
+        function capturarEstadoAtual() {
+            const postItsData = [];
+            document.querySelectorAll('.post-it').forEach(card => {
+                const html = card.querySelector('[contenteditable]').innerHTML;
+                const classes = card.className;
+                let bg = 'bg-amber-100', border = 'border-amber-300', text = 'text-amber-900';
+                if (classes.includes('pink')) { bg = 'bg-pink-100'; border = 'border-pink-300'; text = 'text-pink-900'; }
+                if (classes.includes('sky')) { bg = 'bg-sky-100'; border = 'border-sky-300'; text = 'text-sky-900'; }
+                if (classes.includes('emerald')) { bg = 'bg-emerald-100'; border = 'border-emerald-300'; text = 'text-emerald-900'; }
+                postItsData.push({ html, bg, border, text });
+            });
+
+            return {
+                ed1: editor.innerHTML,
+                ed2: editor2.innerHTML,
+                tit: titulo.innerText,
+                colunas: !editor2.classList.contains('hidden'),
+                postIts: postItsData,
+                formas: JSON.parse(JSON.stringify(formasSalvas))
+            };
+        }
+
+        function registrarHistorico() {
+            if (bloquearRegistroHistorico) return;
+            const estado = capturarEstadoAtual();
+            
+            // Se estivermos no meio do histórico e fizermos algo novo, limpamos o "futuro"
+            if (indiceHistorico < pilhaHistorico.length - 1) {
+                pilhaHistorico = pilhaHistorico.slice(0, indiceHistorico + 1);
+            }
+            
+            // Evitar duplicar estado idêntico consecutivo
+            if (pilhaHistorico.length > 0) {
+                const ultimoEstado = pilhaHistorico[pilhaHistorico.length - 1];
+                if (JSON.stringify(ultimoEstado) === JSON.stringify(estado)) return;
+            }
+
+            pilhaHistorico.push(estado);
+            // Limitar pilha a 30 passos para não pesar a memória
+            if (pilhaHistorico.length > 30) {
+                pilhaHistorico.shift();
+            } else {
+                indiceHistorico++;
+            }
             salvarAutomaticamente();
         }
 
-        function refazerAcao() {
-            document.execCommand('redo', false, null);
+        function restaurarEstado(estado) {
+            bloquearRegistroHistorico = true;
+            editor.innerHTML = estado.ed1;
+            editor2.innerHTML = estado.ed2;
+            titulo.innerText = estado.tit;
+            
+            if (estado.colunas) {
+                editor2.classList.remove('hidden');
+                document.getElementById('btnLayout').innerHTML = `<span>📐 Coluna Única</span>`;
+                colunasAtivas = true;
+            } else {
+                editor2.classList.add('hidden');
+                document.getElementById('btnLayout').innerHTML = `<span>📐 Dividir em 2 Colunas</span>`;
+                colunasAtivas = false;
+            }
+
+            postItsContainer.innerHTML = '';
+            estado.postIts.forEach(p => adicionarPostIt(p.html, p.bg, p.border, p.text, true));
+
+            formasSalvas = JSON.parse(JSON.stringify(estado.formas));
+            redesenharHistorico();
+            ajustarTamanhoCanvas();
+            atualizarContador();
+
+            setTimeout(() => { bloquearRegistroHistorico = false; }, 50);
             salvarAutomaticamente();
+        }
+
+        function desfazerAcao() {
+            if (indiceHistorico > 0) {
+                indiceHistorico--;
+                restaurarEstado(pilhaHistorico[indiceHistorico]);
+            }
+        }
+
+        function refazerAcao() {
+            if (indiceHistorico < pilhaHistorico.length - 1) {
+                indiceHistorico++;
+                restaurarEstado(pilhaHistorico[indiceHistorico]);
+            }
         }
 
         // --- SISTEMA DE DESENHO INTELIGENTE COM COR PERSONALIZÁVEL ---
@@ -487,7 +570,7 @@
             formasSalvas.push(formaPerfeita);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             redesenharHistorico();
-            salvarAutomaticamente();
+            registrarHistorico();
         }
 
         function redesenharHistorico() {
@@ -519,10 +602,10 @@
                 btn.innerHTML = `<span>📐 Dividir em 2 Colunas</span>`;
             }
             ajustarTamanhoCanvas();
-            salvarAutomaticamente();
+            registrarHistorico();
         }
 
-        function adicionarPostIt(conteudoInicial = "", corFundo = "bg-amber-100", corBorda = "border-amber-300", corTexto = "text-amber-900") {
+        function adicionarPostIt(conteudoInicial = "", corFundo = "bg-amber-100", corBorda = "border-amber-300", corTexto = "text-amber-900", silencioso = false) {
             const card = document.createElement('div');
             card.className = `post-it ${corFundo} ${corBorda} border-2 rounded-2xl p-4 flex flex-col gap-2 relative shadow-md`;
             card.innerHTML = `
@@ -533,14 +616,16 @@
                         <button onclick="mudarCorPostIt(this, 'bg-sky-100', 'border-sky-300', 'text-sky-900')" class="w-4 h-4 rounded-full bg-sky-200 border border-sky-400 cursor-pointer"></button>
                         <button onclick="mudarCorPostIt(this, 'bg-emerald-100', 'border-emerald-300', 'text-emerald-900')" class="w-4 h-4 rounded-full bg-emerald-200 border border-emerald-400 cursor-pointer"></button>
                     </div>
-                    <button onclick="this.closest('.post-it').remove(); salvarAutomaticamente();" class="text-slate-400 hover:text-red-600 font-bold text-xs cursor-pointer">✕</button>
+                    <button onclick="this.closest('.post-it').remove(); registrarHistorico();" class="text-slate-400 hover:text-red-600 font-bold text-xs cursor-pointer">✕</button>
                 </div>
                 <div contenteditable="true" class="outline-none ${corTexto} text-sm md:text-base min-h-[90px] font-medium" data-placeholder="Escreva no seu Post-it...">${conteudoInicial}</div>
             `;
-            card.querySelector('[contenteditable]').addEventListener('input', salvarAutomaticamente);
+            card.querySelector('[contenteditable]').addEventListener('input', () => {
+                if (!bloquearRegistroHistorico) registrarHistorico();
+            });
             postItsContainer.appendChild(card);
             ajustarTamanhoCanvas();
-            salvarAutomaticamente();
+            if (!silencioso) registrarHistorico();
         }
 
         function mudarCorPostIt(botao, bg, border, text) {
@@ -548,25 +633,29 @@
             card.className = `post-it ${bg} ${border} border-2 rounded-2xl p-4 flex flex-col gap-2 relative shadow-md`;
             card.querySelector('div').className = `flex justify-between items-center border-b ${border} pb-1.5`;
             card.querySelector('[contenteditable]').className = `outline-none ${text} text-sm md:text-base min-h-[90px] font-medium`;
-            salvarAutomaticamente();
+            registrarHistorico();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const salvo1 = localStorage.getItem('coloridinho_v9_ed1');
-            const salvo2 = localStorage.getItem('coloridinho_v9_ed2');
-            const tituloSalvo = localStorage.getItem('coloridinho_v9_tit');
-            const colunasSalvas = localStorage.getItem('coloridinho_v9_col');
-            const postitsSalvos = localStorage.getItem('coloridinho_v9_posts');
-            const formasSalvasData = localStorage.getItem('coloridinho_v9_formas');
+            const salvo1 = localStorage.getItem('coloridinho_v10_ed1');
+            const salvo2 = localStorage.getItem('coloridinho_v10_ed2');
+            const tituloSalvo = localStorage.getItem('coloridinho_v10_tit');
+            const colunasSalvas = localStorage.getItem('coloridinho_v10_col');
+            const postitsSalvos = localStorage.getItem('coloridinho_v10_posts');
+            const formasSalvasData = localStorage.getItem('coloridinho_v10_formas');
 
             if (salvo1) editor.innerHTML = salvo1;
             if (salvo2) editor2.innerHTML = salvo2;
             if (tituloSalvo) titulo.innerText = tituloSalvo;
-            if (colunasSalvas === 'true') alternarLayoutColunas();
+            if (colunasSalvas === 'true') {
+                editor2.classList.remove('hidden');
+                document.getElementById('btnLayout').innerHTML = `<span>📐 Coluna Única</span>`;
+                colunasAtivas = true;
+            }
 
             if (postitsSalvos) {
                 try {
-                    JSON.parse(postitsSalvos).forEach(p => adicionarPostIt(p.html, p.bg, p.border, p.text));
+                    JSON.parse(postitsSalvos).forEach(p => adicionarPostIt(p.html, p.bg, p.border, p.text, true));
                 } catch(e) {}
             }
 
@@ -578,14 +667,17 @@
             }
 
             atualizarContador();
+            // Salvar primeiro estado inicial
+            pilhaHistorico.push(capturarEstadoAtual());
+            indiceHistorico = 0;
         });
 
         function salvarAutomaticamente() {
-            localStorage.setItem('coloridinho_v9_ed1', editor.innerHTML);
-            localStorage.setItem('coloridinho_v9_ed2', editor2.innerHTML);
-            localStorage.setItem('coloridinho_v9_tit', titulo.innerText);
-            localStorage.setItem('coloridinho_v9_col', colunasAtivas);
-            localStorage.setItem('coloridinho_v9_formas', JSON.stringify(formasSalvas));
+            localStorage.setItem('coloridinho_v10_ed1', editor.innerHTML);
+            localStorage.setItem('coloridinho_v10_ed2', editor2.innerHTML);
+            localStorage.setItem('coloridinho_v10_tit', titulo.innerText);
+            localStorage.setItem('coloridinho_v10_col', colunasAtivas);
+            localStorage.setItem('coloridinho_v10_formas', JSON.stringify(formasSalvas));
 
             const postItsData = [];
             document.querySelectorAll('.post-it').forEach(card => {
@@ -597,16 +689,26 @@
                 if (classes.includes('emerald')) { bg = 'bg-emerald-100'; border = 'border-emerald-300'; text = 'text-emerald-900'; }
                 postItsData.push({ html, bg, border, text });
             });
-            localStorage.setItem('coloridinho_v9_posts', JSON.stringify(postItsData));
+            localStorage.setItem('coloridinho_v10_posts', JSON.stringify(postItsData));
 
             atualizarContador();
             statusSalvo.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo automaticamente`;
             lucide.createIcons();
         }
 
-        editor.addEventListener('input', salvarAutomaticamente);
-        editor2.addEventListener('input', salvarAutomaticamente);
-        titulo.addEventListener('input', salvarAutomaticamente);
+        // Registrar histórico ao digitar (com pequeno intervalo para não salvar a cada letra)
+        let temporizadorDigichat;
+        function gatilhoDigitacao() {
+            if (bloquearRegistroHistorico) return;
+            clearTimeout(temporizadorDigichat);
+            temporizadorDigichat = setTimeout(() => {
+                registrarHistorico();
+            }, 600);
+        }
+
+        editor.addEventListener('input', gatilhoDigitacao);
+        editor2.addEventListener('input', gatilhoDigitacao);
+        titulo.addEventListener('input', gatilhoDigitacao);
 
         function atualizarContador() {
             const textoTotal = editor.innerText + " " + editor2.innerText;
@@ -618,6 +720,7 @@
         function formatar(comando) {
             document.execCommand(comando, false, null);
             editor.focus();
+            registrarHistorico();
         }
 
         function mudarCorTexto(cor) {
@@ -630,24 +733,26 @@
                 span.appendChild(range.extractContents());
                 range.insertNode(span);
                 selecao.removeAllRanges();
-                salvarAutomaticamente();
+                registrarHistorico();
             } catch (e) {}
         }
 
         function inserirEmoji(emoji) {
             document.execCommand('insertText', false, emoji);
-            salvarAutomaticamente();
+            registrarHistorico();
         }
 
         function mudarFonte() {
             const fonte = document.getElementById('fontSelector').value;
             editor.style.fontFamily = fonte;
             editor2.style.fontFamily = fonte;
+            registrarHistorico();
         }
         function mudarTamanho() {
             const tamanho = document.getElementById('sizeSelector').value;
             editor.style.fontSize = tamanho;
             editor2.style.fontSize = tamanho;
+            registrarHistorico();
         }
 
         const listaEmojis = [
@@ -688,7 +793,8 @@
                 formasSalvas = [];
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 localStorage.clear();
-                atualizarContador();
+                pilhaHistorico = [];
+                registrarHistorico();
             }
         }
 

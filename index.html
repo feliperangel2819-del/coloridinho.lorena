@@ -51,7 +51,6 @@
             display: block;
         }
 
-        /* Estilo Post-it */
         .post-it {
             box-shadow: 4px 4px 15px rgba(0,0,0,0.15);
             transition: transform 0.2s;
@@ -60,7 +59,7 @@
             transform: scale(1.01);
         }
 
-        /* Canvas de Desenho Livre da IA */
+        /* Canvas de Desenho Inteligente */
         #canvasDesenho {
             position: absolute;
             top: 0;
@@ -88,7 +87,7 @@
     <div class="side-text-left">Boa aula de português</div>
     <div class="side-text-right">Boa aula de português</div>
 
-    <!-- Barra de Controle Flutuante de Zoom -->
+    <!-- Barra de Zoom Flutuante -->
     <div class="fixed bottom-4 right-4 bg-white/90 backdrop-blur-md border border-pink-200 shadow-xl rounded-2xl p-2 z-50 flex items-center gap-2 no-print">
         <button onclick="ajustarZoom(-0.1)" class="w-8 h-8 bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold rounded-xl flex items-center justify-center cursor-pointer transition" title="Diminuir Zoom">🔍-</button>
         <span id="zoomLabel" class="text-xs font-bold text-slate-700 w-12 text-center">100%</span>
@@ -100,7 +99,7 @@
     <div id="viewportZoom" class="w-full flex justify-center main-container-zoom">
         <div id="conteudoParaPdf" class="main-content w-full max-w-6xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-pink-200 p-4 md:p-10 relative">
             
-            <!-- Canvas invisível ou ativo para desenhar com a IA -->
+            <!-- Canvas de Desenho da IA -->
             <canvas id="canvasDesenho"></canvas>
 
             <!-- Cabeçalho -->
@@ -129,8 +128,21 @@
             </div>
 
             <!-- Barra de Ferramentas -->
-            <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 md:p-4 mb-6 flex flex-wrap items-center gap-2.5 md:gap-4 shadow-xs no-print">
+            <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 md:p-4 mb-6 flex flex-wrap items-center gap-2.5 md:gap-4 shadow-xs no-print relative z-30">
                 
+                <!-- Botões Desfazer / Refazer (Voltar e Avançar) -->
+                <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-2 py-1 rounded-xl shadow-xs">
+                    <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Desfazer (Voltar)">
+                        ↩ Desfazer
+                    </button>
+                    <div class="h-4 w-[1px] bg-pink-200"></div>
+                    <button onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Refazer (Avançar)">
+                        ↪ Refazer
+                    </button>
+                </div>
+
+                <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
+
                 <!-- Fonte -->
                 <div class="flex items-center gap-1.5">
                     <span class="text-xs md:text-sm font-bold text-slate-700">Fonte</span>
@@ -169,15 +181,23 @@
 
                 <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
 
-                <!-- Cor de Texto -->
+                <!-- Cor do Texto -->
                 <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-bold text-slate-700">Cor</span>
+                    <span class="text-xs md:text-sm font-bold text-slate-700">Texto</span>
                     <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-8 h-8 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent">
                 </div>
 
                 <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
 
-                <!-- Botão Novo Post-it -->
+                <!-- Cor do Desenho / Círculo da IA -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs md:text-sm font-bold text-slate-700">Cor Desenho</span>
+                    <input type="color" id="corDesenhoPicker" onchange="mudarCorDesenho(this.value)" value="#db2777" class="w-8 h-8 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent" title="Escolher cor para circular">
+                </div>
+
+                <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
+
+                <!-- Botão Post-it -->
                 <button onclick="adicionarPostIt()" class="bg-amber-200 hover:bg-amber-300 text-amber-900 border border-amber-300 font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
                     <span>📌 Novo Post-it</span>
                 </button>
@@ -187,7 +207,7 @@
                     <span>📐 Dividir em 2 Colunas</span>
                 </button>
 
-                <!-- BOTÃO NOVO: Desenhar / Circular com IA -->
+                <!-- BOTÃO DE ATIVAR/DESATIVAR DESENHO -->
                 <button onclick="alternarModoDesenhoIA()" id="btnModoDesenho" class="bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
                     <i data-lucide="pencil" class="w-4 h-4 text-pink-600"></i>
                     <span>Desenhar / Circular (IA): <strong id="statusDesenhoLabel" class="text-red-500">Inativo</strong></span>
@@ -200,7 +220,7 @@
                     <span class="text-[11px] font-extrabold text-pink-700 mr-1">Atalhos:</span>
                     <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-base p-1">📍</button>
                     <button onclick="inserirEmoji('⬆️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬆️</button>
-                    <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base p-1">➡️</button>
+                    <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base p-1">➡️️</button>
                     <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬇️</button>
                     <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬅️</button>
                     <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base p-1">👩🏽‍🏫</button>
@@ -229,7 +249,7 @@
                     </div>
                 </div>
                 
-                <!-- Área de Editor Dinâmico (Colunas) -->
+                <!-- Editor Dinâmico (Colunas) -->
                 <div id="wrapperEditor" class="flex flex-col md:flex-row gap-4 w-full flex-1">
                     <div id="editorTexto" 
                          contenteditable="true" 
@@ -249,7 +269,7 @@
 
                 <div class="flex justify-between items-center text-xs md:text-sm font-bold text-pink-900 mt-6 pt-3 border-t border-pink-300/50">
                     <span id="contadorPalavras">0 palavras • 0 caracteres</span>
-                    <span class="text-[11px] text-pink-700 bg-white/50 px-3 py-1 rounded-lg">Dica: Use Ctrl + Scroll do mouse para dar zoom!</span>
+                    <span class="text-[11px] text-pink-700 bg-white/50 px-3 py-1 rounded-lg">Dica: Use Ctrl + Scroll para zoom!</span>
                 </div>
             </div>
 
@@ -338,12 +358,28 @@
         atualizarDataHora();
         setInterval(atualizarDataHora, 30000);
 
-        // --- SISTEMA DE DESENHO E RECONHECIMENTO DE FORMAS PELA IA ---
+        // --- FUNÇÕES DE DESFAZER E REFAZER (VOLTAR E AVANÇAR) ---
+        function desfazerAcao() {
+            document.execCommand('undo', false, null);
+            salvarAutomaticamente();
+        }
+
+        function refazerAcao() {
+            document.execCommand('redo', false, null);
+            salvarAutomaticamente();
+        }
+
+        // --- SISTEMA DE DESENHO INTELIGENTE COM COR PERSONALIZÁVEL ---
         let modoDesenhoAtivo = false;
         const canvas = document.getElementById('canvasDesenho');
         const ctx = canvas.getContext('2d');
         let desenhando = false;
         let pontosRascunho = [];
+        let corAtualDesenho = "#db2777";
+
+        function mudarCorDesenho(novaCor) {
+            corAtualDesenho = novaCor;
+        }
 
         function alternarModoDesenhoIA() {
             modoDesenhoAtivo = !modoDesenhoAtivo;
@@ -367,6 +403,7 @@
             const container = document.getElementById('conteudoParaPdf');
             canvas.width = container.offsetWidth;
             canvas.height = container.offsetHeight;
+            redesenharHistorico();
         }
         window.addEventListener('resize', ajustarTamanhoCanvas);
         setTimeout(ajustarTamanhoCanvas, 100);
@@ -377,26 +414,15 @@
 
         canvas.addEventListener('touchstart', (e) => {
             const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousedown', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            canvas.dispatchEvent(mouseEvent);
+            canvas.dispatchEvent(new MouseEvent('mousedown', { clientX: touch.clientX, clientY: touch.clientY }));
         });
-
         canvas.addEventListener('touchmove', (e) => {
             const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousemove', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            canvas.dispatchEvent(mouseEvent);
+            canvas.dispatchEvent(new MouseEvent('mousemove', { clientX: touch.clientX, clientY: touch.clientY }));
             e.preventDefault();
         }, { passive: false });
-
-        canvas.addEventListener('touchend', (e) => {
-            const mouseEvent = new MouseEvent('mouseup', {});
-            canvas.dispatchEvent(mouseEvent);
+        canvas.addEventListener('touchend', () => {
+            canvas.dispatchEvent(new MouseEvent('mouseup', {}));
         });
 
         function iniciarDesenho(e) {
@@ -417,9 +443,8 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             redesenharHistorico();
 
-            // Desenhar rascunho temporário do usuário
             ctx.beginPath();
-            ctx.strokeStyle = '#db2777';
+            ctx.strokeStyle = corAtualDesenho;
             ctx.lineWidth = 3;
             ctx.setLineDash([4, 4]);
             ctx.moveTo(pontosRascunho[0].x, pontosRascunho[0].y);
@@ -434,10 +459,8 @@
         function finalizarDesenhoIA() {
             if (!modoDesenhoAtivo || !desenhando) return;
             desenhando = false;
-
             if (pontosRascunho.length < 5) return;
 
-            // Simulação da IA analisando e rebobinando o traço torto em uma forma geométrica perfeita (Círculo ou Retângulo)
             let minX = Math.min(...pontosRascunho.map(p => p.x));
             let maxX = Math.max(...pontosRascunho.map(p => p.x));
             let minY = Math.min(...pontosRascunho.map(p => p.y));
@@ -448,7 +471,6 @@
             let centerX = minX + largura / 2;
             let centerY = minY + altura / 2;
 
-            // Determinar se parece círculo/elipse ou retângulo
             let formaPerfeita = {
                 tipo: largura > 1.8 * altura || altura > 1.8 * largura ? 'retangulo' : 'circulo',
                 cx: centerX,
@@ -458,7 +480,8 @@
                 x: minX - 8,
                 y: minY - 8,
                 w: largura + 16,
-                h: altura + 16
+                h: altura + 16,
+                cor: corAtualDesenho
             };
 
             formasSalvas.push(formaPerfeita);
@@ -468,9 +491,10 @@
         }
 
         function redesenharHistorico() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             formasSalvas.forEach(f => {
                 ctx.beginPath();
-                ctx.strokeStyle = '#db2777';
+                ctx.strokeStyle = f.cor || '#db2777';
                 ctx.lineWidth = 3;
                 ctx.setLineDash([]);
                 if (f.tipo === 'circulo') {
@@ -482,7 +506,7 @@
             });
         }
 
-        // --- SISTEMA DE COLUNAS E POST-ITS ---
+        // --- COLUNAS E POST-ITS ---
         let colunasAtivas = false;
         function alternarLayoutColunas() {
             colunasAtivas = !colunasAtivas;
@@ -528,12 +552,12 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const salvo1 = localStorage.getItem('coloridinho_v7_ed1');
-            const salvo2 = localStorage.getItem('coloridinho_v7_ed2');
-            const tituloSalvo = localStorage.getItem('coloridinho_v7_tit');
-            const colunasSalvas = localStorage.getItem('coloridinho_v7_col');
-            const postitsSalvos = localStorage.getItem('coloridinho_v7_posts');
-            const formasSalvasData = localStorage.getItem('coloridinho_v7_formas');
+            const salvo1 = localStorage.getItem('coloridinho_v9_ed1');
+            const salvo2 = localStorage.getItem('coloridinho_v9_ed2');
+            const tituloSalvo = localStorage.getItem('coloridinho_v9_tit');
+            const colunasSalvas = localStorage.getItem('coloridinho_v9_col');
+            const postitsSalvos = localStorage.getItem('coloridinho_v9_posts');
+            const formasSalvasData = localStorage.getItem('coloridinho_v9_formas');
 
             if (salvo1) editor.innerHTML = salvo1;
             if (salvo2) editor2.innerHTML = salvo2;
@@ -556,13 +580,12 @@
             atualizarContador();
         });
 
-        let tempoSalvar;
         function salvarAutomaticamente() {
-            localStorage.setItem('coloridinho_v7_ed1', editor.innerHTML);
-            localStorage.setItem('coloridinho_v7_ed2', editor2.innerHTML);
-            localStorage.setItem('coloridinho_v7_tit', titulo.innerText);
-            localStorage.setItem('coloridinho_v7_col', colunasAtivas);
-            localStorage.setItem('coloridinho_v7_formas', JSON.stringify(formasSalvas));
+            localStorage.setItem('coloridinho_v9_ed1', editor.innerHTML);
+            localStorage.setItem('coloridinho_v9_ed2', editor2.innerHTML);
+            localStorage.setItem('coloridinho_v9_tit', titulo.innerText);
+            localStorage.setItem('coloridinho_v9_col', colunasAtivas);
+            localStorage.setItem('coloridinho_v9_formas', JSON.stringify(formasSalvas));
 
             const postItsData = [];
             document.querySelectorAll('.post-it').forEach(card => {
@@ -574,7 +597,7 @@
                 if (classes.includes('emerald')) { bg = 'bg-emerald-100'; border = 'border-emerald-300'; text = 'text-emerald-900'; }
                 postItsData.push({ html, bg, border, text });
             });
-            localStorage.setItem('coloridinho_v7_posts', JSON.stringify(postItsData));
+            localStorage.setItem('coloridinho_v9_posts', JSON.stringify(postItsData));
 
             atualizarContador();
             statusSalvo.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo automaticamente`;

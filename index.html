@@ -16,7 +16,7 @@
             overflow-x: hidden;
         }
         
-        /* Textos nas laterais */
+        /* Textos nas laterais (escondidos em telas pequenas para não atrapalhar o celular) */
         .side-text-left, .side-text-right {
             position: fixed;
             top: 50%;
@@ -31,8 +31,12 @@
             z-index: 0;
             letter-spacing: 2px;
         }
-        .side-text-left { left: 25px; }
-        .side-text-right { right: 25px; transform: translateY(-50%) rotate(180deg); }
+        .side-text-left { left: 15px; }
+        .side-text-right { right: 15px; transform: translateY(-50%) rotate(180deg); }
+
+        @media (max-width: 1024px) {
+            .side-text-left, .side-text-right { display: none; }
+        }
 
         .main-content {
             position: relative;
@@ -74,50 +78,50 @@
         }
     </style>
 </head>
-<body class="bg-[#FCE8ED] min-h-screen text-slate-700 flex flex-col items-center justify-between p-4 md:p-8">
+<body class="bg-[#FCE8ED] min-h-screen text-slate-700 flex flex-col items-center justify-between p-3 md:p-8">
 
     <!-- Textos nas laterais -->
     <div class="side-text-left">Boa aula de português</div>
     <div class="side-text-right">Boa aula de português</div>
 
-    <div id="conteudoParaPdf" class="main-content w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border border-pink-200 p-6 md:p-8">
+    <div id="conteudoParaPdf" class="main-content w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border border-pink-200 p-4 md:p-8">
         
         <!-- Cabeçalho do Editor -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
             <div class="flex items-center gap-3">
-                <div class="bg-pink-100 text-pink-700 p-3.5 rounded-2xl shadow-xs">
-                    <i data-lucide="heart" class="w-7 h-7 fill-pink-500 text-pink-500"></i>
+                <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs shrink-0">
+                    <i data-lucide="heart" class="w-6 h-6 md:w-7 md:h-7 fill-pink-500 text-pink-500"></i>
                 </div>
                 <div>
-                    <div class="flex items-center gap-2 text-sm text-pink-600 font-bold uppercase tracking-wider mb-1.5">
+                    <div class="flex flex-wrap items-center gap-1.5 text-xs md:text-sm text-pink-600 font-bold uppercase tracking-wider mb-1">
                         <span>✨ Criado com carinho para</span>
-                        <span>•</span>
-                        <span class="bg-pink-100 px-3 py-0.5 rounded-full text-pink-700 font-extrabold text-sm">Professora Lorena</span>
+                        <span class="hidden sm:inline">•</span>
+                        <span class="bg-pink-100 px-2.5 py-0.5 rounded-full text-pink-700 font-extrabold text-xs md:text-sm">Professora Lorena</span>
                     </div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
-                        Coloridinho da Prof <i data-lucide="sparkles" class="w-6 h-6 text-pink-500 inline-block"></i>
+                    <h1 class="text-xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
+                        Coloridinho da Prof <i data-lucide="sparkles" class="w-5 h-5 md:w-6 md:h-6 text-pink-500 inline-block"></i>
                     </h1>
                 </div>
             </div>
             
             <!-- Botão de Voltar e Status Salvo -->
-            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                <span id="statusSalvo" class="text-xs font-bold text-pink-600 bg-pink-50 px-3 py-1.5 rounded-full border border-pink-200 flex items-center gap-1">
+            <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
+                <span id="statusSalvo" class="text-[11px] md:text-xs font-bold text-pink-600 bg-pink-50 px-2.5 py-1.5 rounded-full border border-pink-200 flex items-center gap-1">
                     <i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo automaticamente
                 </span>
-                <a href="index.html" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-4 py-2 rounded-xl transition text-sm flex items-center gap-2 border border-pink-200">
+                <a href="index.html" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-3 py-1.5 md:px-4 md:py-2 rounded-xl transition text-xs md:text-sm flex items-center gap-1.5 border border-pink-200">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar
                 </a>
             </div>
         </div>
 
-        <!-- Barra de Ferramentas Estilo Word -->
-        <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3 md:gap-5 shadow-xs no-print">
+        <!-- Barra de Ferramentas Estilo Word Adaptada para Mobile -->
+        <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 md:p-4 mb-6 flex flex-wrap items-center gap-2.5 md:gap-4 shadow-xs no-print">
             
             <!-- Fonte -->
-            <div class="flex items-center gap-2">
-                <span class="text-sm font-bold text-slate-700">Fonte</span>
-                <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-xl px-3.5 py-2 text-sm text-slate-700 focus:outline-none font-semibold">
+            <div class="flex items-center gap-1.5">
+                <span class="text-xs md:text-sm font-bold text-slate-700">Fonte</span>
+                <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-xl px-2.5 py-1.5 text-xs md:text-sm text-slate-700 focus:outline-none font-semibold">
                     <option value="Quicksand, sans-serif">Padrão</option>
                     <option value="Arial, sans-serif">Arial</option>
                     <option value="Georgia, serif">Georgia</option>
@@ -126,12 +130,12 @@
                 </select>
             </div>
 
-            <div class="h-6 w-[1px] bg-pink-200"></div>
+            <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
 
             <!-- Tamanho da Fonte -->
-            <div class="flex items-center gap-2">
-                <span class="text-sm font-bold text-slate-700">Tam</span>
-                <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-xl px-3.5 py-2 text-sm text-slate-700 focus:outline-none font-semibold">
+            <div class="flex items-center gap-1.5">
+                <span class="text-xs md:text-sm font-bold text-slate-700">Tam</span>
+                <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-xl px-2.5 py-1.5 text-xs md:text-sm text-slate-700 focus:outline-none font-semibold">
                     <option value="14px">14</option>
                     <option value="16px" selected>16</option>
                     <option value="18px">18</option>
@@ -141,36 +145,36 @@
                 </select>
             </div>
 
-            <div class="h-6 w-[1px] bg-pink-200"></div>
+            <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
 
             <!-- Botões de Formatação -->
-            <div class="flex items-center gap-2">
-                <button onclick="formatar('bold')" class="hover:bg-pink-200 rounded-xl transition font-bold text-sm px-4 py-2 bg-white border border-pink-200 cursor-pointer">N</button>
-                <button onclick="formatar('italic')" class="hover:bg-pink-200 rounded-xl transition italic text-sm px-4 py-2 bg-white border border-pink-200 cursor-pointer">I</button>
-                <button onclick="formatar('underline')" class="hover:bg-pink-200 rounded-xl transition underline text-sm px-4 py-2 bg-white border border-pink-200 cursor-pointer">S</button>
+            <div class="flex items-center gap-1.5">
+                <button onclick="formatar('bold')" class="hover:bg-pink-200 rounded-xl transition font-bold text-xs md:text-sm px-3 py-1.5 bg-white border border-pink-200 cursor-pointer">N</button>
+                <button onclick="formatar('italic')" class="hover:bg-pink-200 rounded-xl transition italic text-xs md:text-sm px-3 py-1.5 bg-white border border-pink-200 cursor-pointer">I</button>
+                <button onclick="formatar('underline')" class="hover:bg-pink-200 rounded-xl transition underline text-xs md:text-sm px-3 py-1.5 bg-white border border-pink-200 cursor-pointer">S</button>
             </div>
 
-            <div class="h-6 w-[1px] bg-pink-200"></div>
+            <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
 
             <!-- Cor de Texto Isolada -->
-            <div class="flex items-center gap-2.5">
-                <span class="text-sm font-bold text-slate-700">Cor</span>
-                <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-9 h-9 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent">
+            <div class="flex items-center gap-2">
+                <span class="text-xs md:text-sm font-bold text-slate-700">Cor</span>
+                <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-8 h-8 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent">
             </div>
 
-            <div class="h-6 w-[1px] bg-pink-200"></div>
+            <div class="w-full h-[1px] bg-pink-200 my-1 sm:hidden"></div>
 
             <!-- Bloco de Emojis com o Botão Mais -->
-            <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-3 py-2 rounded-xl shadow-xs">
-                <span class="text-xs font-extrabold text-pink-700 mr-1">Atalhos:</span>
-                <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir 📍">📍</button>
-                <button onclick="inserirEmoji('⬆️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ⬆️">⬆️</button>
-                <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ➡️">➡️</button>
-                <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ⬇️">⬇️</button>
-                <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ⬅️">⬅️</button>
-                <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir 👩🏽‍🏫">👩🏽‍🏫</button>
+            <div class="flex items-center flex-wrap gap-1 bg-white border border-pink-200 px-2.5 py-1.5 rounded-xl shadow-xs w-full sm:w-auto justify-between sm:justify-start">
+                <span class="text-[11px] font-extrabold text-pink-700 mr-1">Atalhos:</span>
+                <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir 📍">📍</button>
+                <button onclick="inserirEmoji('⬆️')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir ⬆️">⬆️</button>
+                <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir ➡️">➡️</button>
+                <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir ⬇️">⬇️</button>
+                <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir ⬅️">⬅️</button>
+                <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir 👩🏽‍🏫">👩🏽‍‍🏫</button>
                 <div class="h-4 w-[1px] bg-pink-200 mx-1"></div>
-                <button onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs transition flex items-center gap-1 cursor-pointer">
+                <button onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs transition flex items-center gap-1 cursor-pointer">
                     Mais +
                 </button>
             </div>
@@ -178,10 +182,10 @@
         </div>
 
         <!-- Folha de Escrita com Fundo Rosa Bem Bonito -->
-        <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-2xl p-6 md:p-8 min-h-[420px] shadow-md relative flex flex-col">
+        <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-2xl p-4 md:p-8 min-h-[380px] shadow-md relative flex flex-col">
             
             <!-- Campo de Título com Placeholder -->
-            <h2 class="text-xl font-bold text-slate-900 mb-4 outline-none border-b border-pink-300/60 pb-2" 
+            <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-3 outline-none border-b border-pink-300/60 pb-2" 
                 contenteditable="true" 
                 id="tituloColoridinho" 
                 data-placeholder="Título..."></h2>
@@ -189,12 +193,12 @@
             <!-- Área de Texto Editável -->
             <div id="editorTexto" 
                  contenteditable="true" 
-                 class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[285px] bg-[#FFE4E9]/70 p-4 rounded-xl border border-pink-300/40" 
+                 class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[250px] bg-[#FFE4E9]/70 p-3.5 md:p-4 rounded-xl border border-pink-300/40 text-sm md:text-base" 
                  data-placeholder="Escreva aqui...">
             </div>
 
             <!-- Rodapé Interno -->
-            <div class="flex justify-between items-center text-sm font-bold text-pink-900 mt-4 pt-3 border-t border-pink-300/50">
+            <div class="flex justify-between items-center text-xs md:text-sm font-bold text-pink-900 mt-4 pt-3 border-t border-pink-300/50">
                 <span id="contadorPalavras">0 palavras • 0 caracteres</span>
             </div>
         </div>
@@ -202,69 +206,69 @@
     </div>
 
     <!-- Modal / Janela Flutuante de Emojis -->
-    <div id="modalEmojis" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+    <div id="modalEmojis" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center hidden p-3">
         <div class="bg-white rounded-3xl shadow-2xl border border-pink-200 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
             
             <!-- Cabeçalho do Modal -->
             <div class="bg-[#FFF0F3] p-4 border-b border-pink-200 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="text-xl">✨</span>
-                    <h3 class="font-bold text-slate-800 text-lg">Catálogo de Emojis</h3>
+                    <h3 class="font-bold text-slate-800 text-base md:text-lg">Catálogo de Emojis</h3>
                 </div>
-                <button onclick="fecharModalEmojis()" class="bg-white hover:bg-pink-100 text-slate-600 font-bold w-9 h-9 rounded-full flex items-center justify-center border border-pink-200 transition cursor-pointer">
+                <button onclick="fecharModalEmojis()" class="bg-white hover:bg-pink-100 text-slate-600 font-bold w-8 h-8 rounded-full flex items-center justify-center border border-pink-200 transition cursor-pointer">
                     ✕
                 </button>
             </div>
 
             <!-- Barra de Pesquisa de Emojis -->
-            <div class="p-4 border-b border-pink-100 bg-white">
+            <div class="p-3 md:p-4 border-b border-pink-100 bg-white">
                 <div class="relative">
-                    <input type="text" id="inputBuscaEmoji" oninput="filtrarEmojis(this.value)" placeholder="Pesquisar emoji (ex: joia, dedao, alfinete, mao, estrela)..." 
-                           class="w-full bg-pink-50/60 border border-pink-200 rounded-2xl px-4 py-3 pl-10 text-sm text-slate-700 outline-none focus:border-pink-400 font-medium">
-                    <span class="absolute left-3.5 top-3.5 text-pink-400">🔍</span>
+                    <input type="text" id="inputBuscaEmoji" oninput="filtrarEmojis(this.value)" placeholder="Pesquisar (ex: joia, dedao, alfinete)..." 
+                           class="w-full bg-pink-50/60 border border-pink-200 rounded-2xl px-4 py-2.5 pl-10 text-xs md:text-sm text-slate-700 outline-none focus:border-pink-400 font-medium">
+                    <span class="absolute left-3.5 top-3 text-pink-400">🔍</span>
                 </div>
             </div>
 
             <!-- Lista / Grelha de Emojis -->
-            <div id="gridEmojis" class="p-4 overflow-y-auto grid grid-cols-6 sm:grid-cols-8 gap-2.5 max-h-[350px]">
+            <div id="gridEmojis" class="p-3 md:p-4 overflow-y-auto grid grid-cols-5 sm:grid-cols-8 gap-2 max-h-[300px]">
                 <!-- Preenchido via Javascript -->
             </div>
 
             <!-- Rodapé do Modal -->
-            <div class="bg-pink-50 p-3 text-center text-xs text-pink-600 font-bold border-t border-pink-100">
-                Clique em qualquer emoji para inseri-lo instantaneamente no seu texto!
+            <div class="bg-pink-50 p-2.5 text-center text-[11px] md:text-xs text-pink-600 font-bold border-t border-pink-100">
+                Clique em qualquer emoji para inseri-lo instantaneamente!
             </div>
         </div>
     </div>
 
-    <!-- Barra de Ações Inferior -->
-    <div class="main-content flex flex-wrap items-center justify-center gap-4 mt-8 no-print w-full max-w-5xl">
+    <!-- Barra de Ações Inferior (Botões Responsivos) -->
+    <div class="main-content grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-6 no-print w-full max-w-5xl">
         
         <!-- Botão Círculo Mágico -->
-        <div class="flex flex-col items-center flex-1 min-w-[210px]">
-            <button onclick="ativarCirculoMagico()" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-base font-bold px-6 py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105">
+        <div class="flex flex-col items-center w-full">
+            <button onclick="ativarCirculoMagico()" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-sm md:text-base font-bold py-3.5 px-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]">
                 <i data-lucide="sparkles" class="w-5 h-5"></i> Círculo Mágico IA
             </button>
         </div>
         
         <!-- Botão Salvar como PDF -->
-        <div class="flex flex-col items-center flex-1 min-w-[210px]">
-            <span class="text-xs font-bold text-pink-800 mb-1 tracking-wide">(só funciona para computador)</span>
-            <button onclick="gerarPDFParaSlide()" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold px-4 py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105">
+        <div class="flex flex-col items-center w-full">
+            <span class="text-[10px] md:text-xs font-bold text-pink-800 mb-0.5 tracking-wide">(só funciona para computador)</span>
+            <button onclick="gerarPDFParaSlide()" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-sm md:text-base font-bold py-3.5 px-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]">
                 <i data-lucide="file-down" class="w-5 h-5 shrink-0"></i> <span>Salvar como PDF</span>
             </button>
         </div>
 
         <!-- Botão Baixar .txt -->
-        <div class="flex flex-col items-center flex-1 min-w-[210px]">
-            <button onclick="baixarTxt()" class="w-full bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-base font-bold px-6 py-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105">
+        <div class="flex flex-col items-center w-full justify-end">
+            <button onclick="baixarTxt()" class="w-full bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-sm md:text-base font-bold py-3.5 px-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]">
                 <i data-lucide="download" class="w-5 h-5 text-pink-600"></i> Baixar .txt
             </button>
         </div>
 
         <!-- Botão Limpar Folha -->
-        <div class="flex flex-col items-center flex-1 min-w-[210px]">
-            <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-base font-bold px-6 py-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105">
+        <div class="flex flex-col items-center w-full justify-end">
+            <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-sm md:text-base font-bold py-3.5 px-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]">
                 <i data-lucide="trash-2" class="w-5 h-5"></i> Limpar folha
             </button>
         </div>
@@ -284,6 +288,7 @@
 
         editor.addEventListener('mouseup', capturarSelecao);
         editor.addEventListener('keyup', capturarSelecao);
+        editor.addEventListener('touchend', capturarSelecao);
 
         function capturarSelecao() {
             const selecao = window.getSelection();
@@ -295,7 +300,6 @@
             }
         }
 
-        // Base de emojis rica com sinônimos e termos flexíveis (atende erros de digitação comuns)
         const listaEmojis = [
             { emoji: '📌', termos: 'alfinete alfinethe tachinha prego fixar' },
             { emoji: '📍', termos: 'localizacao pino mapa lugar aqui marcador alfinete' },
@@ -343,8 +347,7 @@
             { emoji: '🔥', termos: 'fogo quente destaque' },
             { emoji: '🚀', termos: 'foguete subida rapido' },
             { emoji: '🎨', termos: 'arte paleta cores pintar' },
-            { emoji: '📌', termos: 'alfinete 📌' },
-            { emoji: '⬆️', termos: 'cima seta subida' },
+            { emoji: '⬆️️', termos: 'cima seta subida' },
             { emoji: '➡️', termos: 'direita seta' },
             { emoji: '⬇️', termos: 'baixo seta' },
             { emoji: '⬅️', termos: 'esquerda seta' }
@@ -362,7 +365,7 @@
             });
 
             if (filtrados.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 font-medium text-sm">Nenhum emoji encontrado para "${filtro}". Tente outro termo!</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-6 text-slate-400 font-medium text-xs md:text-sm">Nenhum emoji encontrado para "${filtro}".</div>`;
                 return;
             }
 
@@ -370,7 +373,6 @@
                 const btn = document.createElement('button');
                 btn.className = 'hover:bg-pink-100 bg-pink-50/50 border border-pink-100 rounded-2xl p-2.5 text-2xl flex items-center justify-center transition hover:scale-125 cursor-pointer';
                 btn.innerText = item.emoji;
-                btn.title = item.termos.split(' ')[0];
                 btn.onclick = () => {
                     inserirEmoji(item.emoji);
                     fecharModalEmojis();
@@ -479,12 +481,12 @@
         }
 
         function baixarTxt() {
-            const nomeTitulo = titulo.innerText.trim() || "Coloridinho_da_Prof";
+            const nomeTitulo = titulo.innerText.trin ? titulo.innerText.trim() : "Coloridinho_da_Prof";
             const texto = editor.innerText;
             const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `${nomeTitulo}.txt`;
+            link.download = `${nomeTitulo || 'Coloridinho_da_Prof'}.txt`;
             link.click();
         }
 

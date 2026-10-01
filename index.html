@@ -43,7 +43,7 @@
         [contenteditable][data-placeholder]:empty:before {
             content: attr(data-placeholder);
             color: #d97792;
-            opacity: 0.7;
+            opacity: 0.8;
             pointer-events: none;
             display: block;
         }
@@ -182,11 +182,11 @@
                 id="tituloColoridinho" 
                 data-placeholder="Título..."></h2>
             
-            <!-- Área de Texto Editável -->
+            <!-- Área de Texto Editável com Placeholder atualizado -->
             <div id="editorTexto" 
                  contenteditable="true" 
                  class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[285px] bg-[#FFE4E9]/70 p-4 rounded-xl border border-pink-300/40" 
-                 data-placeholder="Escreva suas anotações ou plano de aula aqui...">
+                 data-placeholder="Escreva aqui...">
             </div>
 
             <!-- Rodapé Interno -->
@@ -256,9 +256,13 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const salvo = localStorage.getItem('coloridinho_lorena_texto_v2');
-            const tituloSalvo = localStorage.getItem('coloridinho_lorena_titulo_v2');
-            if (salvo) editor.innerHTML = salvo;
+            const salvo = localStorage.getItem('coloridinho_lorena_texto_v3');
+            const tituloSalvo = localStorage.getItem('coloridinho_lorena_titulo_v3');
+            if (salvo && salvo.trim() !== "") {
+                editor.innerHTML = salvo;
+            } else {
+                editor.innerHTML = ""; // Garante que fica vazio para o placeholder aparecer
+            }
             if (tituloSalvo) titulo.innerText = tituloSalvo;
             atualizarContador();
         });
@@ -274,8 +278,8 @@
         });
 
         function salvarAutomaticamente() {
-            localStorage.setItem('coloridinho_lorena_texto_v2', editor.innerHTML);
-            localStorage.setItem('coloridinho_lorena_titulo_v2', titulo.innerText);
+            localStorage.setItem('coloridinho_lorena_texto_v3', editor.innerHTML);
+            localStorage.setItem('coloridinho_lorena_titulo_v3', titulo.innerText);
             
             statusSalvo.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Salvando...`;
             lucide.createIcons();
@@ -324,8 +328,8 @@
             if(confirm('Deseja realmente limpar todo o conteúdo deste Coloridinho?')) {
                 editor.innerHTML = '';
                 titulo.innerText = '';
-                localStorage.removeItem('coloridinho_lorena_texto_v2');
-                localStorage.removeItem('coloridinho_lorena_titulo_v2');
+                localStorage.removeItem('coloridinho_lorena_texto_v3');
+                localStorage.removeItem('coloridinho_lorena_titulo_v3');
                 atualizarContador();
             }
         }

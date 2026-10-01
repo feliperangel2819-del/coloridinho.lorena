@@ -10,7 +10,34 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;650;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Quicksand', sans-serif; }
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Textos nas laterais bem visíveis para a sala */
+        .side-text-left, .side-text-right {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+            color: #be185d;
+            opacity: 0.7;
+            font-size: 1.4rem;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            pointer-events: none;
+            z-index: 0;
+            letter-spacing: 2px;
+        }
+        .side-text-left { left: 25px; }
+        .side-text-right { right: 25px; transform: translateY(-50%) rotate(180deg); }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+        }
         
         /* Efeito de texto transparente/guia quando vazio */
         [contenteditable][data-placeholder]:empty:before {
@@ -38,13 +65,18 @@
         @media print {
             body { background: white !important; padding: 0 !important; }
             button, .no-print { display: none !important; }
+            .side-text-left, .side-text-right { display: none !important; }
             #conteudoParaPdf { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; }
         }
     </style>
 </head>
-<body class="bg-[#FCE8ED] min-h-screen text-slate-700 flex flex-col items-center p-4 md:p-8">
+<body class="bg-[#FCE8ED] min-h-screen text-slate-700 flex flex-col items-center justify-between p-4 md:p-8">
 
-    <div id="conteudoParaPdf" class="w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border border-pink-200 p-6 md:p-8">
+    <!-- Textos nas laterais -->
+    <div class="side-text-left">Boa aula de português</div>
+    <div class="side-text-right">Boa aula de português</div>
+
+    <div id="conteudoParaPdf" class="main-content w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border border-pink-200 p-6 md:p-8">
         
         <!-- Cabeçalho do Editor -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
@@ -83,14 +115,14 @@
 
             <div class="h-5 w-[1px] bg-pink-200"></div>
 
-            <!-- Tamanho da Fonte -->
+            <!-- Tamanho da Fonte (Padrão inicial agora é 20px maior) -->
             <div class="flex items-center gap-1">
                 <span class="text-xs font-bold text-slate-500">Tam</span>
                 <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-xs text-slate-700 focus:outline-none">
                     <option value="14px">14</option>
-                    <option value="16px" selected>16</option>
+                    <option value="16px">16</option>
                     <option value="18px">18</option>
-                    <option value="20px">20</option>
+                    <option value="20px" selected>20</option>
                     <option value="24px">24</option>
                     <option value="32px">32</option>
                 </select>
@@ -118,16 +150,16 @@
         <!-- Folha de Escrita com Fundo Rosa Bem Bonito -->
         <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-2xl p-6 md:p-8 min-h-[420px] shadow-md relative flex flex-col">
             
-            <!-- Campo de Título com Placeholder -->
-            <h2 class="text-xl font-bold text-slate-900 mb-4 outline-none border-b border-pink-300/60 pb-2" 
+            <!-- Campo de Título com Letra Maior -->
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4 outline-none border-b border-pink-300/60 pb-2" 
                 contenteditable="true" 
                 id="tituloColoridinho" 
                 data-placeholder="Título..."></h2>
             
-            <!-- Área de Texto Editável -->
+            <!-- Área de Texto Editável com Letra Maior (20px) -->
             <div id="editorTexto" 
                  contenteditable="true" 
-                 class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[285px] bg-[#FFE4E9]/70 p-4 rounded-xl border border-pink-300/40" 
+                 class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[285px] bg-[#FFE4E9]/70 p-4 rounded-xl border border-pink-300/40 text-[20px]" 
                  data-placeholder="Escreva suas anotações ou plano de aula aqui...">
             </div>
 
@@ -141,7 +173,7 @@
     </div>
 
     <!-- Barra de Ações Inferior -->
-    <div class="flex flex-wrap items-center justify-center gap-3 mt-6 no-print">
+    <div class="main-content flex flex-wrap items-center justify-center gap-3 mt-6 no-print">
         <button onclick="ativarCirculoMagico()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-5 py-3 rounded-full shadow-md transition flex items-center gap-2 cursor-pointer">
             <i data-lucide="sparkles" class="w-4 h-4"></i> Círculo Mágico IA
         </button>
@@ -166,6 +198,7 @@
         const editor = document.getElementById('editorTexto');
         const titulo = document.getElementById('tituloColoridinho');
         const contador = document.getElementById('contadorPalavras');
+        const sizeSelector = document.getElementById('sizeSelector');
 
         window.addEventListener('DOMContentLoaded', () => {
             const salvo = localStorage.getItem('coloridinho_lorena_texto');
@@ -207,7 +240,7 @@
         }
 
         function mudarTamanho() {
-            const tamanho = document.getElementById('sizeSelector').value;
+            const tamanho = sizeSelector.value;
             editor.style.fontSize = tamanho;
         }
 
@@ -231,7 +264,6 @@
             link.click();
         }
 
-        // Função rápida e sem travamentos para salvar como PDF (ideal para slides)
         function gerarPDFParaSlide() {
             window.print();
         }

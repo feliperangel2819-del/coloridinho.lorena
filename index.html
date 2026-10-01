@@ -85,25 +85,22 @@
                     <i data-lucide="heart" class="w-7 h-7 fill-pink-500 text-pink-500"></i>
                 </div>
                 <div>
-                    <!-- Parte de cima aumentada conforme pedido anteriormente -->
                     <div class="flex items-center gap-2 text-sm text-pink-600 font-bold uppercase tracking-wider mb-1.5">
                         <span>✨ Criado com carinho para</span>
                         <span>•</span>
                         <span class="bg-pink-100 px-3 py-0.5 rounded-full text-pink-700 font-extrabold text-sm">Professora Lorena</span>
                     </div>
-                    <!-- Tamanho do título mantido original -->
                     <h1 class="text-2xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
                         Coloridinho da Prof <i data-lucide="sparkles" class="w-6 h-6 text-pink-500 inline-block"></i>
                     </h1>
                 </div>
             </div>
-            <!-- Status de salvo aumentado -->
             <div class="flex items-center gap-2 text-sm text-slate-600 bg-pink-50 px-4 py-2.5 rounded-full border border-pink-100 shadow-xs no-print font-semibold">
                 <i data-lucide="check-circle-2" class="w-5 h-5 text-pink-600"></i> Salvo automaticamente
             </div>
         </div>
 
-        <!-- Barra de Ferramentas Estilo Word (Tamanhos aumentados) -->
+        <!-- Barra de Ferramentas Estilo Word -->
         <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3 md:gap-5 shadow-xs no-print">
             
             <!-- Fonte -->
@@ -155,7 +152,7 @@
         <!-- Folha de Escrita com Fundo Rosa Bem Bonito -->
         <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-2xl p-6 md:p-8 min-h-[420px] shadow-md relative flex flex-col">
             
-            <!-- Campo de Título com Placeholder (Tamanho mantido original) -->
+            <!-- Campo de Título com Placeholder -->
             <h2 class="text-xl font-bold text-slate-900 mb-4 outline-none border-b border-pink-300/60 pb-2" 
                 contenteditable="true" 
                 id="tituloColoridinho" 
@@ -168,7 +165,7 @@
                  data-placeholder="Escreva suas anotações ou plano de aula aqui...">
             </div>
 
-            <!-- Rodapé Interno Aumentado -->
+            <!-- Rodapé Interno -->
             <div class="flex justify-between items-center text-sm font-bold text-pink-900 mt-4 pt-3 border-t border-pink-300/50">
                 <span id="contadorPalavras">0 palavras • 0 caracteres</span>
                 <span class="italic text-base">Coloridinho feito com muito carinho para a Profª Lorena 💖</span>
@@ -177,21 +174,21 @@
 
     </div>
 
-    <!-- Barra de Ações Inferior (Botões menores, equilibrados e iguais) -->
+    <!-- Barra de Ações Inferior (Com o botão ajustado e alinhado) -->
     <div class="main-content flex flex-wrap items-center justify-center gap-3 mt-6 no-print w-full max-w-5xl">
-        <button onclick="ativarCirculoMagico()" class="bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[190px]">
+        <button onclick="ativarCirculoMagico()" class="bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold px-5 py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[190px]">
             <i data-lucide="sparkles" class="w-4 h-4"></i> Círculo Mágico IA
         </button>
         
-        <button onclick="gerarPDFParaSlide()" class="bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[190px]">
-            <i data-lucide="file-down" class="w-4 h-4"></i> Salvar como PDF / Slide
+        <button onclick="gerarPDFParaSlide()" class="bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold px-5 py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[190px]">
+            <i data-lucide="file-down" class="w-4 h-4"></i> Salvar como PDF
         </button>
 
-        <button onclick="baixarTxt()" class="bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-sm font-bold px-5 py-2.5 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[190px]">
+        <button onclick="baixarTxt()" class="bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-sm font-bold px-5 py-3 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[190px]">
             <i data-lucide="download" class="w-4 h-4 text-pink-600"></i> Baixar .txt
         </button>
 
-        <button onclick="limparFolha()" class="bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-sm font-bold px-5 py-2.5 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[190px]">
+        <button onclick="limparFolha()" class="bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-sm font-bold px-5 py-3 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[190px]">
             <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar folha
         </button>
     </div>

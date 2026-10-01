@@ -81,30 +81,35 @@
         <!-- Cabeçalho do Editor -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
             <div class="flex items-center gap-3">
-                <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs">
-                    <i data-lucide="heart" class="w-6 h-6 fill-pink-500 text-pink-500"></i>
+                <div class="bg-pink-100 text-pink-700 p-3.5 rounded-2xl shadow-xs">
+                    <i data-lucide="heart" class="w-7 h-7 fill-pink-500 text-pink-500"></i>
                 </div>
                 <div>
-                    <div class="flex items-center gap-2 text-xs text-pink-600 font-semibold uppercase tracking-wider">
+                    <!-- Aumentado: Selo Superior -->
+                    <div class="flex items-center gap-2 text-sm text-pink-600 font-semibold uppercase tracking-wider mb-1">
                         <span>✨ Criado com carinho para</span>
                         <span>•</span>
-                        <span class="bg-pink-100 px-2.5 py-0.5 rounded-full text-pink-700 font-bold">Professora Lorena</span>
+                        <span class="bg-pink-100 px-3 py-0.5 rounded-full text-pink-700 font-bold text-sm">Professora Lorena</span>
                     </div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Coloridinho Digital 💖</h1>
+                    <!-- Mantido exatamente o tamanho original do título -->
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
+                        Coloridinho da Prof <i data-lucide="sparkles" class="w-6 h-6 text-pink-500 inline-block"></i>
+                    </h1>
                 </div>
             </div>
-            <div class="flex items-center gap-2 text-xs text-slate-500 bg-pink-50 px-3 py-2 rounded-full border border-pink-100 shadow-xs no-print">
-                <i data-lucide="check-circle-2" class="w-4 h-4 text-pink-600"></i> Salvo automaticamente
+            <!-- Aumentado: Status de salvo -->
+            <div class="flex items-center gap-2 text-sm text-slate-600 bg-pink-50 px-4 py-2.5 rounded-full border border-pink-100 shadow-xs no-print font-medium">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-pink-600"></i> Salvo automaticamente
             </div>
         </div>
 
-        <!-- Barra de Ferramentas Estilo Word -->
-        <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 mb-6 flex flex-wrap items-center gap-2 md:gap-4 shadow-xs no-print">
+        <!-- Barra de Ferramentas Estilo Word (Tamanhos aumentados) -->
+        <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3 md:gap-5 shadow-xs no-print">
             
             <!-- Fonte -->
-            <div class="flex items-center gap-1">
-                <span class="text-xs font-bold text-slate-500">Fonte</span>
-                <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-xs text-slate-700 focus:outline-none">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-slate-600">Fonte</span>
+                <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-xl px-3 py-1.5 text-sm text-slate-700 focus:outline-none font-medium">
                     <option value="Quicksand, sans-serif">Padrão</option>
                     <option value="Arial, sans-serif">Arial</option>
                     <option value="Georgia, serif">Georgia</option>
@@ -113,12 +118,12 @@
                 </select>
             </div>
 
-            <div class="h-5 w-[1px] bg-pink-200"></div>
+            <div class="h-6 w-[1px] bg-pink-200"></div>
 
             <!-- Tamanho da Fonte -->
-            <div class="flex items-center gap-1">
-                <span class="text-xs font-bold text-slate-500">Tam</span>
-                <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-lg px-2 py-1 text-xs text-slate-700 focus:outline-none">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-slate-600">Tam</span>
+                <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-xl px-3 py-1.5 text-sm text-slate-700 focus:outline-none font-medium">
                     <option value="14px">14</option>
                     <option value="16px" selected>16</option>
                     <option value="18px">18</option>
@@ -128,21 +133,21 @@
                 </select>
             </div>
 
-            <div class="h-5 w-[1px] bg-pink-200"></div>
+            <div class="h-6 w-[1px] bg-pink-200"></div>
 
             <!-- Botões de Formatação -->
-            <div class="flex items-center gap-1">
-                <button onclick="formatar('bold')" class="p-1.5 hover:bg-pink-200 rounded-lg transition font-bold text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">N</button>
-                <button onclick="formatar('italic')" class="p-1.5 hover:bg-pink-200 rounded-lg transition italic text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">I</button>
-                <button onclick="formatar('underline')" class="p-1.5 hover:bg-pink-200 rounded-lg transition underline text-xs px-2.5 bg-white border border-pink-200 cursor-pointer">S</button>
+            <div class="flex items-center gap-1.5">
+                <button onclick="formatar('bold')" class="hover:bg-pink-200 rounded-xl transition font-bold text-sm px-3.5 py-1.5 bg-white border border-pink-200 cursor-pointer">N</button>
+                <button onclick="formatar('italic')" class="hover:bg-pink-200 rounded-xl transition italic text-sm px-3.5 py-1.5 bg-white border border-pink-200 cursor-pointer">I</button>
+                <button onclick="formatar('underline')" class="hover:bg-pink-200 rounded-xl transition underline text-sm px-3.5 py-1.5 bg-white border border-pink-200 cursor-pointer">S</button>
             </div>
 
-            <div class="h-5 w-[1px] bg-pink-200"></div>
+            <div class="h-6 w-[1px] bg-pink-200"></div>
 
             <!-- Cores de Texto -->
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-slate-500">Cor</span>
-                <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-7 h-7 rounded border border-pink-200 cursor-pointer p-0 bg-transparent">
+            <div class="flex items-center gap-2.5">
+                <span class="text-sm font-bold text-slate-600">Cor</span>
+                <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-8 h-8 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent">
             </div>
 
         </div>
@@ -150,7 +155,7 @@
         <!-- Folha de Escrita com Fundo Rosa Bem Bonito -->
         <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-2xl p-6 md:p-8 min-h-[420px] shadow-md relative flex flex-col">
             
-            <!-- Campo de Título com Placeholder -->
+            <!-- Campo de Título com Placeholder (Tamanho mantido original) -->
             <h2 class="text-xl font-bold text-slate-900 mb-4 outline-none border-b border-pink-300/60 pb-2" 
                 contenteditable="true" 
                 id="tituloColoridinho" 
@@ -163,10 +168,10 @@
                  data-placeholder="Escreva suas anotações ou plano de aula aqui...">
             </div>
 
-            <!-- Contador de Palavras e Rodapé Padrão -->
-            <div class="flex justify-between items-center text-xs font-bold text-pink-900 mt-4 pt-3 border-t border-pink-300/50">
+            <!-- Aumentado: Contador de Palavras e Rodapé Interno -->
+            <div class="flex justify-between items-center text-sm font-bold text-pink-900 mt-4 pt-3 border-t border-pink-300/50">
                 <span id="contadorPalavras">0 palavras • 0 caracteres</span>
-                <span class="italic text-sm">Coloridinho feito com muito carinho para a Profª Lorena 💖</span>
+                <span class="italic text-base">Coloridinho feito com muito carinho para a Profª Lorena 💖</span>
             </div>
         </div>
 
@@ -254,7 +259,7 @@
         }
 
         function baixarTxt() {
-            const nomeTitulo = titulo.innerText.trim() || "Coloridinho_Lorena";
+            const nomeTitulo = titulo.innerText.trim() || "Coloridinho_da_Prof";
             const texto = editor.innerText;
             const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');

@@ -160,7 +160,7 @@
 
             <div class="h-6 w-[1px] bg-pink-200"></div>
 
-            <!-- Bloco de Emojis Separado -->
+            <!-- Bloco de Emojis com o Botão Mais -->
             <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-3 py-2 rounded-xl shadow-xs">
                 <span class="text-xs font-extrabold text-pink-700 mr-1">Atalhos:</span>
                 <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir 📍">📍</button>
@@ -169,6 +169,10 @@
                 <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ⬇️">⬇️</button>
                 <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ⬅️">⬅️</button>
                 <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir 👩🏽‍🏫">👩🏽‍🏫</button>
+                <div class="h-4 w-[1px] bg-pink-200 mx-1"></div>
+                <button onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs transition flex items-center gap-1 cursor-pointer">
+                    Mais +
+                </button>
             </div>
 
         </div>
@@ -182,7 +186,7 @@
                 id="tituloColoridinho" 
                 data-placeholder="Título..."></h2>
             
-            <!-- Área de Texto Editável com Placeholder atualizado -->
+            <!-- Área de Texto Editável -->
             <div id="editorTexto" 
                  contenteditable="true" 
                  class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[285px] bg-[#FFE4E9]/70 p-4 rounded-xl border border-pink-300/40" 
@@ -195,6 +199,42 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Modal / Janela Flutuante de Emojis -->
+    <div id="modalEmojis" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl shadow-2xl border border-pink-200 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            
+            <!-- Cabeçalho do Modal -->
+            <div class="bg-[#FFF0F3] p-4 border-b border-pink-200 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">✨</span>
+                    <h3 class="font-bold text-slate-800 text-lg">Catálogo de Emojis</h3>
+                </div>
+                <button onclick="fecharModalEmojis()" class="bg-white hover:bg-pink-100 text-slate-600 font-bold w-9 h-9 rounded-full flex items-center justify-center border border-pink-200 transition cursor-pointer">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Barra de Pesquisa de Emojis -->
+            <div class="p-4 border-b border-pink-100 bg-white">
+                <div class="relative">
+                    <input type="text" id="inputBuscaEmoji" oninput="filtrarEmojis(this.value)" placeholder="Pesquisar emoji (ex: joia, dedao, alfinete, mao, estrela)..." 
+                           class="w-full bg-pink-50/60 border border-pink-200 rounded-2xl px-4 py-3 pl-10 text-sm text-slate-700 outline-none focus:border-pink-400 font-medium">
+                    <span class="absolute left-3.5 top-3.5 text-pink-400">🔍</span>
+                </div>
+            </div>
+
+            <!-- Lista / Grelha de Emojis -->
+            <div id="gridEmojis" class="p-4 overflow-y-auto grid grid-cols-6 sm:grid-cols-8 gap-2.5 max-h-[350px]">
+                <!-- Preenchido via Javascript -->
+            </div>
+
+            <!-- Rodapé do Modal -->
+            <div class="bg-pink-50 p-3 text-center text-xs text-pink-600 font-bold border-t border-pink-100">
+                Clique em qualquer emoji para inseri-lo instantaneamente no seu texto!
+            </div>
+        </div>
     </div>
 
     <!-- Barra de Ações Inferior -->
@@ -255,13 +295,117 @@
             }
         }
 
+        // Base de emojis rica com sinônimos e termos flexíveis (atende erros de digitação comuns)
+        const listaEmojis = [
+            { emoji: '📌', termos: 'alfinete alfinethe tachinha prego fixar' },
+            { emoji: '📍', termos: 'localizacao pino mapa lugar aqui marcador alfinete' },
+            { emoji: '👍', termos: 'joia dedao positivo sim ok legal mao' },
+            { emoji: '👎', termos: 'negativo nao ruim dedao baixo mao' },
+            { emoji: '👏', termos: 'palmas parabens aplauso mao comemoracao' },
+            { emoji: '⭐', termos: 'estrela favorito destaque brilho' },
+            { emoji: '✨', termos: 'brilho sparkles magica ✨' },
+            { emoji: '❤️', termos: 'coracao amor vermelho' },
+            { emoji: '💙', termos: 'coracao azul' },
+            { emoji: '💚', termos: 'coracao verde' },
+            { emoji: '💛', termos: 'coracao amarelo' },
+            { emoji: '🧡', termos: 'coracao laranja' },
+            { emoji: '💜', termos: 'coracao roxo' },
+            { emoji: '✅', termos: 'certo correto check ok aprovado' },
+            { emoji: '❌', termos: 'errado X cancelar fechar' },
+            { emoji: '⚠️', termos: 'atencao alerta aviso' },
+            { emoji: '💡', termos: 'ideia lampada luz pensamento' },
+            { emoji: '📚', termos: 'livros estudo escola leitura' },
+            { emoji: '📖', termos: 'livro aberto leitura materia' },
+            { emoji: '✏️', termos: 'lapis escrever editar' },
+            { emoji: '📝', termos: 'nota bloco anotacao escrever relatorio' },
+            { emoji: '✂️', termos: 'tesoura recortar papel' },
+            { emoji: '📎', termos: 'clipe anexo papel' },
+            { emoji: '🔍', termos: 'lupa pesquisa buscar' },
+            { emoji: '👩🏽‍🏫', termos: 'professora professoraora docente aula escola' },
+            { emoji: '👨🏽‍🏫', termos: 'professor docente aula' },
+            { emoji: '🎒', termos: 'mochila bolsa escola' },
+            { emoji: '🏫', termos: 'escola edificio colegio' },
+            { emoji: '🎓', termos: 'formatura chapeu formandos' },
+            { emoji: '🎯', termos: 'alvo objetivo foco meta' },
+            { emoji: '🏆', termos: 'trofeu premio vencedor' },
+            { emoji: '🥇', termos: 'primeiro lugar medalha ouro' },
+            { emoji: '🎉', termos: 'festa comemoracao confete' },
+            { emoji: '💬', termos: 'balao fala conversa chat mensagem' },
+            { emoji: '🧠', termos: 'cerebro mente pensar estudar' },
+            { emoji: '⏰', termos: 'relogio tempo horario alarme' },
+            { emoji: '📅', termos: 'calendario data mes ano' },
+            { emoji: '💻', termos: 'computador notebook pc tecnologia' },
+            { emoji: '📱', termos: 'celular smartphone telefone' },
+            { emoji: '😊', termos: 'sorriso feliz rosto alegre' },
+            { emoji: '😎', termos: 'oculos sol legal 😎' },
+            { emoji: '🤔', termos: 'pensativo duvida pensando' },
+            { emoji: '🤩', termos: 'estrelas olhos maravilha' },
+            { emoji: '🔥', termos: 'fogo quente destaque' },
+            { emoji: '🚀', termos: 'foguete subida rapido' },
+            { emoji: '🎨', termos: 'arte paleta cores pintar' },
+            { emoji: '📌', termos: 'alfinete 📌' },
+            { emoji: '⬆️', termos: 'cima seta subida' },
+            { emoji: '➡️', termos: 'direita seta' },
+            { emoji: '⬇️', termos: 'baixo seta' },
+            { emoji: '⬅️', termos: 'esquerda seta' }
+        ];
+
+        function carregarGridEmojis(filtro = '') {
+            const grid = document.getElementById('gridEmojis');
+            grid.innerHTML = '';
+
+            const termoBusca = normalizarTexto(filtro);
+
+            const filtrados = listaEmojis.filter(item => {
+                if (!termoBusca) return true;
+                return normalizarTexto(item.termos).includes(termoBusca) || item.emoji.includes(filtro);
+            });
+
+            if (filtrados.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 font-medium text-sm">Nenhum emoji encontrado para "${filtro}". Tente outro termo!</div>`;
+                return;
+            }
+
+            filtrados.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'hover:bg-pink-100 bg-pink-50/50 border border-pink-100 rounded-2xl p-2.5 text-2xl flex items-center justify-center transition hover:scale-125 cursor-pointer';
+                btn.innerText = item.emoji;
+                btn.title = item.termos.split(' ')[0];
+                btn.onclick = () => {
+                    inserirEmoji(item.emoji);
+                    fecharModalEmojis();
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        function normalizarTexto(texto) {
+            return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function abrirModalEmojis() {
+            document.getElementById('modalEmojis').classList.remove('hidden');
+            document.getElementById('inputBuscaEmoji').value = '';
+            carregarGridEmojis();
+            setTimeout(() => document.getElementById('inputBuscaEmoji').focus(), 100);
+        }
+
+        function fecharModalEmojis() {
+            document.getElementById('modalEmojis').classList.add('hidden');
+            editor.focus();
+        }
+
+        function filtrarEmojis(valor) {
+            carregarGridEmojis(valor);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            const salvo = localStorage.getItem('coloridinho_lorena_texto_v3');
-            const tituloSalvo = localStorage.getItem('coloridinho_lorena_titulo_v3');
+            const salvo = localStorage.getItem('coloridinho_lorena_texto_v4');
+            const tituloSalvo = localStorage.getItem('coloridinho_lorena_titulo_v4');
             if (salvo && salvo.trim() !== "") {
                 editor.innerHTML = salvo;
             } else {
-                editor.innerHTML = ""; // Garante que fica vazio para o placeholder aparecer
+                editor.innerHTML = "";
             }
             if (tituloSalvo) titulo.innerText = tituloSalvo;
             atualizarContador();
@@ -278,8 +422,8 @@
         });
 
         function salvarAutomaticamente() {
-            localStorage.setItem('coloridinho_lorena_texto_v3', editor.innerHTML);
-            localStorage.setItem('coloridinho_lorena_titulo_v3', titulo.innerText);
+            localStorage.setItem('coloridinho_lorena_texto_v4', editor.innerHTML);
+            localStorage.setItem('coloridinho_lorena_titulo_v4', titulo.innerText);
             
             statusSalvo.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Salvando...`;
             lucide.createIcons();
@@ -328,8 +472,8 @@
             if(confirm('Deseja realmente limpar todo o conteúdo deste Coloridinho?')) {
                 editor.innerHTML = '';
                 titulo.innerText = '';
-                localStorage.removeItem('coloridinho_lorena_texto_v3');
-                localStorage.removeItem('coloridinho_lorena_titulo_v3');
+                localStorage.removeItem('coloridinho_lorena_texto_v4');
+                localStorage.removeItem('coloridinho_lorena_titulo_v4');
                 atualizarContador();
             }
         }
@@ -374,11 +518,9 @@
             try {
                 rangeParaUsar.surroundContents(span);
                 
-                // Insere um espaço logo após o círculo para facilitar a continuidade da digitação
                 const space = document.createTextNode(' ');
                 span.after(space);
 
-                // Posiciona o cursor logo após o espaço criado
                 const novaSelecao = window.getSelection();
                 const novoRange = document.createRange();
                 novoRange.setStartAfter(space);

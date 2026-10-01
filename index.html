@@ -172,21 +172,21 @@
 
     </div>
 
-    <!-- Barra de Ações Inferior com os Botões Bem Grandes -->
-    <div class="main-content flex flex-wrap items-center justify-center gap-4 mt-8 no-print">
-        <button onclick="ativarCirculoMagico()" class="bg-pink-600 hover:bg-pink-700 text-white text-lg font-bold px-8 py-5 rounded-2xl shadow-xl transition flex items-center gap-3 cursor-pointer hover:scale-105">
+    <!-- Barra de Ações Inferior com Todos os Botões Iguais e Grandes -->
+    <div class="main-content flex flex-wrap items-center justify-center gap-4 mt-8 no-print w-full max-w-5xl">
+        <button onclick="ativarCirculoMagico()" class="bg-pink-600 hover:bg-pink-700 text-white text-lg font-bold px-8 py-5 rounded-2xl shadow-xl transition flex items-center justify-center gap-3 cursor-pointer hover:scale-105 flex-1 min-w-[220px]">
             <i data-lucide="sparkles" class="w-6 h-6"></i> Círculo Mágico IA
         </button>
         
-        <button onclick="gerarPDFParaSlide()" class="bg-pink-600 hover:bg-pink-700 text-white text-lg font-bold px-8 py-5 rounded-2xl shadow-xl transition flex items-center gap-3 cursor-pointer hover:scale-105">
+        <button onclick="gerarPDFParaSlide()" class="bg-pink-600 hover:bg-pink-700 text-white text-lg font-bold px-8 py-5 rounded-2xl shadow-xl transition flex items-center justify-center gap-3 cursor-pointer hover:scale-105 flex-1 min-w-[220px]">
             <i data-lucide="file-down" class="w-6 h-6"></i> Salvar como PDF / Slide
         </button>
 
-        <button onclick="baixarTxt()" class="bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-lg font-bold px-7 py-5 rounded-2xl shadow-md transition flex items-center gap-3 cursor-pointer hover:scale-105">
+        <button onclick="baixarTxt()" class="bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-lg font-bold px-8 py-5 rounded-2xl shadow-md transition flex items-center justify-center gap-3 cursor-pointer hover:scale-105 flex-1 min-w-[220px]">
             <i data-lucide="download" class="w-6 h-6 text-pink-600"></i> Baixar .txt
         </button>
 
-        <button onclick="limparFolha()" class="bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-lg font-bold px-7 py-5 rounded-2xl shadow-md transition flex items-center gap-3 cursor-pointer hover:scale-105">
+        <button onclick="limparFolha()" class="bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-lg font-bold px-8 py-5 rounded-2xl shadow-md transition flex items-center justify-center gap-3 cursor-pointer hover:scale-105 flex-1 min-w-[220px]">
             <i data-lucide="trash-2" class="w-6 h-6"></i> Limpar folha
         </button>
     </div>

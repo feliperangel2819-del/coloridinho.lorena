@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coloridinho Digital — Professora Lorena</title>
+    <title>Coloridinho — Professora Lorena</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilo para colocar exatamente um texto em cada lateral */
         body {
             background-color: #fce7f3;
             position: relative;
             overflow-x: hidden;
         }
+        /* Laterais limpas sem poluição visual */
         .side-text-left, .side-text-right {
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
             font-weight: bold;
-            color: #db2777;
-            opacity: 0.4;
-            font-size: 1.2rem;
+            color: #be185d;
+            opacity: 0.5;
+            font-size: 1.4rem;
             writing-mode: vertical-rl;
             text-orientation: mixed;
             pointer-events: none;
@@ -29,10 +29,16 @@
         .side-text-left { left: 20px; }
         .side-text-right { right: 20px; transform: translateY(-50%) rotate(180deg); }
 
-        /* Ajuste para o conteúdo principal ficar acima das faixas laterais */
         .main-content {
             position: relative;
             z-index: 10;
+        }
+
+        /* Garante que o texto digitado no editor seja escuro e legível por padrão */
+        #editor {
+            color: #1f2937;
+            font-size: 1.125rem;
+            line-height: 1.6;
         }
 
         @media print {
@@ -44,65 +50,65 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-between p-4">
 
-    <!-- Texto único nas laterais -->
+    <!-- Textos nas laterais -->
     <div class="side-text-left">Boa aula de português</div>
     <div class="side-text-right">Boa aula de português</div>
 
     <!-- Conteúdo Principal -->
-    <div class="main-content w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 flex flex-col gap-4 border border-pink-200">
+    <div class="main-content w-full max-w-3xl bg-white rounded-2xl shadow-xl p-6 flex flex-col gap-4 border border-pink-300">
         
         <!-- Cabeçalho -->
         <div class="flex justify-between items-center border-b pb-3">
-            <h1 class="text-2xl font-bold text-pink-600">Coloridinho Digital</h1>
-            <button onclick="window.print()" class="no-print bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl font-medium transition shadow-md">
-                🖨️ Salvar em PDF / Imprimir
-            </button>
+            <h1 class="text-2xl font-bold text-pink-700">✨ Coloridinho Digital — Profª Lorena</h1>
+            <span class="text-xs font-semibold text-pink-600 bg-pink-100 px-3 py-1 rounded-full">Salvo automaticamente</span>
         </div>
 
-        <!-- Aviso de restrição para computador -->
-        <div class="no-print text-xs text-center text-pink-500 italic">
-            (Esta função de salvar em PDF / imprimir só funciona para computador)
-        </div>
-
-        <!-- Barra de Ferramentas do Editor -->
-        <div class="no-print flex flex-wrap gap-2 items-center bg-pink-50 p-2 rounded-lg border border-pink-100">
-            <select id="fontSize" onchange="formatText('fontSize', this.value)" class="text-sm border rounded p-1 bg-white text-gray-700">
+        <!-- Barra de Ferramentas -->
+        <div class="no-print flex flex-wrap gap-2 items-center bg-pink-50 p-3 rounded-lg border border-pink-200">
+            <select id="fontSize" onchange="formatText('fontSize', this.value)" class="text-sm border rounded p-1.5 bg-white text-gray-800 font-medium">
                 <option value="3">Título...</option>
                 <option value="1">Pequeno</option>
                 <option value="3">Normal</option>
                 <option value="5">Grande</option>
                 <option value="7">Muito Grande</option>
             </select>
-            <button onclick="formatText('bold', null)" class="px-2 py-1 bg-white border rounded font-bold text-gray-700 hover:bg-pink-100">B</button>
-            <button onclick="formatText('italic', null)" class="px-2 py-1 bg-white border rounded italic text-gray-700 hover:bg-pink-100">I</button>
-            <button onclick="formatText('underline', null)" class="px-2 py-1 bg-white border rounded underline text-gray-700 hover:bg-pink-100">U</button>
-            <button onclick="ativarCirculoMagico()" class="px-3 py-1 bg-pink-600 text-white rounded-lg text-sm font-medium hover:bg-pink-700 transition">✨ Círculo Mágico</button>
+            <button onclick="formatText('bold', null)" class="px-3 py-1.5 bg-white border rounded font-bold text-gray-800 hover:bg-pink-100">B</button>
+            <button onclick="formatText('italic', null)" class="px-3 py-1.5 bg-white border rounded italic text-gray-800 hover:bg-pink-100">I</button>
+            <button onclick="formatText('underline', null)" class="px-3 py-1.5 bg-white border rounded underline text-gray-800 hover:bg-pink-100">U</button>
+            <button onclick="ativarCirculoMagico()" class="px-3.5 py-1.5 bg-pink-600 text-white rounded-lg text-sm font-bold hover:bg-pink-700 transition">✨ Círculo Mágico IA</button>
         </div>
 
         <!-- Área de Edição -->
-        <div id="editor" contenteditable="true" class="w-full h-80 border border-pink-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-pink-400 overflow-y-auto bg-white text-gray-800">
+        <div id="editor" contenteditable="true" class="w-full h-80 border-2 border-pink-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-pink-500 overflow-y-auto bg-white">
             Escreva seu conteúdo aqui, Professora Lorena...
         </div>
 
-        <!-- Rodapé do Aplicativo -->
-        <div class="flex justify-between items-center text-xs text-pink-400 pt-2 border-t">
+        <!-- Rodapé da área de texto (Agora bem visível e escuro) -->
+        <div class="flex justify-between items-center text-sm font-semibold text-pink-700 pt-2 border-t border-pink-200">
             <span id="wordCount">0 palavras • 0 caracteres</span>
-            <span>Criado com muito carinho para a Profª Lorena 💖</span>
+            <span>Coloridinho feito com muito carinho para a Profª Lorena 💖</span>
         </div>
     </div>
 
-    <footer class="no-print mt-4 text-xs text-pink-600">
-        Coloridinho App v1.0
-    </footer>
+    <!-- Seção de Ações e Avisos -->
+    <div class="no-print main-content flex flex-col items-center gap-2 mt-4">
+        <div class="flex flex-wrap gap-3 justify-center">
+            <button onclick="window.print()" class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-md">
+                🖨️ Salvar como PDF / Slide
+            </button>
+        </div>
+        <!-- Aviso ajustado e bem legível logo abaixo -->
+        <span class="text-sm font-bold text-pink-800 bg-pink-200/80 px-3 py-1 rounded-md">
+            (Esta função de salvar em PDF / imprimir só funciona para computador)
+        </span>
+    </div>
 
     <script>
-        // Função de formatação do texto
         function formatText(command, value) {
             document.execCommand(command, false, value);
             document.getElementById('editor').focus();
         }
 
-        // Contador de palavras e caracteres dinâmico
         const editor = document.getElementById('editor');
         const wordCount = document.getElementById('wordCount');
 
@@ -113,16 +119,16 @@
             wordCount.innerText = `${words} palavras • ${chars} caracteres`;
         });
 
-        // Função do Círculo Mágico (destaque interativo)
         function ativarCirculoMagico() {
             const selection = window.getSelection();
             if (!selection.isCollapsed) {
                 const range = selection.getRangeAt(0);
                 const span = document.createElement('span');
-                span.style.border = '2px dashed #ec4899';
+                span.style.border = '2px dashed #db2777';
                 span.style.borderRadius = '20px';
                 span.style.padding = '2px 6px';
-                span.style.backgroundColor = 'rgba(252, 231, 243, 0.5)';
+                span.style.backgroundColor = 'rgba(252, 231, 243, 0.8)';
+                span.style.fontWeight = 'bold';
                 range.surroundContents(span);
             } else {
                 alert('Selecione um trecho de texto primeiro para usar o Círculo Mágico!');

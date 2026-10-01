@@ -16,7 +16,7 @@
             overflow-x: hidden;
         }
         
-        /* Textos nas laterais (escondidos em telas pequenas para não atrapalhar o celular) */
+        /* Textos nas laterais (escondidos em telas pequenas) */
         .side-text-left, .side-text-right {
             position: fixed;
             top: 50%;
@@ -172,7 +172,7 @@
                 <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir ➡️">➡️</button>
                 <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir ⬇️">⬇️</button>
                 <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir ⬅️">⬅️</button>
-                <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir 👩🏽‍🏫">👩🏽‍‍🏫</button>
+                <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base p-1" title="Inserir 👩🏽‍🏫">👩🏽‍🏫</button>
                 <div class="h-4 w-[1px] bg-pink-200 mx-1"></div>
                 <button onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs transition flex items-center gap-1 cursor-pointer">
                     Mais +
@@ -184,11 +184,19 @@
         <!-- Folha de Escrita com Fundo Rosa Bem Bonito -->
         <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-2xl p-4 md:p-8 min-h-[380px] shadow-md relative flex flex-col">
             
-            <!-- Campo de Título com Placeholder -->
-            <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-3 outline-none border-b border-pink-300/60 pb-2" 
-                contenteditable="true" 
-                id="tituloColoridinho" 
-                data-placeholder="Título..."></h2>
+            <!-- Linha do Cabeçalho da Folha: Título na Esquerda e Data/Hora na Direita -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3 border-b border-pink-300/60 pb-2">
+                <!-- Campo de Título com Placeholder -->
+                <h2 class="text-lg md:text-xl font-bold text-slate-900 outline-none w-full sm:w-auto flex-1" 
+                    contenteditable="true" 
+                    id="tituloColoridinho" 
+                    data-placeholder="Título..."></h2>
+                
+                <!-- Data e Hora Atualizadas Automaticamente -->
+                <div id="dataHoraAtual" class="text-xs md:text-sm font-bold text-pink-800 bg-white/60 px-3 py-1 rounded-xl border border-pink-300/40 shrink-0">
+                    --/--/-- às --:--
+                </div>
+            </div>
             
             <!-- Área de Texto Editável -->
             <div id="editorTexto" 
@@ -283,6 +291,23 @@
         const titulo = document.getElementById('tituloColoridinho');
         const contador = document.getElementById('contadorPalavras');
         const statusSalvo = document.getElementById('statusSalvo');
+        const elementoDataHora = document.getElementById('dataHoraAtual');
+
+        // Função para atualizar a data e hora no formato DD/MM/AA às HH:MM
+        function atualizarDataHora() {
+            const agora = new Date();
+            const dia = String(agora.getDate()).padStart(2, '0');
+            const mes = String(agora.getMonth() + 1).padStart(2, '0');
+            const ano = String(agora.getFullYear()).slice(-2); // Pega os 2 últimos dígitos do ano (ex: 26)
+            const hora = String(agora.getHours()).padStart(2, '0');
+            const minuto = String(agora.getMinutes()).padStart(2, '0');
+
+            elementoDataHora.innerText = `${dia}/${mes}/${ano} às ${hora}:${minuto}`;
+        }
+
+        // Executa na abertura e atualiza a cada 30 segundos
+        atualizarDataHora();
+        setInterval(atualizarDataHora, 30000);
 
         let ultimaSelecaoRange = null;
 
@@ -322,7 +347,7 @@
             { emoji: '📖', termos: 'livro aberto leitura materia' },
             { emoji: '✏️', termos: 'lapis escrever editar' },
             { emoji: '📝', termos: 'nota bloco anotacao escrever relatorio' },
-            { emoji: '✂️', termos: 'tesoura recortar papel' },
+            { emoji: '✂️️', termos: 'tesoura recortar papel' },
             { emoji: '📎', termos: 'clipe anexo papel' },
             { emoji: '🔍', termos: 'lupa pesquisa buscar' },
             { emoji: '👩🏽‍🏫', termos: 'professora professoraora docente aula escola' },
@@ -347,7 +372,7 @@
             { emoji: '🔥', termos: 'fogo quente destaque' },
             { emoji: '🚀', termos: 'foguete subida rapido' },
             { emoji: '🎨', termos: 'arte paleta cores pintar' },
-            { emoji: '⬆️️', termos: 'cima seta subida' },
+            { emoji: '⬆️', termos: 'cima seta subida' },
             { emoji: '➡️', termos: 'direita seta' },
             { emoji: '⬇️', termos: 'baixo seta' },
             { emoji: '⬅️', termos: 'esquerda seta' }
@@ -481,12 +506,12 @@
         }
 
         function baixarTxt() {
-            const nomeTitulo = titulo.innerText.trin ? titulo.innerText.trim() : "Coloridinho_da_Prof";
+            const nomeTitulo = titulo.innerText.trim() || "Coloridinho_da_Prof";
             const texto = editor.innerText;
             const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `${nomeTitulo || 'Coloridinho_da_Prof'}.txt`;
+            link.download = `${nomeTitulo}.txt`;
             link.click();
         }
 

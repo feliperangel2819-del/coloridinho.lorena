@@ -152,7 +152,7 @@
 
             <div class="h-6 w-[1px] bg-pink-200"></div>
 
-            <!-- Cor de Texto -->
+            <!-- Cor de Texto Isolada -->
             <div class="flex items-center gap-2.5">
                 <span class="text-sm font-bold text-slate-700">Cor</span>
                 <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-9 h-9 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent">
@@ -160,15 +160,15 @@
 
             <div class="h-6 w-[1px] bg-pink-200"></div>
 
-            <!-- Emojis Prontos para Inserir -->
-            <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-3 py-1.5 rounded-xl">
-                <span class="text-xs font-bold text-pink-700 mr-1">Emojis:</span>
-                <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir 📍">📍</button>
-                <button onclick="inserirEmoji('⬆️️')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir ⬆️">⬆️</button>
-                <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir ➡️">➡️</button>
-                <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir ⬇️">⬇️</button>
-                <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir ⬅️">⬅️</button>
-                <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir 👩🏽‍🏫">👩🏽‍🏫</button>
+            <!-- Bloco de Emojis Separado -->
+            <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-3 py-2 rounded-xl shadow-xs">
+                <span class="text-xs font-extrabold text-pink-700 mr-1">Atalhos:</span>
+                <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir 📍">📍</button>
+                <button onclick="inserirEmoji('⬆️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ⬆️">⬆️</button>
+                <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ➡️">➡️</button>
+                <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ⬇️">⬇️</button>
+                <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir ⬅️">⬅️</button>
+                <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-lg p-1" title="Inserir 👩🏽‍🏫">👩🏽‍🏫</button>
             </div>
 
         </div>
@@ -256,8 +256,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const salvo = localStorage.getItem('coloridinho_lorena_texto');
-            const tituloSalvo = localStorage.getItem('coloridinho_lorena_titulo');
+            const salvo = localStorage.getItem('coloridinho_lorena_texto_v2');
+            const tituloSalvo = localStorage.getItem('coloridinho_lorena_titulo_v2');
             if (salvo) editor.innerHTML = salvo;
             if (tituloSalvo) titulo.innerText = tituloSalvo;
             atualizarContador();
@@ -274,8 +274,8 @@
         });
 
         function salvarAutomaticamente() {
-            localStorage.setItem('coloridinho_lorena_texto', editor.innerHTML);
-            localStorage.setItem('coloridinho_lorena_titulo', titulo.innerText);
+            localStorage.setItem('coloridinho_lorena_texto_v2', editor.innerHTML);
+            localStorage.setItem('coloridinho_lorena_titulo_v2', titulo.innerText);
             
             statusSalvo.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Salvando...`;
             lucide.createIcons();
@@ -324,8 +324,8 @@
             if(confirm('Deseja realmente limpar todo o conteúdo deste Coloridinho?')) {
                 editor.innerHTML = '';
                 titulo.innerText = '';
-                localStorage.removeItem('coloridinho_lorena_texto');
-                localStorage.removeItem('coloridinho_lorena_titulo');
+                localStorage.removeItem('coloridinho_lorena_texto_v2');
+                localStorage.removeItem('coloridinho_lorena_titulo_v2');
                 atualizarContador();
             }
         }

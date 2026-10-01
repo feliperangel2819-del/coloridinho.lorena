@@ -174,23 +174,38 @@
 
     </div>
 
-    <!-- Barra de Ações Inferior (Botões grandes e o texto do PDF ajustado na medida certa) -->
+    <!-- Barra de Ações Inferior -->
     <div class="main-content flex flex-wrap items-center justify-center gap-4 mt-8 no-print w-full max-w-5xl">
-        <button onclick="ativarCirculoMagico()" class="bg-pink-600 hover:bg-pink-700 text-white text-base font-bold px-6 py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105 flex-1 min-w-[210px]">
-            <i data-lucide="sparkles" class="w-5 h-5"></i> Círculo Mágico IA
-        </button>
         
-        <button onclick="gerarPDFParaSlide()" class="bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold px-4 py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105 flex-1 min-w-[210px]">
-            <i data-lucide="file-down" class="w-5 h-5 shrink-0"></i> <span>Salvar como PDF / Slide</span>
-        </button>
+        <!-- Botão Círculo Mágico -->
+        <div class="flex flex-col items-center flex-1 min-w-[210px]">
+            <button onclick="ativarCirculoMagico()" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-base font-bold px-6 py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105">
+                <i data-lucide="sparkles" class="w-5 h-5"></i> Círculo Mágico IA
+            </button>
+        </div>
+        
+        <!-- Botão Salvar como PDF -->
+        <div class="flex flex-col items-center flex-1 min-w-[210px]">
+            <span class="text-xs font-bold text-pink-800 mb-1 tracking-wide">(só funciona para computador)</span>
+            <button onclick="gerarPDFParaSlide()" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold px-4 py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer hover:scale-105">
+                <i data-lucide="file-down" class="w-5 h-5 shrink-0"></i> <span>Salvar como PDF</span>
+            </button>
+        </div>
 
-        <button onclick="baixarTxt()" class="bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-base font-bold px-6 py-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105 flex-1 min-w-[210px]">
-            <i data-lucide="download" class="w-5 h-5 text-pink-600"></i> Baixar .txt
-        </button>
+        <!-- Botão Baixar .txt -->
+        <div class="flex flex-col items-center flex-1 min-w-[210px]">
+            <button onclick="baixarTxt()" class="w-full bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-base font-bold px-6 py-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105">
+                <i data-lucide="download" class="w-5 h-5 text-pink-600"></i> Baixar .txt
+            </button>
+        </div>
 
-        <button onclick="limparFolha()" class="bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-base font-bold px-6 py-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105 flex-1 min-w-[210px]">
-            <i data-lucide="trash-2" class="w-5 h-5"></i> Limpar folha
-        </button>
+        <!-- Botão Limpar Folha -->
+        <div class="flex flex-col items-center flex-1 min-w-[210px]">
+            <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-base font-bold px-6 py-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2.5 cursor-pointer hover:scale-105">
+                <i data-lucide="trash-2" class="w-5 h-5"></i> Limpar folha
+            </button>
+        </div>
+
     </div>
 
     <!-- Script de Funcionalidades -->
@@ -272,7 +287,7 @@
         function ativarCirculoMagico() {
             const selecao = window.getSelection();
             if (!selecao.rangeCount || selecao.isCollapsed) {
-                alert('✨ Dica do Círculo Mágico: Selecione uma palavra ou frase com o mouse dentro do texto e clique no botão para a IA circular em volta!');
+                alert('✨ Selecione uma palavra ou frase com o mouse dentro do texto antes de clicar no Círculo Mágico!');
                 return;
             }
 
@@ -283,7 +298,8 @@
             try {
                 range.surroundContents(span);
                 editor.focus();
-                alert('✨ Pronto! A IA circulou o texto selecionado perfeitamente.');
+                // Salva automaticamente após circular
+                localStorage.setItem('coloridinho_lorena_texto', editor.innerHTML);
             } catch (e) {
                 alert('Por favor, selecione o texto dentro da área principal de escrita.');
             }

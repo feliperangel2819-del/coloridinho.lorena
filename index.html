@@ -59,8 +59,10 @@
             border: 3px dashed #db2777;
             background-color: rgba(255, 182, 193, 0.15);
             box-shadow: 0 0 15px rgba(219, 39, 119, 0.3);
-            display: inline-block;
-            margin: 0 3px;
+            display: inline;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            margin: 0 2px;
         }
 
         /* Regra para a impressão sair limpa apenas o Coloridinho nos slides */
@@ -344,19 +346,19 @@
             }
 
             const span = document.createElement('span');
-            span.className = 'circulo-ia px-2.5 py-1 rounded-full font-semibold';
+            span.className = 'circulo-ia';
             
             try {
                 rangeParaUsar.surroundContents(span);
                 
-                // Cria um espaço logo após o círculo para o cursor sair dele com facilidade
-                const textNode = document.createTextNode(' ');
-                span.after(textNode);
-                
-                // Posiciona o cursor logo após o espaço criado fora do círculo
+                // Insere um espaço logo após o círculo para facilitar a continuidade da digitação
+                const space = document.createTextNode(' ');
+                span.after(space);
+
+                // Posiciona o cursor logo após o espaço criado
                 const novaSelecao = window.getSelection();
                 const novoRange = document.createRange();
-                novoRange.setStartAfter(textNode);
+                novoRange.setStartAfter(space);
                 novoRange.collapse(true);
                 novaSelecao.removeAllRanges();
                 novaSelecao.addRange(novoRange);

@@ -59,6 +59,8 @@
             border: 3px dashed #db2777;
             background-color: rgba(255, 182, 193, 0.15);
             box-shadow: 0 0 15px rgba(219, 39, 119, 0.3);
+            display: inline-block;
+            margin: 0 3px;
         }
 
         /* Regra para a impressão sair limpa apenas o Coloridinho nos slides */
@@ -225,7 +227,6 @@
 
         let ultimaSelecaoRange = null;
 
-        // Salva a seleção sempre que o usuário solta o mouse ou digita dentro do editor
         editor.addEventListener('mouseup', capturarSelecao);
         editor.addEventListener('keyup', capturarSelecao);
 
@@ -233,7 +234,6 @@
             const selecao = window.getSelection();
             if (selecao.rangeCount > 0) {
                 const range = selecao.getRangeAt(0);
-                // Confirma se o texto selecionado está dentro do editor
                 if (editor.contains(range.commonAncestorContainer) && !selecao.isCollapsed) {
                     ultimaSelecaoRange = range.cloneRange();
                 }
@@ -327,7 +327,6 @@
             const selecao = window.getSelection();
             let rangeParaUsar = null;
 
-            // Verifica se há seleção atual válida dentro do editor
             if (selecao.rangeCount > 0 && !selecao.isCollapsed) {
                 const range = selecao.getRangeAt(0);
                 if (editor.contains(range.commonAncestorContainer)) {
@@ -335,7 +334,6 @@
                 }
             }
 
-            // Se perdeu o foco ao clicar no botão, usa a última seleção guardada
             if (!rangeParaUsar && ultimaSelecaoRange) {
                 rangeParaUsar = ultimaSelecaoRange;
             }
@@ -346,10 +344,23 @@
             }
 
             const span = document.createElement('span');
-            span.className = 'circulo-ia px-2 py-1 rounded-full inline-block font-semibold';
+            span.className = 'circulo-ia px-2.5 py-1 rounded-full font-semibold';
             
             try {
                 rangeParaUsar.surroundContents(span);
+                
+                // Cria um espaço logo após o círculo para o cursor sair dele com facilidade
+                const textNode = document.createTextNode(' ');
+                span.after(textNode);
+                
+                // Posiciona o cursor logo após o espaço criado fora do círculo
+                const novaSelecao = window.getSelection();
+                const novoRange = document.createRange();
+                novoRange.setStartAfter(textNode);
+                novoRange.collapse(true);
+                novaSelecao.removeAllRanges();
+                novaSelecao.addRange(novoRange);
+
                 editor.focus();
                 ultimaSelecaoRange = null;
                 salvarAutomaticamente();

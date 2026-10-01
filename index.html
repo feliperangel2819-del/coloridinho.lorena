@@ -104,14 +104,11 @@
                 </div>
             </div>
             
-            <!-- Botão de Voltar e Status Salvo -->
-            <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
-                <span id="statusSalvo" class="text-[11px] md:text-xs font-bold text-pink-600 bg-pink-50 px-2.5 py-1.5 rounded-full border border-pink-200 flex items-center gap-1">
+            <!-- Status Salvo (Sem o botão de voltar) -->
+            <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                <span id="statusSalvo" class="text-[11px] md:text-xs font-bold text-pink-600 bg-pink-50 px-3 py-1.5 rounded-full border border-pink-200 flex items-center gap-1">
                     <i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo automaticamente
                 </span>
-                <a href="index.html" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-3 py-1.5 md:px-4 md:py-2 rounded-xl transition text-xs md:text-sm flex items-center gap-1.5 border border-pink-200">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar
-                </a>
             </div>
         </div>
 
@@ -298,14 +295,13 @@
             const agora = new Date();
             const dia = String(agora.getDate()).padStart(2, '0');
             const mes = String(agora.getMonth() + 1).padStart(2, '0');
-            const ano = String(agora.getFullYear()).slice(-2); // Pega os 2 últimos dígitos do ano (ex: 26)
+            const ano = String(agora.getFullYear()).slice(-2);
             const hora = String(agora.getHours()).padStart(2, '0');
             const minuto = String(agora.getMinutes()).padStart(2, '0');
 
             elementoDataHora.innerText = `${dia}/${mes}/${ano} às ${hora}:${minuto}`;
         }
 
-        // Executa na abertura e atualiza a cada 30 segundos
         atualizarDataHora();
         setInterval(atualizarDataHora, 30000);
 
@@ -333,7 +329,7 @@
             { emoji: '👏', termos: 'palmas parabens aplauso mao comemoracao' },
             { emoji: '⭐', termos: 'estrela favorito destaque brilho' },
             { emoji: '✨', termos: 'brilho sparkles magica ✨' },
-            { emoji: '❤️', termos: 'coracao amor vermelho' },
+            { emoji: '❤️️', termos: 'coracao amor vermelho' },
             { emoji: '💙', termos: 'coracao azul' },
             { emoji: '💚', termos: 'coracao verde' },
             { emoji: '💛', termos: 'coracao amarelo' },
@@ -347,7 +343,7 @@
             { emoji: '📖', termos: 'livro aberto leitura materia' },
             { emoji: '✏️', termos: 'lapis escrever editar' },
             { emoji: '📝', termos: 'nota bloco anotacao escrever relatorio' },
-            { emoji: '✂️️', termos: 'tesoura recortar papel' },
+            { emoji: '✂️', termos: 'tesoura recortar papel' },
             { emoji: '📎', termos: 'clipe anexo papel' },
             { emoji: '🔍', termos: 'lupa pesquisa buscar' },
             { emoji: '👩🏽‍🏫', termos: 'professora professoraora docente aula escola' },
@@ -375,7 +371,7 @@
             { emoji: '⬆️', termos: 'cima seta subida' },
             { emoji: '➡️', termos: 'direita seta' },
             { emoji: '⬇️', termos: 'baixo seta' },
-            { emoji: '⬅️', termos: 'esquerda seta' }
+            { emoji: '⬅️️', termos: 'esquerda seta' }
         ];
 
         function carregarGridEmojis(filtro = '') {

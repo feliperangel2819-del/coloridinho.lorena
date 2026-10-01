@@ -172,7 +172,7 @@
                  data-placeholder="Escreva suas anotações ou plano de aula aqui...">
             </div>
 
-            <!-- Rodapé Interno (Apenas com o contador de palavras, texto extra removido) -->
+            <!-- Rodapé Interno -->
             <div class="flex justify-between items-center text-sm font-bold text-pink-900 mt-4 pt-3 border-t border-pink-300/50">
                 <span id="contadorPalavras">0 palavras • 0 caracteres</span>
             </div>
@@ -222,6 +222,23 @@
         const titulo = document.getElementById('tituloColoridinho');
         const contador = document.getElementById('contadorPalavras');
         const statusSalvo = document.getElementById('statusSalvo');
+
+        let ultimaSelecaoRange = null;
+
+        // Salva a seleção sempre que o usuário solta o mouse ou digita dentro do editor
+        editor.addEventListener('mouseup', capturarSelecao);
+        editor.addEventListener('keyup', capturarSelecao);
+
+        function capturarSelecao() {
+            const selecao = window.getSelection();
+            if (selecao.rangeCount > 0) {
+                const range = selecao.getRangeAt(0);
+                // Confirma se o texto selecionado está dentro do editor
+                if (editor.contains(range.commonAncestorContainer) && !selecao.isCollapsed) {
+                    ultimaSelecaoRange = range.cloneRange();
+                }
+            }
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             const salvo = localStorage.getItem('coloridinho_lorena_texto');
@@ -308,21 +325,36 @@
 
         function ativarCirculoMagico() {
             const selecao = window.getSelection();
-            if (!selecao.rangeCount || selecao.isCollapsed) {
+            let rangeParaUsar = null;
+
+            // Verifica se há seleção atual válida dentro do editor
+            if (selecao.rangeCount > 0 && !selecao.isCollapsed) {
+                const range = selecao.getRangeAt(0);
+                if (editor.contains(range.commonAncestorContainer)) {
+                    rangeParaUsar = range;
+                }
+            }
+
+            // Se perdeu o foco ao clicar no botão, usa a última seleção guardada
+            if (!rangeParaUsar && ultimaSelecaoRange) {
+                rangeParaUsar = ultimaSelecaoRange;
+            }
+
+            if (!rangeParaUsar) {
                 alert('✨ Selecione uma palavra ou frase com o mouse dentro do texto antes de clicar no Círculo Mágico!');
                 return;
             }
 
-            const range = selecao.getRangeAt(0);
             const span = document.createElement('span');
             span.className = 'circulo-ia px-2 py-1 rounded-full inline-block font-semibold';
             
             try {
-                range.surroundContents(span);
+                rangeParaUsar.surroundContents(span);
                 editor.focus();
+                ultimaSelecaoRange = null;
                 salvarAutomaticamente();
             } catch (e) {
-                alert('Por favor, selecione o texto dentro da área principal de escrita.');
+                alert('Por favor, selecione o texto de forma contínua dentro da área principal de escrita.');
             }
         }
     </script>

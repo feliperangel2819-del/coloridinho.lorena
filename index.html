@@ -73,6 +73,10 @@
             pointer-events: auto;
             cursor: crosshair;
         }
+        #canvasDesenho.modo-selecao {
+            pointer-events: auto;
+            cursor: pointer;
+        }
 
         @media print {
             body { background: white !important; padding: 0 !important; }
@@ -101,6 +105,21 @@
             
             <!-- Canvas de Desenho da IA -->
             <canvas id="canvasDesenho"></canvas>
+
+            <!-- Painel de Manipulação de Forma Selecionada -->
+            <div id="painelFormaSelecionada" class="hidden absolute top-4 right-4 bg-white/95 border-2 border-pink-400 shadow-xl rounded-2xl p-3 z-30 flex items-center gap-3 no-print">
+                <span class="text-xs font-extrabold text-pink-700">📐 Forma Selecionada</span>
+                <div class="flex items-center gap-1">
+                    <button onclick="redimensionarFormaSelecionada(-15, 0)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded-lg font-bold" title="Estreitar">◀ ▶</button>
+                    <button onclick="redimensionarFormaSelecionada(15, 0)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded-lg font-bold" title="Alargar">▶ ◀</button>
+                    <button onclick="redimensionarFormaSelecionada(0, 15)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded-lg font-bold" title="Aumentar Altura">▲ ▼</button>
+                    <button onclick="redimensionarFormaSelecionada(0, -15)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded-lg font-bold" title="Diminuir Altura">▼ ▲</button>
+                </div>
+                <button onclick="excluirFormaSelecionada()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer">
+                    🗑️ Excluir
+                </button>
+                <button onclick="desselecionarForma()" class="text-slate-400 hover:text-slate-600 font-bold text-sm px-1">✕</button>
+            </div>
 
             <!-- Cabeçalho -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
@@ -221,7 +240,7 @@
                     <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-base p-1">📍</button>
                     <button onclick="inserirEmoji('⬆️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬆️</button>
                     <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base p-1">➡</button>
-                    <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬇️</button>
+                    <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬇️️</button>
                     <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬅️</button>
                     <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base p-1">👩🏽‍🏫</button>
                     <button onclick="inserirEmoji('✅')" class="hover:scale-125 transition cursor-pointer text-base p-1">✅</button>
@@ -389,19 +408,16 @@
             if (bloquearRegistroHistorico) return;
             const estado = capturarEstadoAtual();
             
-            // Se estivermos no meio do histórico e fizermos algo novo, limpamos o "futuro"
             if (indiceHistorico < pilhaHistorico.length - 1) {
                 pilhaHistorico = pilhaHistorico.slice(0, indiceHistorico + 1);
             }
             
-            // Evitar duplicar estado idêntico consecutivo
             if (pilhaHistorico.length > 0) {
                 const ultimoEstado = pilhaHistorico[pilhaHistorico.length - 1];
                 if (JSON.stringify(ultimoEstado) === JSON.stringify(estado)) return;
             }
 
             pilhaHistorico.push(estado);
-            // Limitar pilha a 30 passos para não pesar a memória
             if (pilhaHistorico.length > 30) {
                 pilhaHistorico.shift();
             } else {
@@ -430,6 +446,8 @@
             estado.postIts.forEach(p => adicionarPostIt(p.html, p.bg, p.border, p.text, true));
 
             formasSalvas = JSON.parse(JSON.stringify(estado.formas));
+            formaSelecionadaIndex = null;
+            document.getElementById('painelFormaSelecionada').classList.add('hidden');
             redesenharHistorico();
             ajustarTamanhoCanvas();
             atualizarContador();
@@ -452,13 +470,15 @@
             }
         }
 
-        // --- SISTEMA DE DESENHO INTELIGENTE COM COR PERSONALIZÁVEL ---
+        // --- SISTEMA DE DESENHO E SELEÇÃO DE FORMAS ---
         let modoDesenhoAtivo = false;
         const canvas = document.getElementById('canvasDesenho');
         const ctx = canvas.getContext('2d');
         let desenhando = false;
         let pontosRascunho = [];
         let corAtualDesenho = "#db2777";
+        let formasSalvas = [];
+        let formaSelecionadaIndex = null;
 
         function mudarCorDesenho(novaCor) {
             corAtualDesenho = novaCor;
@@ -469,15 +489,19 @@
             const statusLabel = document.getElementById('statusDesenhoLabel');
             const btn = document.getElementById('btnModoDesenho');
 
+            desselecionarForma();
+
             if (modoDesenhoAtivo) {
                 canvas.classList.add('ativo');
-                statusLabel.innerText = "Ativo";
+                canvas.classList.remove('modo-selecao');
+                statusLabel.innerText = "Ativo (Desenho)";
                 statusLabel.className = "text-emerald-600 font-extrabold";
                 btn.className = "bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-2 border-emerald-400 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs";
             } else {
                 canvas.classList.remove('ativo');
-                statusLabel.innerText = "Inativo";
-                statusLabel.className = "text-red-500 font-extrabold";
+                canvas.classList.add('modo-selecao');
+                statusLabel.innerText = "Inativo (Clique na forma para editar/excluir)";
+                statusLabel.className = "text-pink-700 font-extrabold";
                 btn.className = "bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs";
             }
         }
@@ -491,32 +515,37 @@
         window.addEventListener('resize', ajustarTamanhoCanvas);
         setTimeout(ajustarTamanhoCanvas, 100);
 
-        canvas.addEventListener('mousedown', iniciarDesenho);
-        canvas.addEventListener('mousemove', desenharTraço);
-        canvas.addEventListener('mouseup', finalizarDesenhoIA);
-
-        canvas.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            canvas.dispatchEvent(new MouseEvent('mousedown', { clientX: touch.clientX, clientY: touch.clientY }));
-        });
-        canvas.addEventListener('touchmove', (e) => {
-            const touch = e.touches[0];
-            canvas.dispatchEvent(new MouseEvent('mousemove', { clientX: touch.clientX, clientY: touch.clientY }));
-            e.preventDefault();
-        }, { passive: false });
-        canvas.addEventListener('touchend', () => {
-            canvas.dispatchEvent(new MouseEvent('mouseup', {}));
-        });
-
-        function iniciarDesenho(e) {
-            if (!modoDesenhoAtivo) return;
-            desenhando = true;
-            pontosRascunho = [];
+        canvas.addEventListener('mousedown', (e) => {
             const rect = canvas.getBoundingClientRect();
-            pontosRascunho.push({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-        }
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
-        function desenharTraço(e) {
+            if (modoDesenhoAtivo) {
+                desenhando = true;
+                pontosRascunho = [];
+                pontosRascunho.push({ x, y });
+            } else {
+                // Verificar se clicou em cima de alguma forma existente para selecioná-la
+                let encontrada = null;
+                for (let i = formasSalvas.length - 1; i >= 0; i--) {
+                    let f = formasSalvas[i];
+                    if (x >= f.x - 15 && x <= f.x + f.w + 15 && y >= f.y - 15 && y <= f.y + f.h + 15) {
+                        encontrada = i;
+                        break;
+                    }
+                }
+
+                if (encontrada !== null) {
+                    formaSelecionadaIndex = encontrada;
+                    document.getElementById('painelFormaSelecionada').classList.remove('hidden');
+                } else {
+                    desselecionarForma();
+                }
+                redesenharHistorico();
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
             if (!modoDesenhoAtivo || !desenhando) return;
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -535,11 +564,9 @@
                 ctx.lineTo(pontosRascunho[i].x, pontosRascunho[i].y);
             }
             ctx.stroke();
-        }
+        });
 
-        let formasSalvas = [];
-
-        function finalizarDesenhoIA() {
+        canvas.addEventListener('mouseup', () => {
             if (!modoDesenhoAtivo || !desenhando) return;
             desenhando = false;
             if (pontosRascunho.length < 5) return;
@@ -568,24 +595,66 @@
             };
 
             formasSalvas.push(formaPerfeita);
+            formaSelecionadaIndex = formasSalvas.length - 1;
+            document.getElementById('painelFormaSelecionada').classList.remove('hidden');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             redesenharHistorico();
             registrarHistorico();
+        });
+
+        function desselecionarForma() {
+            formaSelecionadaIndex = null;
+            document.getElementById('painelFormaSelecionada').classList.add('hidden');
+            redesenharHistorico();
+        }
+
+        function excluirFormaSelecionada() {
+            if (formaSelecionadaIndex !== null && formasSalvas[formaSelecionadaIndex]) {
+                formasSalvas.splice(formaSelecionadaIndex, 1);
+                desselecionarForma();
+                redesenharHistorico();
+                registrarHistorico();
+            }
+        }
+
+        function redimensionarFormaSelecionada(deltaW, deltaH) {
+            if (formaSelecionadaIndex !== null && formasSalvas[formaSelecionadaIndex]) {
+                let f = formasSalvas[formaSelecionadaIndex];
+                f.w = Math.max(30, f.w + deltaW);
+                f.h = Math.max(30, f.h + deltaH);
+                f.rx = f.w / 2;
+                f.ry = f.h / 2;
+                f.cx = f.x + f.w / 2;
+                f.cy = f.y + f.h / 2;
+                redesenharHistorico();
+                registrarHistorico();
+            }
         }
 
         function redesenharHistorico() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            formasSalvas.forEach(f => {
+            formasSalvas.forEach((f, index) => {
                 ctx.beginPath();
                 ctx.strokeStyle = f.cor || '#db2777';
-                ctx.lineWidth = 3;
+                ctx.lineWidth = (index === formaSelecionadaIndex) ? 4 : 3;
                 ctx.setLineDash([]);
+                
                 if (f.tipo === 'circulo') {
                     ctx.ellipse(f.cx, f.cy, f.rx, f.ry, 0, 0, 2 * Math.PI);
                 } else {
                     ctx.roundRect(f.x, f.y, f.w, f.h, 16);
                 }
                 ctx.stroke();
+
+                // Se estiver selecionada, desenha uma borda pontilhada de destaque com alças
+                if (index === formaSelecionadaIndex) {
+                    ctx.save();
+                    ctx.strokeStyle = '#2563eb';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 4]);
+                    ctx.strokeRect(f.x - 4, f.y - 4, f.w + 8, f.h + 8);
+                    ctx.restore();
+                }
             });
         }
 
@@ -667,7 +736,6 @@
             }
 
             atualizarContador();
-            // Salvar primeiro estado inicial
             pilhaHistorico.push(capturarEstadoAtual());
             indiceHistorico = 0;
         });
@@ -696,7 +764,6 @@
             lucide.createIcons();
         }
 
-        // Registrar histórico ao digitar (com pequeno intervalo para não salvar a cada letra)
         let temporizadorDigichat;
         function gatilhoDigitacao() {
             if (bloquearRegistroHistorico) return;
@@ -791,6 +858,7 @@
                 titulo.innerText = '';
                 postItsContainer.innerHTML = '';
                 formasSalvas = [];
+                desselecionarForma();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 localStorage.clear();
                 pilhaHistorico = [];

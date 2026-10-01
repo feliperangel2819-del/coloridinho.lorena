@@ -152,10 +152,23 @@
 
             <div class="h-6 w-[1px] bg-pink-200"></div>
 
-            <!-- Cores de Texto e Emojis -->
+            <!-- Cor de Texto -->
             <div class="flex items-center gap-2.5">
-                <span class="text-sm font-bold text-slate-700">Cor 📍⬆️➡️⬇️⬅️ 👩🏽‍🏫</span>
+                <span class="text-sm font-bold text-slate-700">Cor</span>
                 <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-9 h-9 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent">
+            </div>
+
+            <div class="h-6 w-[1px] bg-pink-200"></div>
+
+            <!-- Emojis Prontos para Inserir -->
+            <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-3 py-1.5 rounded-xl">
+                <span class="text-xs font-bold text-pink-700 mr-1">Emojis:</span>
+                <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir 📍">📍</button>
+                <button onclick="inserirEmoji('⬆️️')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir ⬆️">⬆️</button>
+                <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir ➡️">➡️</button>
+                <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir ⬇️">⬇️</button>
+                <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir ⬅️">⬅️</button>
+                <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base" title="Inserir 👩🏽‍🏫">👩🏽‍🏫</button>
             </div>
 
         </div>
@@ -289,6 +302,12 @@
         function mudarCorTexto(cor) {
             document.execCommand('foreColor', false, cor);
             editor.focus();
+        }
+
+        function inserirEmoji(emoji) {
+            editor.focus();
+            document.execCommand('insertText', false, emoji);
+            salvarAutomaticamente();
         }
 
         function mudarFonte() {

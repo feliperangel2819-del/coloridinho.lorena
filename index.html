@@ -282,15 +282,10 @@
 
         function salvarEstadoGlobal() {
             if (bloqueiaSalvar) return;
-            
-            // Pega o HTML inteiro de dentro da folha para salvar tudo (textos, colunas, post-its, formas)
             const conteudoFolha = document.getElementById('conteudoParaPdf').innerHTML;
-            
             if (indiceHistorico < historicoGlobal.length - 1) {
                 historicoGlobal = historicoGlobal.slice(0, indiceHistorico + 1);
             }
-            
-            // Evita duplicar estados idênticos consecutivos
             if (historicoGlobal.length === 0 || historicoGlobal[historicoGlobal.length - 1] !== conteudoFolha) {
                 historicoGlobal.push(conteudoFolha);
                 indiceHistorico++;
@@ -318,17 +313,21 @@
         function restaurarEstadoGlobal(htmlState) {
             bloqueiaSalvar = true;
             document.getElementById('conteudoParaPdf').innerHTML = htmlState;
-            
-            // Reatribui eventos e referências após restaurar o DOM
             revinculareventos();
             bloqueiaSalvar = false;
         }
 
         function revinculareventos() {
-            // Reatribui eventos do canvas caso tenham sumido
             const novoCanvas = document.getElementById('canvasDesenho');
-            if(novoCanvas && !novoCanvas.hasAttribute('data-ouvintes')) {
-                novoCanvas.setAttribute('data-ouvintes', 'true');
+            if(novoCanvas) {
+                novoCanvas.removeEventListener('mousedown', iniciarDesenho);
+                novoCanvas.removeEventListener('mousemove', desenhar);
+                novoCanvas.removeEventListener('mouseup', pararDesenho);
+                novoCanvas.removeEventListener('mouseout', pararDesenho);
+                novoCanvas.removeEventListener('touchstart', iniciarDesenho);
+                novoCanvas.removeEventListener('touchmove', desenhar);
+                novoCanvas.removeEventListener('touchend', pararDesenho);
+
                 novoCanvas.addEventListener('mousedown', iniciarDesenho);
                 novoCanvas.addEventListener('mousemove', desenhar);
                 novoCanvas.addEventListener('mouseup', pararDesenho);
@@ -340,7 +339,6 @@
             redimensionarCanvas();
         }
 
-        // Salva o estado inicial ao carregar a página
         setTimeout(() => { salvarEstadoGlobal(); }, 200);
 
         // ================= DESENHO & IA (FORMA INTELIGENTE) =================
@@ -351,7 +349,6 @@
         function redimensionarCanvas() {
             const canvas = document.getElementById('canvasDesenho');
             if(!canvas) return;
-            const ctx = canvas.getContext('2d');
             const wrapper = document.getElementById('conteudoParaPdf');
             canvas.width = wrapper.offsetWidth;
             canvas.height = wrapper.offsetHeight;
@@ -465,10 +462,8 @@
             return `rgba(${num>>16},${(num>>8)&255},${num&255},${alpha})`;
         }
 
-        // Inicializa ouvintes no canvas principal
         const canvasInicial = document.getElementById('canvasDesenho');
         if(canvasInicial) {
-            canvasInicial.setAttribute('data-ouvintes', 'true');
             canvasInicial.addEventListener('mousedown', iniciarDesenho);
             canvasInicial.addEventListener('mousemove', desenhar);
             canvasInicial.addEventListener('mouseup', pararDesenho);
@@ -517,7 +512,7 @@
             salvarEstadoGlobal();
         }
 
-        // ================= EMOJIS =================
+        // ================= EMOJIS (COM A PROFESSORA CORRETA) =================
         const listaEmojis = [
             { emoji: '📍', termos: 'alfinete tachinha fixar map' },
             { emoji: '✅', termos: 'certo check ok verificado' },
@@ -578,7 +573,7 @@
             renderizarGridEmojis(filtrados);
         }
 
-        // ================= FORMATAÇÃO E TAMANHO DE LETRA INTELIGENTE =================
+        // ================= FORMATAÇÃO E TAMANHO DE LETRA =================
         function formatar(cmd) {
             document.execCommand(cmd, false, null);
             salvarEstadoGlobal();
@@ -595,8 +590,6 @@
         
         function mudarTamanho(tamanhoPx) {
             const selection = window.getSelection();
-            
-            // Se há texto selecionado, aplica o span apenas no texto selecionado
             if (selection.rangeCount && !selection.isCollapsed) {
                 const range = selection.getRangeAt(0);
                 const span = document.createElement('span');
@@ -605,8 +598,7 @@
                 range.insertNode(span);
                 selection.removeAllRanges();
             } else {
-                // Se NÃO há texto selecionado, aplica o tamanho para a próxima digitação usando style inline nativo ou command
-                document.execCommand('fontSize', false, '7'); // Usa tamanho base do execCommand e substitui via CSS em spans recém criados
+                document.execCommand('fontSize', false, '7');
                 const fontElements = document.querySelectorAll('font[size="7"]');
                 fontElements.forEach(el => {
                     const span = document.createElement('span');

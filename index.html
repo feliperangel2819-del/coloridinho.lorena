@@ -38,6 +38,9 @@
         .main-container-zoom {
             transition: transform 0.2s ease;
             transform-origin: top center;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         
         [contenteditable][data-placeholder]:empty:before {
@@ -46,6 +49,12 @@
             opacity: 0.8;
             pointer-events: none;
             display: block;
+        }
+
+        /* Evita que texto longo transborde e estique a folha */
+        #editorTexto, #editorTexto2, .post-it div[contenteditable] {
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         #canvasDesenho {
@@ -133,8 +142,8 @@
         <button onclick="resetarZoom()" class="text-xs font-bold text-pink-600 hover:text-pink-800 px-2 py-1 cursor-pointer">Reset</button>
     </div>
 
-    <div id="viewportZoom" class="w-full flex justify-center main-container-zoom z-10">
-        <div id="conteudoParaPdf" class="main-content w-full max-w-6xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-pink-200 p-6 md:p-10 relative">
+    <div id="viewportZoom" class="main-container-zoom z-10">
+        <div id="conteudoParaPdf" class="w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-pink-200 p-6 md:p-10 relative">
             
             <canvas id="canvasDesenho"></canvas>
             <div id="containerFormasIA"></div>
@@ -216,7 +225,7 @@
             </div>
 
             <!-- Folha de Escrita -->
-            <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-3xl p-6 md:p-10 min-h-[500px] shadow-md relative flex flex-col">
+            <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-3xl p-6 md:p-10 min-h-[500px] shadow-md relative flex flex-col overflow-hidden">
                 <div class="flex justify-between mb-4 border-b border-pink-300/60 pb-3">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-900 outline-none w-full" contenteditable="true" id="tituloColoridinho" data-placeholder="Título da Aula..."></h2>
                 </div>
@@ -233,9 +242,11 @@
     </div>
 
     <!-- Barra de Ações Inferior -->
-    <div class="main-content grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 no-print w-full max-w-6xl z-10">
-        <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition cursor-pointer">Salvar como PDF</button>
-        <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer">Limpar folha</button>
+    <div class="w-full flex justify-center mt-6 no-print z-10">
+        <div class="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition cursor-pointer">Salvar como PDF</button>
+            <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer">Limpar folha</button>
+        </div>
     </div>
 
     <script>

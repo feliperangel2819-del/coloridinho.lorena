@@ -51,7 +51,6 @@
             display: block;
         }
 
-        /* Evita que texto longo transborde e estique a folha */
         #editorTexto, #editorTexto2, .post-it div[contenteditable] {
             word-break: break-word;
             overflow-wrap: break-word;
@@ -72,7 +71,6 @@
             cursor: crosshair;
         }
 
-        /* Formas Geométricas Inteligentes com Controlo de Cor */
         .forma-ia {
             position: absolute;
             border: 3px solid #be185d;
@@ -243,8 +241,8 @@
                 </div>
                 
                 <div id="wrapperEditor" class="flex flex-col md:flex-row gap-4 w-full flex-1">
-                    <div id="editorTexto" contenteditable="true" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px]" data-placeholder="Escreva aqui..."></div>
-                    <div id="editorTexto2" contenteditable="true" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px] hidden" data-placeholder="Coluna 2..."></div>
+                    <div id="editorTexto" contenteditable="true" oninput="salvarEstado()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px]" data-placeholder="Escreva aqui..."></div>
+                    <div id="editorTexto2" contenteditable="true" oninput="salvarEstado()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px] hidden" data-placeholder="Coluna 2..."></div>
                 </div>
 
                 <div id="postItsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6"></div>
@@ -435,9 +433,9 @@
 
         // ================= EMOJIS =================
         const listaEmojis = [
-            { emoji: '📍', termos: 'alfinete tachinha fixar' },
+            { emoji: '📍', termos: 'alfinete tachinha fixar map' },
             { emoji: '✅', termos: 'certo check ok verificado' },
-            { emoji: '👩🏽‍🏫', termos: 'professora professora negra quadro' },
+            { emoji: '👩🏽‍‍🏫', termos: 'professora professora negra quadro' },
             { emoji: '⭐', termos: 'estrela favorito brilho' },
             { emoji: '💡', termos: 'ideia lampada' },
             { emoji: '📚', termos: 'livro estudo escola' },
@@ -489,42 +487,65 @@
             renderizarGridEmojis(filtrados);
         }
 
-        // ================= TEXTO E FORMATAÇÃO =================
+        // ================= TEXTO, HISTÓRICO E FORMATAÇÃO =================
         let historico = [];
+        let indiceHistorico = -1;
         const editor = document.getElementById('editorTexto');
 
         function salvarEstado() {
+            if (indiceHistorico < historico.length - 1) {
+                historico = historico.slice(0, indiceHistorico + 1);
+            }
             historico.push(editor.innerHTML);
-            if(historico.length > 20) historico.shift();
+            indiceHistorico++;
+            if (historico.length > 30) {
+                historico.shift();
+                indiceHistorico--;
+            }
         }
+
         function desfazerAcao() {
-            if(historico.length > 0) editor.innerHTML = historico.pop();
+            if (indiceHistorico > 0) {
+                indiceHistorico--;
+                editor.innerHTML = historico[indiceHistorico];
+            }
         }
+
         function refazerAcao() {
-            document.execCommand('redo', false, null);
+            if (indiceHistorico < historico.length - 1) {
+                indiceHistorico++;
+                editor.innerHTML = historico[indiceHistorico];
+            }
         }
+
+        // Salva o estado inicial assim que a página carrega
+        setTimeout(salvarEstado, 100);
+
         function formatar(cmd) {
             document.execCommand(cmd, false, null);
             salvarEstado();
         }
         function mudarCorTexto(cor) {
             document.execCommand('foreColor', false, cor);
+            salvarEstado();
         }
         function mudarFonte() {
             const fonte = document.getElementById('fontSelector').value;
             document.execCommand('fontName', false, fonte);
+            salvarEstado();
         }
         
         function mudarTamanho(tamanhoPx) {
             const selection = window.getSelection();
-            if (!selection.rangeCount) return;
-            const range = selection.getRangeAt(0);
-            if (range.collapsed) return; // Se não houver texto selecionado, não faz nada
+            if (!selection.rangeCount || selection.isCollapsed) return;
 
+            const range = selection.getRangeAt(0);
             const span = document.createElement('span');
             span.style.fontSize = tamanhoPx;
             span.appendChild(range.extractContents());
             range.insertNode(span);
+            
+            selection.removeAllRanges();
             salvarEstado();
         }
 
@@ -537,8 +558,10 @@
                 document.getElementById('containerFormasIA').innerHTML = '';
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 historico = [];
+                indiceHistorico = -1;
+                salvarEstado();
             }
         }
     </script>
 </body>
-</html>S
+</html>

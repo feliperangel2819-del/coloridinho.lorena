@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coloridinho — Professora Lorena</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;650;700&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -108,6 +108,7 @@
     <div class="side-text-left">Boa aula de português</div>
     <div class="side-text-right">Boa aula de português</div>
 
+    <!-- Modal de Emojis -->
     <div id="modalEmojis" class="hidden fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl border border-pink-200 w-full max-w-lg p-5 flex flex-col max-h-[80vh]">
             <div class="flex justify-between items-center mb-3 border-b border-pink-100 pb-2">
@@ -121,6 +122,7 @@
         </div>
     </div>
 
+    <!-- Zoom Flutuante -->
     <div class="fixed bottom-4 right-4 bg-white/90 backdrop-blur-md border border-pink-200 shadow-xl rounded-2xl p-2 z-50 flex items-center gap-2 no-print">
         <button onclick="ajustarZoom(-0.1)" class="w-8 h-8 bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold rounded-xl flex items-center justify-center cursor-pointer">🔍-</button>
         <span id="zoomLabel" class="text-xs font-bold text-slate-700 w-12 text-center">100%</span>
@@ -135,10 +137,11 @@
             <canvas id="canvasDesenho"></canvas>
             <div id="containerFormasIA"></div>
 
+            <!-- Cabeçalho -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-pink-100 pb-4">
                 <div class="flex items-center gap-3">
-                    <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs shrink-0">
-                        <i data-lucide="heart" class="w-6 h-6 fill-pink-500 text-pink-500"></i>
+                    <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs shrink-0 text-xl flex items-center justify-center">
+                        ❤️️
                     </div>
                     <div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs md:text-sm text-pink-600 font-bold uppercase tracking-wider mb-1">
@@ -146,7 +149,7 @@
                             <span class="bg-pink-100 px-2.5 py-0.5 rounded-full text-pink-700 font-extrabold text-xs">Professora Lorena</span>
                         </div>
                         <h1 class="text-xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
-                            Coloridinho da Prof <i data-lucide="sparkles" class="w-5 h-5 text-pink-500 inline-block"></i>
+                            Coloridinho da Prof ✨
                         </h1>
                     </div>
                 </div>
@@ -158,6 +161,7 @@
                 </div>
             </div>
 
+            <!-- Barra de Ferramentas de Texto -->
             <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 mb-3 flex flex-wrap items-center gap-2 shadow-xs no-print relative z-30">
                 <div class="flex items-center gap-1 bg-white border border-pink-200 px-2 py-1 rounded-xl">
                     <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs cursor-pointer">↩ Desfazer</button>
@@ -189,12 +193,14 @@
                 </div>
             </div>
 
+            <!-- Barra de Atalhos com os 4 Emojis Pedidos -->
             <div class="bg-white/80 border border-pink-200 rounded-2xl p-2.5 mb-3 flex items-center gap-2 overflow-x-auto shadow-xs no-print relative z-30">
                 <span class="text-xs font-bold text-pink-700 uppercase tracking-wider shrink-0 px-2">Atalhos:</span>
                 <div id="containerAtalhosEmojis" class="flex items-center gap-1.5 shrink-0"></div>
                 <button onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">Mais+</button>
             </div>
 
+            <!-- Barra de Ações Especiais -->
             <div class="bg-white/60 border border-pink-200 rounded-2xl p-2.5 mb-6 flex flex-wrap items-center gap-2 shadow-xs no-print relative z-30">
                 <button onclick="adicionarPostIt()" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
                     📌 Novo Post-it
@@ -207,6 +213,282 @@
                 </button>
             </div>
 
+            <!-- Folha de Escrita -->
             <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-3xl p-4 md:p-10 min-h-[500px] shadow-md relative flex flex-col">
                 <div class="flex justify-between mb-4 border-b border-pink-300/60 pb-3">
-                    <h2 class="text-xl md:text-2xl font-bold text-slate-9
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 outline-none w-full" contenteditable="true" id="tituloColoridinho" data-placeholder="Título da Aula..."></h2>
+                </div>
+                
+                <div id="wrapperEditor" class="flex flex-col md:flex-row gap-4 w-full flex-1">
+                    <div id="editorTexto" contenteditable="true" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/80 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px]" data-placeholder="Escreva aqui..."></div>
+                    <div id="editorTexto2" contenteditable="true" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/80 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px] hidden" data-placeholder="Coluna 2..."></div>
+                </div>
+
+                <div id="postItsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Barra de Ações Inferior -->
+    <div class="main-content grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 no-print w-full max-w-6xl z-10">
+        <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition cursor-pointer">Salvar como PDF</button>
+        <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer">Limpar folha</button>
+    </div>
+
+    <script>
+        let zoomAtual = 1.0;
+        const viewportZoom = document.getElementById('viewportZoom');
+        const zoomLabel = document.getElementById('zoomLabel');
+
+        function ajustarZoom(delta) {
+            zoomAtual = Math.min(Math.max(0.5, zoomAtual + delta), 2.0);
+            viewportZoom.style.transform = `scale(${zoomAtual})`;
+            zoomLabel.innerText = `${Math.round(zoomAtual * 100)}%`;
+        }
+        function resetarZoom() {
+            zoomAtual = 1.0;
+            viewportZoom.style.transform = `scale(1)`;
+            zoomLabel.innerText = `100%`;
+        }
+
+        // ================= DESENHO & IA (FORMA INTELIGENTE) =================
+        const canvas = document.getElementById('canvasDesenho');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let modoDesenhoAtivo = false;
+        let pontosDesenho = [];
+        
+        function redimensionarCanvas() {
+            const wrapper = document.getElementById('conteudoParaPdf');
+            canvas.width = wrapper.offsetWidth;
+            canvas.height = wrapper.offsetHeight;
+        }
+        window.addEventListener('resize', redimensionarCanvas);
+        setTimeout(redimensionarCanvas, 300);
+
+        function obterPosicao(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+            return {
+                x: (clientX - rect.left) / zoomAtual,
+                y: (clientY - rect.top) / zoomAtual
+            };
+        }
+
+        function iniciarDesenho(e) {
+            if (!modoDesenhoAtivo) return;
+            isDrawing = true;
+            pontosDesenho = [];
+            const pos = obterPosicao(e);
+            pontosDesenho.push(pos);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            ctx.strokeStyle = document.getElementById('textColorPicker').value;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+
+        function desenhar(e) {
+            if (!isDrawing || !modoDesenhoAtivo) return;
+            e.preventDefault();
+            const pos = obterPosicao(e);
+            pontosDesenho.push(pos);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function pararDesenho() {
+            if (!isDrawing || !modoDesenhoAtivo) return;
+            isDrawing = false;
+            ctx.closePath();
+            
+            processarFormaInteligenteIA(pontosDesenho);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function processarFormaInteligenteIA(pontos) {
+            if (pontos.length < 5) return;
+            
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            pontos.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y > maxY) maxY = p.y;
+            });
+
+            const largura = maxX - minX;
+            const altura = maxY - minY;
+            if (largura < 20 || altura < 20) return;
+
+            const proporcao = largura / altura;
+            const ehCirculo = proporcao > 0.7 && proporcao < 1.3;
+
+            const container = document.getElementById('containerFormasIA');
+            const forma = document.createElement('div');
+            forma.className = `forma-ia ${ehCirculo ? 'circulo' : ''}`;
+            forma.style.left = `${minX}px`;
+            forma.style.top = `${minY}px`;
+            forma.style.width = `${largura}px`;
+            forma.style.height = `${altura}px`;
+
+            forma.innerHTML = `
+                <div class="botoes-forma">
+                    <button onclick="this.closest('.forma-ia').remove()" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1.5 py-0.5 rounded text-xs font-bold cursor-pointer">🗑️</button>
+                </div>
+            `;
+            container.appendChild(forma);
+        }
+
+        canvas.addEventListener('mousedown', iniciarDesenho);
+        canvas.addEventListener('mousemove', desenhar);
+        canvas.addEventListener('mouseup', pararDesenho);
+        canvas.addEventListener('mouseout', pararDesenho);
+        canvas.addEventListener('touchstart', iniciarDesenho, {passive: false});
+        canvas.addEventListener('touchmove', desenhar, {passive: false});
+        canvas.addEventListener('touchend', pararDesenho);
+
+        function alternarModoDesenho() {
+            const btn = document.getElementById('btnDesenho');
+            modoDesenhoAtivo = !modoDesenhoAtivo;
+            if(modoDesenhoAtivo) {
+                canvas.classList.add('ativo');
+                btn.classList.add('bg-pink-200');
+                btn.innerText = '✏️ Modo Desenho & IA: Ativo';
+                redimensionarCanvas();
+            } else {
+                canvas.classList.remove('ativo');
+                btn.classList.remove('bg-pink-200');
+                btn.innerText = '✏️ Modo Desenho & IA: Inativo';
+            }
+        }
+
+        // ================= FUNÇÕES DOS BOTÕES =================
+        function adicionarPostIt() {
+            const container = document.getElementById('postItsContainer');
+            const postit = document.createElement('div');
+            postit.className = 'post-it bg-yellow-200 p-4 rounded-xl shadow-md relative min-h-[120px] w-full z-30';
+            postit.innerHTML = `
+                <button onclick="this.parentElement.remove()" class="absolute top-1 right-2 text-yellow-700 hover:text-red-500 font-extrabold px-1 cursor-pointer">✕</button>
+                <div contenteditable="true" class="w-full h-full outline-none text-sm font-semibold text-yellow-900 mt-2" data-placeholder="Escreva a nota..."></div>
+            `;
+            container.appendChild(postit);
+        }
+
+        function alternarColunas() {
+            const ed2 = document.getElementById('editorTexto2');
+            ed2.classList.toggle('hidden');
+        }
+
+        // ================= EMOJIS (Apenas 4 nos atalhos principais) =================
+        const listaEmojis = [
+            { emoji: '📌', termos: 'alfinete tachinha fixar' },
+            { emoji: '✅', termos: 'certo check ok verificado' },
+            { emoji: '👩🏽‍🏫', termos: 'professora professora negra quadro' },
+            { emoji: '⭐', termos: 'estrela favorito brilho' },
+            { emoji: '💡', termos: 'ideia lampada' },
+            { emoji: '📚', termos: 'livro estudo escola' },
+            { emoji: '✏️', termos: 'lapis escrever' },
+            { emoji: '😊', termos: 'sorriso feliz' },
+            { emoji: '❤️', termos: 'coracao amor' },
+            { emoji: '🚀', termos: 'foguete' }
+        ];
+
+        function renderizarAtalhosEmojis() {
+            const container = document.getElementById('containerAtalhosEmojis');
+            container.innerHTML = '';
+            const atalhosIniciais = listaEmojis.slice(0, 4);
+            atalhosIniciais.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'w-8 h-8 bg-white hover:bg-pink-100 border border-pink-200 rounded-xl text-sm flex items-center justify-center cursor-pointer transition shadow-xs';
+                btn.innerText = item.emoji;
+                btn.onclick = () => document.execCommand('insertText', false, item.emoji);
+                container.appendChild(btn);
+            });
+        }
+        renderizarAtalhosEmojis();
+
+        function abrirModalEmojis() {
+            document.getElementById('modalEmojis').classList.remove('hidden');
+            renderizarGridEmojis(listaEmojis);
+        }
+        function fecharModalEmojis() {
+            document.getElementById('modalEmojis').classList.add('hidden');
+        }
+        function renderizarGridEmojis(arr) {
+            const grid = document.getElementById('listaGridEmojis');
+            grid.innerHTML = '';
+            arr.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'h-11 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-xl text-xl flex items-center justify-center cursor-pointer';
+                btn.innerText = item.emoji;
+                btn.onclick = () => {
+                    document.execCommand('insertText', false, item.emoji);
+                    fecharModalEmojis();
+                };
+                grid.appendChild(btn);
+            });
+        }
+        function filtrarEmojis(termo) {
+            const t = termo.toLowerCase().trim();
+            if (!t) { renderizarGridEmojis(listaEmojis); return; }
+            const filtrados = listaEmojis.filter(item => item.termos.includes(t));
+            renderizarGridEmojis(filtrados);
+        }
+
+        // ================= TEXTO E FORMATAÇÃO =================
+        let historico = [];
+        const editor = document.getElementById('editorTexto');
+
+        function salvarEstado() {
+            historico.push(editor.innerHTML);
+            if(historico.length > 20) historico.shift();
+        }
+        function desfazerAcao() {
+            if(historico.length > 0) editor.innerHTML = historico.pop();
+        }
+        function refazerAcao() {
+            document.execCommand('redo', false, null);
+        }
+        function formatar(cmd) {
+            document.execCommand(cmd, false, null);
+            salvarEstado();
+        }
+        function mudarCorTexto(cor) {
+            document.execCommand('foreColor', false, cor);
+        }
+        function mudarFonte() {
+            const fonte = document.getElementById('fontSelector').value;
+            document.execCommand('fontName', false, fonte);
+        }
+        function mudarTamanho() {
+            const tam = document.getElementById('sizeSelector').value;
+            let val = '3';
+            if(tam === '14px') val = '2';
+            if(tam === '18px') val = '4';
+            if(tam === '24px') val = '6';
+            if(tam === '32px') val = '7';
+            document.execCommand('fontSize', false, val);
+        }
+
+        function limparFolha() {
+            if(confirm("Tens a certeza que pretendes limpar toda a folha?")) {
+                editor.innerHTML = '';
+                document.getElementById('editorTexto2').innerHTML = '';
+                document.getElementById('tituloColoridinho').innerText = '';
+                document.getElementById('postItsContainer').innerHTML = '';
+                document.getElementById('containerFormasIA').innerHTML = '';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                historico = [];
+            }
+        }
+    </script>
+</body>
+</html>

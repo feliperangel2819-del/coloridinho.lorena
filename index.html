@@ -219,7 +219,7 @@
                     📐 Dividir em 2 Colunas
                 </button>
                 <button type="button" id="btnDesenho" onmousedown="event.preventDefault()" onclick="alternarModoDesenho()" class="bg-white border border-pink-200 hover:bg-pink-100 text-pink-700 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
-                    ✏️️ Modo Desenho & IA: Inativo
+                    ✏️ Modo Desenho & IA: Inativo
                 </button>
             </div>
 
@@ -506,7 +506,7 @@
         const listaEmojis = [
             { emoji: '📍', termos: 'alfinete tachinha fixar map' },
             { emoji: '✅', termos: 'certo check ok verificado' },
-            { emoji: '👩🏽‍🏫', termos: 'professora professora negra quadro' },
+            { emoji: '👩🏽‍‍🏫', termos: 'professora professora negra quadro' },
             { emoji: '⭐', termos: 'estrela favorito brilho' },
             { emoji: '💡', termos: 'ideia lampada' },
             { emoji: '📚', termos: 'livro estudo escola' },
@@ -565,14 +565,26 @@
             renderizarGridEmojis(filtrados);
         }
 
-        // ================= FORMATAÇÃO E COR DO TEXTO =================
+        // ================= FORMATAÇÃO E COR DO TEXTO (BLINDADO PARA PC E MOBILE) =================
         function formatar(cmd) {
             document.execCommand(cmd, false, null);
             salvarEstadoGlobal();
         }
         
         function mudarCorTexto(cor) {
-            document.execCommand('foreColor', false, cor);
+            const selection = window.getSelection();
+            if (selection.rangeCount && !selection.isCollapsed) {
+                // Se o usuário selecionou um texto, envolve com um span colorido (funciona perfeito no mobile)
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.color = cor;
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+                selection.removeAllRanges();
+            } else {
+                // Se não há seleção, aplica o comando nativo e também injeta na seleção atual se possível
+                document.execCommand('foreColor', false, cor);
+            }
             salvarEstadoGlobal();
         }
         
@@ -583,11 +595,21 @@
         }
         
         function mudarTamanho(tamanhoPx) {
-            let tamanhoMap = '3';
-            if(tamanhoPx === '28px') tamanhoMap = '5';
-            if(tamanhoPx === '32px') tamanhoMap = '6';
-            if(tamanhoPx === '36px' || tamanhoPx === '40px') tamanhoMap = '7';
-            document.execCommand('fontSize', false, tamanhoMap);
+            const selection = window.getSelection();
+            if (selection.rangeCount && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.fontSize = tamanhoPx;
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+                selection.removeAllRanges();
+            } else {
+                let tamanhoMap = '3';
+                if(tamanhoPx === '28px') tamanhoMap = '5';
+                if(tamanhoPx === '32px') tamanhoMap = '6';
+                if(tamanhoPx === '36px' || tamanhoPx === '40px') tamanhoMap = '7';
+                document.execCommand('fontSize', false, tamanhoMap);
+            }
             salvarEstadoGlobal();
         }
 

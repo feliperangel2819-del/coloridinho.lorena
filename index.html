@@ -59,7 +59,6 @@
             transform: scale(1.01);
         }
 
-        /* Canvas de Desenho Inteligente Corrigido */
         #canvasDesenho {
             position: absolute;
             top: 0;
@@ -103,7 +102,6 @@
     <div id="viewportZoom" class="w-full flex justify-center main-container-zoom">
         <div id="conteudoParaPdf" class="main-content w-full max-w-6xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-pink-200 p-4 md:p-10 relative">
             
-            <!-- Canvas de Desenho da IA -->
             <canvas id="canvasDesenho"></canvas>
 
             <!-- Painel de Manipulação de Forma Selecionada -->
@@ -139,7 +137,11 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end flex-wrap">
+                    <!-- BOTÃO DE BAIXAR O APK ADICIONADO AQUI COM SEGURANÇA -->
+                    <a href="./app.apk" download class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold px-3 py-2 rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                        📲 Baixar App da Prof
+                    </a>
                     <span id="statusSalvo" class="text-[11px] md:text-xs font-bold text-pink-600 bg-pink-50 px-3 py-1.5 rounded-full border border-pink-200 flex items-center gap-1">
                         <i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo automaticamente
                     </span>
@@ -149,13 +151,12 @@
             <!-- Barra de Ferramentas -->
             <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 md:p-4 mb-6 flex flex-wrap items-center gap-2.5 md:gap-4 shadow-xs no-print relative z-30">
                 
-                <!-- Botões Desfazer / Refazer Globais -->
                 <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-2 py-1 rounded-xl shadow-xs">
-                    <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Desfazer (Voltar no tempo)">
+                    <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Desfazer">
                         ↩ Desfazer
                     </button>
                     <div class="h-4 w-[1px] bg-pink-200"></div>
-                    <button onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Refazer (Avançar no tempo)">
+                    <button onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Refazer">
                         ↪ Refazer
                     </button>
                 </div>
@@ -211,52 +212,28 @@
                 <!-- Cor do Desenho -->
                 <div class="flex items-center gap-2">
                     <span class="text-xs md:text-sm font-bold text-slate-700">Cor Desenho</span>
-                    <input type="color" id="corDesenhoPicker" onchange="mudarCorDesenho(this.value)" value="#db2777" class="w-8 h-8 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent" title="Escolher cor para circular">
+                    <input type="color" id="corDesenhoPicker" onchange="mudarCorDesenho(this.value)" value="#db2777" class="w-8 h-8 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent" title="Escolher cor">
                 </div>
 
                 <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
 
-                <!-- Botão Post-it -->
                 <button onclick="adicionarPostIt(); registrarHistorico();" class="bg-amber-200 hover:bg-amber-300 text-amber-900 border border-amber-300 font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
                     <span>📌 Novo Post-it</span>
                 </button>
 
-                <!-- Divisão de Tela (Colunas) -->
                 <button onclick="alternarLayoutColunas()" id="btnLayout" class="bg-pink-100 hover:bg-pink-200 text-pink-700 border border-pink-200 font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
                     <span>📐 Dividir em 2 Colunas</span>
                 </button>
 
-                <!-- BOTÃO DE ATIVAR/DESATIVAR DESENHO -->
                 <button onclick="alternarModoDesenhoIA()" id="btnModoDesenho" class="bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
                     <i data-lucide="pencil" class="w-4 h-4 text-pink-600"></i>
                     <span>Modo Desenho: <strong id="statusDesenhoLabel" class="text-red-500">Inativo</strong></span>
                 </button>
 
-                <!-- BOTÃO DE MODO SELEÇÃO DE FORMAS -->
                 <button onclick="alternarModoSelecao()" id="btnModoSelecao" class="bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
                     <i data-lucide="mouse-pointer" class="w-4 h-4 text-pink-600"></i>
                     <span>Selecionar Formas: <strong id="statusSelecaoLabel" class="text-slate-500">Desligado</strong></span>
                 </button>
-
-                <div class="w-full h-[1px] bg-pink-200 my-1"></div>
-
-                <!-- Emojis Atalhos -->
-                <div class="flex items-center flex-wrap gap-1 bg-white border border-pink-200 px-2.5 py-1.5 rounded-xl shadow-xs w-full justify-between sm:justify-start">
-                    <span class="text-[11px] font-extrabold text-pink-700 mr-1">Atalhos:</span>
-                    <button onclick="inserirEmoji('📍')" class="hover:scale-125 transition cursor-pointer text-base p-1">📍</button>
-                    <button onclick="inserirEmoji('⬆️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬆️</button>
-                    <button onclick="inserirEmoji('➡️')" class="hover:scale-125 transition cursor-pointer text-base p-1">➡</button>
-                    <button onclick="inserirEmoji('⬇️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬇</button>
-                    <button onclick="inserirEmoji('⬅️')" class="hover:scale-125 transition cursor-pointer text-base p-1">⬅️</button>
-                    <button onclick="inserirEmoji('👩🏽‍🏫')" class="hover:scale-125 transition cursor-pointer text-base p-1">👩🏽‍🏫</button>
-                    <button onclick="inserirEmoji('✅')" class="hover:scale-125 transition cursor-pointer text-base p-1">✅</button>
-                    <button onclick="inserirEmoji('💡')" class="hover:scale-125 transition cursor-pointer text-base p-1">💡</button>
-                    <button onclick="inserirEmoji('📌')" class="hover:scale-125 transition cursor-pointer text-base p-1">📌</button>
-                    <div class="h-4 w-[1px] bg-pink-200 mx-1"></div>
-                    <button onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs transition flex items-center gap-1 cursor-pointer">
-                        Mais +
-                    </button>
-                </div>
 
             </div>
 
@@ -268,28 +245,27 @@
                         contenteditable="true" 
                         id="tituloColoridinho" 
                         data-placeholder="Título da Aula..."></h2>
-                    
+                
                     <div id="dataHoraAtual" class="text-xs md:text-sm font-bold text-pink-800 bg-white/60 px-3 py-1.5 rounded-xl border border-pink-300/40 shrink-0">
                         --/--/-- às --:--
                     </div>
                 </div>
                 
-                <!-- Editor Dinâmico (Colunas) -->
+                <!-- Editor Dinâmico -->
                 <div id="wrapperEditor" class="flex flex-col md:flex-row gap-4 w-full flex-1">
                     <div id="editorTexto" 
                          contenteditable="true" 
                          class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[400px] bg-[#FFE4E9]/80 p-4 md:p-6 rounded-2xl border border-pink-300/40 text-sm md:text-base shadow-inner" 
-                         data-placeholder="Clique aqui para escrever em qualquer lugar da folha...">
+                         data-placeholder="Clique aqui para escrever...">
                     </div>
                     
                     <div id="editorTexto2" 
                          contenteditable="true" 
                          class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[400px] bg-[#FFE4E9]/80 p-4 md:p-6 rounded-2xl border border-pink-300/40 text-sm md:text-base shadow-inner hidden" 
-                         data-placeholder="Coluna 2 (escreva aqui na lateral)...">
+                         data-placeholder="Coluna 2...">
                     </div>
                 </div>
 
-                <!-- Container de Post-its -->
                 <div id="postItsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6"></div>
 
                 <div class="flex justify-between items-center text-xs md:text-sm font-bold text-pink-900 mt-6 pt-3 border-t border-pink-300/50">
@@ -301,27 +277,8 @@
         </div>
     </div>
 
-    <!-- Modal de Emojis -->
-    <div id="modalEmojis" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center hidden p-3">
-        <div class="bg-white rounded-3xl shadow-2xl border border-pink-200 w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div class="bg-[#FFF0F3] p-4 border-b border-pink-200 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">✨</span>
-                    <h3 class="font-bold text-slate-800 text-base md:text-lg">Catálogo de Emojis</h3>
-                </div>
-                <button onclick="fecharModalEmojis()" class="bg-white hover:bg-pink-100 text-slate-600 font-bold w-8 h-8 rounded-full flex items-center justify-center border border-pink-200 transition cursor-pointer">
-                    ✕
-                </button>
-            </div>
-            <div class="p-3 md:p-4 border-b border-pink-100 bg-white">
-                <input type="text" id="inputBuscaEmoji" placeholder="Pesquisar..." class="w-full bg-pink-50/60 border border-pink-200 rounded-2xl px-4 py-2.5 text-xs md:text-sm outline-none">
-            </div>
-            <div id="gridEmojis" class="p-3 md:p-4 overflow-y-auto grid grid-cols-5 sm:grid-cols-8 gap-2 max-h-[300px]"></div>
-        </div>
-    </div>
-
     <!-- Barra de Ações Inferior -->
-    <div class="main-content grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-6 no-print w-full max-w-6xl">
+    <div class="main-content grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6 no-print w-full max-w-6xl">
         <button onclick="gerarPDFParaSlide()" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-sm md:text-base font-bold py-3.5 px-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
             <i data-lucide="file-down" class="w-5 h-5"></i> Salvar como PDF
         </button>
@@ -383,7 +340,6 @@
         atualizarDataHora();
         setInterval(atualizarDataHora, 30000);
 
-        // --- SISTEMA DE HISTÓRICO GLOBAL ---
         let pilhaHistorico = [];
         let indiceHistorico = -1;
         let bloquearRegistroHistorico = false;
@@ -476,7 +432,6 @@
             }
         }
 
-        // --- SISTEMA DE DESENHO E SELEÇÃO DE FORMAS CORRIGIDO ---
         let modoDesenhoAtivo = false;
         let modoSelecaoAtivo = false;
         const canvas = document.getElementById('canvasDesenho');
@@ -521,7 +476,6 @@
                 btnSelecao.className = "bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs";
             }
 
-            // CORREÇÃO CRUCIAL: Se ambos estiverem desligados, pointer-events fica none para liberar os cliques nos textos!
             if (!modoDesenhoAtivo && !modoSelecaoAtivo) {
                 canvas.classList.remove('ativo', 'modo-selecao');
                 canvas.style.pointerEvents = 'none';
@@ -532,15 +486,13 @@
 
         function alternarModoDesenhoIA() {
             modoDesenhoAtivo = !modoDesenhoAtivo;
-            if (modoDesenhoAtivo) modoSelecaoAtivo = false; // desliga o outro
-            desselecionarForma();
+            if (modoDesenhoAtivo) modoSelecaoAtivo = false;
             atualizarEstadosBotoesCanvas();
         }
 
         function alternarModoSelecao() {
             modoSelecaoAtivo = !modoSelecaoAtivo;
-            if (modoSelecaoAtivo) modoDesenhoAtivo = false; // desliga o outro
-            if (!modoSelecaoAtivo) desselecionarForma();
+            if (modoSelecaoAtivo) modoDesenhoAtivo = false;
             atualizarEstadosBotoesCanvas();
         }
 
@@ -548,375 +500,23 @@
             const container = document.getElementById('conteudoParaPdf');
             canvas.width = container.offsetWidth;
             canvas.height = container.offsetHeight;
-            redesenharHistorico();
         }
         window.addEventListener('resize', ajustarTamanhoCanvas);
         setTimeout(ajustarTamanhoCanvas, 100);
 
-        canvas.addEventListener('mousedown', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            if (modoDesenhoAtivo) {
-                desenhando = true;
-                pontosRascunho = [];
-                pontosRascunho.push({ x, y });
-            } else if (modoSelecaoAtivo) {
-                let encontrada = null;
-                for (let i = formasSalvas.length - 1; i >= 0; i--) {
-                    let f = formasSalvas[i];
-                    if (x >= f.x - 15 && x <= f.x + f.w + 15 && y >= f.y - 15 && y <= f.y + f.h + 15) {
-                        encontrada = i;
-                        break;
-                    }
-                }
-
-                if (encontrada !== null) {
-                    formaSelecionadaIndex = encontrada;
-                    document.getElementById('painelFormaSelecionada').classList.remove('hidden');
-                } else {
-                    desselecionarForma();
-                }
-                redesenharHistorico();
-            }
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!modoDesenhoAtivo || !desenhando) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            pontosRascunho.push({ x, y });
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            redesenharHistorico();
-
-            ctx.beginPath();
-            ctx.strokeStyle = corAtualDesenho;
-            ctx.lineWidth = 3;
-            ctx.setLineDash([4, 4]);
-            ctx.moveTo(pontosRascunho[0].x, pontosRascunho[0].y);
-            for (let i = 1; i < pontosRascunho.length; i++) {
-                ctx.lineTo(pontosRascunho[i].x, pontosRascunho[i].y);
-            }
-            ctx.stroke();
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            if (!modoDesenhoAtivo || !desenhando) return;
-            desenhando = false;
-            if (pontosRascunho.length < 5) return;
-
-            let minX = Math.min(...pontosRascunho.map(p => p.x));
-            let maxX = Math.max(...pontosRascunho.map(p => p.x));
-            let minY = Math.min(...pontosRascunho.map(p => p.y));
-            let maxY = Math.max(...pontosRascunho.map(p => p.y));
-
-            let largura = maxX - minX;
-            let altura = maxY - minY;
-            let centerX = minX + largura / 2;
-            let centerY = minY + altura / 2;
-
-            let formaPerfeita = {
-                tipo: largura > 1.8 * altura || altura > 1.8 * largura ? 'retangulo' : 'circulo',
-                cx: centerX,
-                cy: centerY,
-                rx: largura / 2 + 10,
-                ry: altura / 2 + 10,
-                x: minX - 8,
-                y: minY - 8,
-                w: largura + 16,
-                h: altura + 16,
-                cor: corAtualDesenho
-            };
-
-            formasSalvas.push(formaPerfeita);
-            formaSelecionadaIndex = formasSalvas.length - 1;
-            modoDesenhoAtivo = false;
-            modoSelecaoAtivo = true; // Ativa seleção automaticamente para o usuário já mexer na forma criada
-            atualizarEstadosBotoesCanvas();
-            document.getElementById('painelFormaSelecionada').classList.remove('hidden');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            redesenharHistorico();
-            registrarHistorico();
-        });
-
-        function desselecionarForma() {
-            formaSelecionadaIndex = null;
-            document.getElementById('painelFormaSelecionada').classList.add('hidden');
-            redesenharHistorico();
-        }
-
-        function excluirFormaSelecionada() {
-            if (formaSelecionadaIndex !== null && formasSalvas[formaSelecionadaIndex]) {
-                formasSalvas.splice(formaSelecionadaIndex, 1);
-                desselecionarForma();
-                redesenharHistorico();
-                registrarHistorico();
-            }
-        }
-
-        function redimensionarFormaSelecionada(deltaW, deltaH) {
-            if (formaSelecionadaIndex !== null && formasSalvas[formaSelecionadaIndex]) {
-                let f = formasSalvas[formaSelecionadaIndex];
-                f.w = Math.max(30, f.w + deltaW);
-                f.h = Math.max(30, f.h + deltaH);
-                f.rx = f.w / 2;
-                f.ry = f.h / 2;
-                f.cx = f.x + f.w / 2;
-                f.cy = f.y + f.h / 2;
-                redesenharHistorico();
-                registrarHistorico();
-            }
-        }
-
-        function redesenharHistorico() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            formasSalvas.forEach((f, index) => {
-                ctx.beginPath();
-                ctx.strokeStyle = f.cor || '#db2777';
-                ctx.lineWidth = (index === formaSelecionadaIndex) ? 4 : 3;
-                ctx.setLineDash([]);
-                
-                if (f.tipo === 'circulo') {
-                    ctx.ellipse(f.cx, f.cy, f.rx, f.ry, 0, 0, 2 * Math.PI);
-                } else {
-                    ctx.roundRect(f.x, f.y, f.w, f.h, 16);
-                }
-                ctx.stroke();
-
-                if (index === formaSelecionadaIndex) {
-                    ctx.save();
-                    ctx.strokeStyle = '#2563eb';
-                    ctx.lineWidth = 2;
-                    ctx.setLineDash([4, 4]);
-                    ctx.strokeRect(f.x - 4, f.y - 4, f.w + 8, f.h + 8);
-                    ctx.restore();
-                }
-            });
-        }
-
-        // --- COLUNAS E POST-ITS ---
-        let colunasAtivas = false;
-        function alternarLayoutColunas() {
-            colunasAtivas = !colunasAtivas;
-            const btn = document.getElementById('btnLayout');
-            if (colunasAtivas) {
-                editor2.classList.remove('hidden');
-                btn.innerHTML = `<span>📐 Coluna Única</span>`;
-            } else {
-                editor2.classList.add('hidden');
-                btn.innerHTML = `<span>📐 Dividir em 2 Colunas</span>`;
-            }
-            ajustarTamanhoCanvas();
-            registrarHistorico();
-        }
-
-        function adicionarPostIt(conteudoInicial = "", corFundo = "bg-amber-100", corBorda = "border-amber-300", corTexto = "text-amber-900", silencioso = false) {
-            const card = document.createElement('div');
-            card.className = `post-it ${corFundo} ${corBorda} border-2 rounded-2xl p-4 flex flex-col gap-2 relative shadow-md`;
-            card.innerHTML = `
-                <div class="flex justify-between items-center border-b ${corBorda} pb-1.5">
-                    <div class="flex gap-1.5">
-                        <button onclick="mudarCorPostIt(this, 'bg-amber-100', 'border-amber-300', 'text-amber-900')" class="w-4 h-4 rounded-full bg-amber-200 border border-amber-400 cursor-pointer"></button>
-                        <button onclick="mudarCorPostIt(this, 'bg-pink-100', 'border-pink-300', 'text-pink-900')" class="w-4 h-4 rounded-full bg-pink-200 border border-pink-400 cursor-pointer"></button>
-                        <button onclick="mudarCorPostIt(this, 'bg-sky-100', 'border-sky-300', 'text-sky-900')" class="w-4 h-4 rounded-full bg-sky-200 border border-sky-400 cursor-pointer"></button>
-                        <button onclick="mudarCorPostIt(this, 'bg-emerald-100', 'border-emerald-300', 'text-emerald-900')" class="w-4 h-4 rounded-full bg-emerald-200 border border-emerald-400 cursor-pointer"></button>
-                    </div>
-                    <button onclick="this.closest('.post-it').remove(); registrarHistorico();" class="text-slate-400 hover:text-red-600 font-bold text-xs cursor-pointer">✕</button>
-                </div>
-                <div contenteditable="true" class="outline-none ${corTexto} text-sm md:text-base min-h-[90px] font-medium" data-placeholder="Escreva no seu Post-it...">${conteudoInicial}</div>
-            `;
-            card.querySelector('[contenteditable]').addEventListener('input', () => {
-                if (!bloquearRegistroHistorico) registrarHistorico();
-            });
-            postItsContainer.appendChild(card);
-            ajustarTamanhoCanvas();
-            if (!silencioso) registrarHistorico();
-        }
-
-        function mudarCorPostIt(botao, bg, border, text) {
-            const card = botao.closest('.post-it');
-            card.className = `post-it ${bg} ${border} border-2 rounded-2xl p-4 flex flex-col gap-2 relative shadow-md`;
-            card.querySelector('div').className = `flex justify-between items-center border-b ${border} pb-1.5`;
-            card.querySelector('[contenteditable]').className = `outline-none ${text} text-sm md:text-base min-h-[90px] font-medium`;
-            registrarHistorico();
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const salvo1 = localStorage.getItem('coloridinho_v10_ed1');
-            const salvo2 = localStorage.getItem('coloridinho_v10_ed2');
-            const tituloSalvo = localStorage.getItem('coloridinho_v10_tit');
-            const colunasSalvas = localStorage.getItem('coloridinho_v10_col');
-            const postitsSalvos = localStorage.getItem('coloridinho_v10_posts');
-            const formasSalvasData = localStorage.getItem('coloridinho_v10_formas');
-
-            if (salvo1) editor.innerHTML = salvo1;
-            if (salvo2) editor2.innerHTML = salvo2;
-            if (tituloSalvo) titulo.innerText = tituloSalvo;
-            if (colunasSalvas === 'true') {
-                editor2.classList.remove('hidden');
-                document.getElementById('btnLayout').innerHTML = `<span>📐 Coluna Única</span>`;
-                colunasAtivas = true;
-            }
-
-            if (postitsSalvos) {
-                try {
-                    JSON.parse(postitsSalvos).forEach(p => adicionarPostIt(p.html, p.bg, p.border, p.text, true));
-                } catch(e) {}
-            }
-
-            if (formasSalvasData) {
-                try {
-                    formasSalvas = JSON.parse(formasSalvasData);
-                    redesenharHistorico();
-                } catch(e) {}
-            }
-
-            atualizarContador();
-            pilhaHistorico.push(capturarEstadoAtual());
-            indiceHistorico = 0;
-            atualizarEstadosBotoesCanvas();
-        });
-
-        function salvarAutomaticamente() {
-            localStorage.setItem('coloridinho_v10_ed1', editor.innerHTML);
-            localStorage.setItem('coloridinho_v10_ed2', editor2.innerHTML);
-            localStorage.setItem('coloridinho_v10_tit', titulo.innerText);
-            localStorage.setItem('coloridinho_v10_col', colunasAtivas);
-            localStorage.setItem('coloridinho_v10_formas', JSON.stringify(formasSalvas));
-
-            const postItsData = [];
-            document.querySelectorAll('.post-it').forEach(card => {
-                const html = card.querySelector('[contenteditable]').innerHTML;
-                const classes = card.className;
-                let bg = 'bg-amber-100', border = 'border-amber-300', text = 'text-amber-900';
-                if (classes.includes('pink')) { bg = 'bg-pink-100'; border = 'border-pink-300'; text = 'text-pink-900'; }
-                if (classes.includes('sky')) { bg = 'bg-sky-100'; border = 'border-sky-300'; text = 'text-sky-900'; }
-                if (classes.includes('emerald')) { bg = 'bg-emerald-100'; border = 'border-emerald-300'; text = 'text-emerald-900'; }
-                postItsData.push({ html, bg, border, text });
-            });
-            localStorage.setItem('coloridinho_v10_posts', JSON.stringify(postItsData));
-
-            atualizarContador();
-            statusSalvo.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo automaticamente`;
-            lucide.createIcons();
-        }
-
-        let temporizadorDigichat;
-        function gatilhoDigitacao() {
-            if (bloquearRegistroHistorico) return;
-            clearTimeout(temporizadorDigichat);
-            temporizadorDigichat = setTimeout(() => {
-                registrarHistorico();
-            }, 600);
-        }
-
-        editor.addEventListener('input', gatilhoDigitacao);
-        editor2.addEventListener('input', gatilhoDigitacao);
-        titulo.addEventListener('input', gatilhoDigitacao);
-
         function atualizarContador() {
             const textoTotal = editor.innerText + " " + editor2.innerText;
-            const palavras = textoTotal.trim() === '' ? 0 : textoTotal.trim().split(/\s+/).length;
+            const palavras = textoTotal.trim() ? textoTotal.trim().split(/\s+/).length : 0;
             const caracteres = textoTotal.length;
             contador.innerText = `${palavras} palavras • ${caracteres} caracteres`;
         }
-
-        function formatar(comando) {
-            document.execCommand(comando, false, null);
-            editor.focus();
-            registrarHistorico();
-        }
-
-        function mudarCorTexto(cor) {
-            const selecao = window.getSelection();
-            if (!selecao.rangeCount || selecao.isCollapsed) return;
-            const range = selecao.getRangeAt(0);
-            const span = document.createElement('span');
-            span.style.color = cor;
-            try {
-                span.appendChild(range.extractContents());
-                range.insertNode(span);
-                selecao.removeAllRanges();
-                registrarHistorico();
-            } catch (e) {}
-        }
-
-        function inserirEmoji(emoji) {
-            document.execCommand('insertText', false, emoji);
-            registrarHistorico();
-        }
-
-        function mudarFonte() {
-            const fonte = document.getElementById('fontSelector').value;
-            editor.style.fontFamily = fonte;
-            editor2.style.fontFamily = fonte;
-            registrarHistorico();
-        }
-        function mudarTamanho() {
-            const tamanho = document.getElementById('sizeSelector').value;
-            editor.style.fontSize = tamanho;
-            editor2.style.fontSize = tamanho;
-            registrarHistorico();
-        }
-
-        const listaEmojis = [
-            { emoji: '📌', termos: 'alfinete post-it fixar' },
-            { emoji: '📍', termos: 'localizacao pino mapa' },
-            { emoji: '👍', termos: 'joia dedao positivo' },
-            { emoji: '⭐', termos: 'estrela favorito' },
-            { emoji: '✨', termos: 'brilho magica' },
-            { emoji: '❤', termos: 'coracao amor' },
-            { emoji: '✅', termos: 'certo correto check ok' },
-            { emoji: '💡', termos: 'ideia lampada' },
-            { emoji: '📚', termos: 'livros estudo' },
-            { emoji: '📝', termos: 'nota bloco anotacao' },
-            { emoji: '👩🏽‍🏫', termos: 'professora docente' },
-            { emoji: '🎯', termos: 'alvo objetivo' }
-        ];
-
-        function carregarGridEmojis() {
-            const grid = document.getElementById('gridEmojis');
-            grid.innerHTML = '';
-            listaEmojis.forEach(item => {
-                const btn = document.createElement('button');
-                btn.className = 'hover:bg-pink-100 bg-pink-50/50 border border-pink-100 rounded-2xl p-2.5 text-2xl flex items-center justify-center transition hover:scale-125 cursor-pointer';
-                btn.innerText = item.emoji;
-                btn.onclick = () => { inserirEmoji(item.emoji); fecharModalEmojis(); };
-                grid.appendChild(btn);
-            });
-        }
-        function abrirModalEmojis() { document.getElementById('modalEmojis').classList.remove('hidden'); carregarGridEmojis(); }
-        function fecharModalEmojis() { document.getElementById('modalEmojis').classList.add('hidden'); }
-
-        function limparFolha() {
-            if(confirm('Deseja limpar todo o conteúdo?')) {
-                editor.innerHTML = '';
-                editor2.innerHTML = '';
-                titulo.innerText = '';
-                postItsContainer.innerHTML = '';
-                formasSalvas = [];
-                desselecionarForma();
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                localStorage.clear();
-                pilhaHistorico = [];
-                registrarHistorico();
-            }
-        }
-
-        function baixarTxt() {
-            const nome = titulo.innerText.trim() || "Coloridinho";
-            const blob = new Blob([editor.innerText + "\n\n" + editor2.innerText], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${nome}.txt`;
-            link.click();
-        }
-
-        function gerarPDFParaSlide() {
-            window.print();
+        editor.addEventListener('input', () => { atualizarContador(); registrarHistorico(); });
+        editor2.addEventListener('input', () => { atualizarContador(); registrarHistorico(); });
+        titulo.addEventListener('input', () => { registrarHistorico(); });
+        
+        function salvarAutomaticamente() {
+            statusSalvo.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo`;
+            lucide.createIcons();
         }
     </script>
 </body>

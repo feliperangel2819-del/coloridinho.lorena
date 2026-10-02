@@ -185,11 +185,23 @@
                     <option value="Georgia, serif">Georgia</option>
                 </select>
 
-                <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-xl px-2 py-1.5 text-xs font-semibold cursor-pointer">
+                <select id="sizeSelector" onchange="mudarTamanho(this.value)" class="bg-white border border-pink-200 rounded-xl px-2 py-1.5 text-xs font-semibold cursor-pointer">
+                    <option value="10px">10</option>
+                    <option value="12px">12</option>
                     <option value="14px">14</option>
+                    <option value="16px">16</option>
                     <option value="18px">18</option>
+                    <option value="20px">20</option>
+                    <option value="22px">22</option>
                     <option value="24px" selected>24</option>
+                    <option value="26px">26</option>
+                    <option value="28px">28</option>
+                    <option value="30px">30</option>
                     <option value="32px">32</option>
+                    <option value="34px">34</option>
+                    <option value="36px">36</option>
+                    <option value="38px">38</option>
+                    <option value="40px">40</option>
                 </select>
 
                 <div class="flex items-center gap-1">
@@ -502,14 +514,18 @@
             const fonte = document.getElementById('fontSelector').value;
             document.execCommand('fontName', false, fonte);
         }
-        function mudarTamanho() {
-            const tam = document.getElementById('sizeSelector').value;
-            let val = '3';
-            if(tam === '14px') val = '2';
-            if(tam === '18px') val = '4';
-            if(tam === '24px') val = '6';
-            if(tam === '32px') val = '7';
-            document.execCommand('fontSize', false, val);
+        
+        function mudarTamanho(tamanhoPx) {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+            const range = selection.getRangeAt(0);
+            if (range.collapsed) return; // Se não houver texto selecionado, não faz nada
+
+            const span = document.createElement('span');
+            span.style.fontSize = tamanhoPx;
+            span.appendChild(range.extractContents());
+            range.insertNode(span);
+            salvarEstado();
         }
 
         function limparFolha() {

@@ -150,7 +150,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
                 <div class="flex items-center gap-3">
                     <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs shrink-0 text-xl flex items-center justify-center">
-                        ❤️
+                        ❤️️
                     </div>
                     <div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs md:text-sm text-pink-600 font-bold uppercase tracking-wider mb-1">
@@ -173,8 +173,8 @@
             <!-- Barra de Ferramentas de Texto -->
             <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 mb-3 flex flex-wrap items-center gap-2 shadow-xs no-print relative z-30">
                 <div class="flex items-center gap-1 bg-white border border-pink-200 px-2 py-1 rounded-xl">
-                    <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs cursor-pointer">↩ Desfazer</button>
-                    <button onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs cursor-pointer">↪ Refazer</button>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs cursor-pointer">↩ Desfazer</button>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs cursor-pointer">↪ Refazer</button>
                 </div>
                 
                 <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-xl px-2 py-1.5 text-xs font-semibold cursor-pointer">
@@ -192,9 +192,9 @@
                 </select>
 
                 <div class="flex items-center gap-1">
-                    <button onclick="formatar('bold')" class="hover:bg-pink-200 font-bold text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">N</button>
-                    <button onclick="formatar('italic')" class="hover:bg-pink-200 italic text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">I</button>
-                    <button onclick="formatar('underline')" class="hover:bg-pink-200 underline text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">S</button>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="formatar('bold')" class="hover:bg-pink-200 font-bold text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">N</button>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="formatar('italic')" class="hover:bg-pink-200 italic text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">I</button>
+                    <button type="button" onmousedown="event.preventDefault()" onclick="formatar('underline')" class="hover:bg-pink-200 underline text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">S</button>
                 </div>
 
                 <div class="flex items-center gap-2 bg-white px-2.5 py-1 rounded-xl border border-pink-200">
@@ -207,18 +207,18 @@
             <div class="bg-white/90 border border-pink-200 rounded-2xl p-2.5 mb-3 flex items-center gap-2 overflow-x-auto shadow-xs no-print relative z-30">
                 <span class="text-xs font-bold text-pink-700 uppercase tracking-wider shrink-0 px-2">Atalhos:</span>
                 <div id="containerAtalhosEmojis" class="flex items-center gap-1.5 shrink-0"></div>
-                <button onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">Mais+</button>
+                <button type="button" onmousedown="event.preventDefault()" onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">Mais+</button>
             </div>
 
             <!-- Barra de Ações Especiais -->
             <div class="bg-white/70 border border-pink-200 rounded-2xl p-2.5 mb-6 flex flex-wrap items-center gap-2 shadow-xs no-print relative z-30">
-                <button onclick="adicionarPostIt()" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
+                <button type="button" onmousedown="event.preventDefault()" onclick="adicionarPostIt()" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
                     📌 Novo Post-it
                 </button>
-                <button onclick="alternarColunas()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
+                <button type="button" onmousedown="event.preventDefault()" onclick="alternarColunas()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
                     📐 Dividir em 2 Colunas
                 </button>
-                <button id="btnDesenho" onclick="alternarModoDesenho()" class="bg-white border border-pink-200 hover:bg-pink-100 text-pink-700 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
+                <button type="button" id="btnDesenho" onmousedown="event.preventDefault()" onclick="alternarModoDesenho()" class="bg-white border border-pink-200 hover:bg-pink-100 text-pink-700 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
                     ✏️ Modo Desenho & IA: Inativo
                 </button>
             </div>
@@ -433,7 +433,7 @@
             forma.innerHTML = `
                 <div class="botoes-forma">
                     <input type="color" value="${corAtual}" onchange="mudarCorForma(this, this.value); salvarEstadoGlobal();" title="Mudar Cor" class="w-6 h-6 cursor-pointer p-0 border-none bg-transparent">
-                    <button onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1.5 py-0.5 rounded text-xs font-bold cursor-pointer">🗑️</button>
+                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1.5 py-0.5 rounded text-xs font-bold cursor-pointer">🗑️</button>
                 </div>
             `;
             container.appendChild(forma);
@@ -487,8 +487,8 @@
             postit.className = 'post-it bg-yellow-200 p-4 rounded-xl shadow-md relative min-h-[120px] w-full z-30 transition-colors';
             postit.innerHTML = `
                 <div class="absolute top-2 right-2 flex items-center gap-2">
-                    <input type="color" value="#fef08a" onchange="this.closest('.post-it').style.backgroundColor = this.value; salvarEstadoGlobal();" title="Mudar Cor do Post-it" class="w-6 h-6 cursor-pointer p-0 border-none bg-transparent">
-                    <button onclick="this.closest('.post-it').remove(); salvarEstadoGlobal();" class="text-yellow-800 hover:text-red-500 font-extrabold px-1.5 cursor-pointer text-sm">✕</button>
+                    <input type="color" value="#fef08a" oninput="this.closest('.post-it').style.backgroundColor = this.value" onchange="salvarEstadoGlobal()" title="Mudar Cor do Post-it" class="w-6 h-6 cursor-pointer p-0 border-none bg-transparent">
+                    <button type="button" onclick="this.closest('.post-it').remove(); salvarEstadoGlobal();" class="text-yellow-800 hover:text-red-500 font-extrabold px-1.5 cursor-pointer text-sm">✕</button>
                 </div>
                 <div contenteditable="true" oninput="salvarEstadoGlobal()" class="w-full h-full outline-none text-sm font-semibold text-yellow-950 mt-2" data-placeholder="Escreva a nota..."></div>
             `;
@@ -512,7 +512,7 @@
             { emoji: '📚', termos: 'livro estudo escola' },
             { emoji: '✏️', termos: 'lapis escrever' },
             { emoji: '😊', termos: 'sorriso feliz' },
-            { emoji: '❤️️', termos: 'coracao amor' },
+            { emoji: '❤️', termos: 'coracao amor' },
             { emoji: '🚀', termos: 'foguete' }
         ];
 
@@ -523,6 +523,7 @@
             const atalhosIniciais = listaEmojis.slice(0, 4);
             atalhosIniciais.forEach(item => {
                 const btn = document.createElement('button');
+                btn.type = 'button';
                 btn.className = 'w-8 h-8 bg-white hover:bg-pink-100 border border-pink-200 rounded-xl text-sm flex items-center justify-center cursor-pointer transition shadow-xs';
                 btn.innerText = item.emoji;
                 btn.onclick = () => {
@@ -546,6 +547,7 @@
             grid.innerHTML = '';
             arr.forEach(item => {
                 const btn = document.createElement('button');
+                btn.type = 'button';
                 btn.className = 'h-11 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-xl text-xl flex items-center justify-center cursor-pointer';
                 btn.innerText = item.emoji;
                 btn.onclick = () => {
@@ -563,15 +565,17 @@
             renderizarGridEmojis(filtrados);
         }
 
-        // ================= FORMATAÇÃO E TAMANHO DE LETRA =================
+        // ================= FORMATAÇÃO E TAMANHO DE LETRA (BLINDADO PARA TOUCH) =================
         function formatar(cmd) {
             document.execCommand(cmd, false, null);
             salvarEstadoGlobal();
         }
+        
         function mudarCorTexto(cor) {
             document.execCommand('foreColor', false, cor);
             salvarEstadoGlobal();
         }
+        
         function mudarFonte() {
             const fonte = document.getElementById('fontSelector').value;
             document.execCommand('fontName', false, fonte);
@@ -579,26 +583,16 @@
         }
         
         function mudarTamanho(tamanhoPx) {
-            const selection = window.getSelection();
-            if (selection.rangeCount && !selection.isCollapsed) {
-                const range = selection.getRangeAt(0);
-                const span = document.createElement('span');
-                span.style.fontSize = tamanhoPx;
-                span.appendChild(range.extractContents());
-                range.insertNode(span);
-                selection.removeAllRanges();
-            } else {
-                let tamanhoMap = '3';
-                if(tamanhoPx === '28px') tamanhoMap = '5';
-                if(tamanhoPx === '32px') tamanhoMap = '6';
-                if(tamanhoPx === '36px' || tamanhoPx === '40px') tamanhoMap = '7';
-                document.execCommand('fontSize', false, tamanhoMap);
-            }
+            let tamanhoMap = '3';
+            if(tamanhoPx === '28px') tamanhoMap = '5';
+            if(tamanhoPx === '32px') tamanhoMap = '6';
+            if(tamanhoPx === '36px' || tamanhoPx === '40px') tamanhoMap = '7';
+            document.execCommand('fontSize', false, tamanhoMap);
             salvarEstadoGlobal();
         }
 
         function limparFolha() {
-            if(confirm("Tens a certeza que pretendes limpar toda a folha?")) {
+            if(confirm("Tem certeza que deseja limpar toda a folha?")) {
                 document.getElementById('editorTexto').innerHTML = '';
                 document.getElementById('editorTexto2').innerHTML = '';
                 document.getElementById('tituloColoridinho').innerText = '';

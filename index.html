@@ -184,21 +184,10 @@
                 </select>
 
                 <select id="sizeSelector" onchange="mudarTamanho(this.value)" class="bg-white border border-pink-200 rounded-xl px-2 py-1.5 text-xs font-semibold cursor-pointer">
-                    <option value="10px">10</option>
-                    <option value="12px">12</option>
-                    <option value="14px">14</option>
-                    <option value="16px">16</option>
-                    <option value="18px">18</option>
-                    <option value="20px">20</option>
-                    <option value="22px">22</option>
                     <option value="24px" selected>24</option>
-                    <option value="26px">26</option>
                     <option value="28px">28</option>
-                    <option value="30px">30</option>
                     <option value="32px">32</option>
-                    <option value="34px">34</option>
                     <option value="36px">36</option>
-                    <option value="38px">38</option>
                     <option value="40px">40</option>
                 </select>
 
@@ -275,7 +264,7 @@
             zoomLabel.innerText = `100%`;
         }
 
-        // ================= HISTÓRICO GLOBAL (MÁQUINA DO TEMPO) =================
+        // ================= HISTÓRICO GLOBAL =================
         let historicoGlobal = [];
         let indiceHistorico = -1;
         let bloqueiaSalvar = false;
@@ -341,7 +330,7 @@
 
         setTimeout(() => { salvarEstadoGlobal(); }, 200);
 
-        // ================= DESENHO & IA (FORMA INTELIGENTE) =================
+        // ================= DESENHO & IA =================
         let isDrawing = false;
         let modoDesenhoAtivo = false;
         let pontosDesenho = [];
@@ -349,6 +338,7 @@
         function redimensionarCanvas() {
             const canvas = document.getElementById('canvasDesenho');
             if(!canvas) return;
+            const ctx = canvas.getContext('2d');
             const wrapper = document.getElementById('conteudoParaPdf');
             canvas.width = wrapper.offsetWidth;
             canvas.height = wrapper.offsetHeight;
@@ -512,7 +502,7 @@
             salvarEstadoGlobal();
         }
 
-        // ================= EMOJIS (COM A PROFESSORA CORRETA) =================
+        // ================= EMOJIS =================
         const listaEmojis = [
             { emoji: '📍', termos: 'alfinete tachinha fixar map' },
             { emoji: '✅', termos: 'certo check ok verificado' },
@@ -598,33 +588,6 @@
                 range.insertNode(span);
                 selection.removeAllRanges();
             } else {
-                document.execCommand('fontSize', false, '7');
-                const fontElements = document.querySelectorAll('font[size="7"]');
-                fontElements.forEach(el => {
-                    const span = document.createElement('span');
-                    span.style.fontSize = tamanhoPx;
-                    span.innerHTML = el.innerHTML;
-                    el.parentNode.replaceChild(span, el);
-                });
-            }
-            salvarEstadoGlobal();
-        }
-
-        function limparFolha() {
-            if(confirm("Tens a certeza que pretendes limpar toda a folha?")) {
-                document.getElementById('editorTexto').innerHTML = '';
-                document.getElementById('editorTexto2').innerHTML = '';
-                document.getElementById('tituloColoridinho').innerText = '';
-                document.getElementById('postItsContainer').innerHTML = '';
-                document.getElementById('containerFormasIA').innerHTML = '';
-                const canvas = document.getElementById('canvasDesenho');
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                historicoGlobal = [];
-                indiceHistorico = -1;
-                salvarEstadoGlobal();
-            }
-        }
-    </script>
-</body>
-</html>
+                // Este trecho define o tamanho para a próxima digitação
+                document.execCommand('fontSize', false, '7'); // Usa valor base do navegador
+                const

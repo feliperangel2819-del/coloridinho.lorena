@@ -54,15 +54,7 @@
         #editorTexto, #editorTexto2, .post-it div[contenteditable] {
             word-break: break-word;
             overflow-wrap: break-word;
-            line-height: 1.4; 
         }
-        
-        /* Classes de estilo de tamanho injetadas pelo JS */
-        .font-size-24 { font-size: 24px !important; }
-        .font-size-28 { font-size: 28px !important; }
-        .font-size-32 { font-size: 32px !important; }
-        .font-size-36 { font-size: 36px !important; }
-        .font-size-40 { font-size: 40px !important; }
 
         #canvasDesenho {
             position: absolute;
@@ -191,13 +183,12 @@
                     <option value="Georgia, serif">Georgia</option>
                 </select>
 
-                <!-- Seletor de Tamanho Definitivo -->
-                <select id="sizeSelector" onchange="aplicarTamanhoForcado(this.value)" class="bg-white border border-pink-200 rounded-xl px-2 py-1.5 text-xs font-semibold cursor-pointer">
-                    <option value="24" selected>24</option>
-                    <option value="28">28</option>
-                    <option value="32">32</option>
-                    <option value="36">36</option>
-                    <option value="40">40</option>
+                <select id="sizeSelector" onchange="mudarTamanho(this.value)" class="bg-white border border-pink-200 rounded-xl px-2 py-1.5 text-xs font-semibold cursor-pointer">
+                    <option value="24px" selected>24</option>
+                    <option value="28px">28</option>
+                    <option value="32px">32</option>
+                    <option value="36px">36</option>
+                    <option value="40px">40</option>
                 </select>
 
                 <div class="flex items-center gap-1">
@@ -239,9 +230,8 @@
                 </div>
                 
                 <div id="wrapperEditor" class="flex flex-col md:flex-row gap-4 w-full flex-1">
-                    <!-- Editor Principal com tamanho padrão -->
-                    <div id="editorTexto" contenteditable="true" oninput="salvarEstadoGlobal()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px] font-size-24" data-placeholder="Escreva aqui..."></div>
-                    <div id="editorTexto2" contenteditable="true" oninput="salvarEstadoGlobal()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px] font-size-24 hidden" data-placeholder="Coluna 2..."></div>
+                    <div id="editorTexto" contenteditable="true" oninput="salvarEstadoGlobal()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px]" data-placeholder="Escreva aqui..."></div>
+                    <div id="editorTexto2" contenteditable="true" oninput="salvarEstadoGlobal()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px] hidden" data-placeholder="Coluna 2..."></div>
                 </div>
 
                 <div id="postItsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6"></div>
@@ -274,7 +264,7 @@
             zoomLabel.innerText = `100%`;
         }
 
-        // ================= HISTÓRICO GLOBAL (MÁQUINA DO TEMPO) =================
+        // ================= HISTÓRICO GLOBAL =================
         let historicoGlobal = [];
         let indiceHistorico = -1;
         let bloqueiaSalvar = false;
@@ -340,7 +330,7 @@
 
         setTimeout(() => { salvarEstadoGlobal(); }, 200);
 
-        // ================= DESENHO & IA (FORMA INTELIGENTE) =================
+        // ================= DESENHO & IA =================
         let isDrawing = false;
         let modoDesenhoAtivo = false;
         let pontosDesenho = [];
@@ -516,13 +506,13 @@
         const listaEmojis = [
             { emoji: '📍', termos: 'alfinete tachinha fixar map' },
             { emoji: '✅', termos: 'certo check ok verificado' },
-            { emoji: '👩🏽‍🏫', termos: 'professora professora negra quadro' },
+            { emoji: '👩🏽‍‍🏫', termos: 'professora professora negra quadro' },
             { emoji: '⭐', termos: 'estrela favorito brilho' },
             { emoji: '💡', termos: 'ideia lampada' },
             { emoji: '📚', termos: 'livro estudo escola' },
             { emoji: '✏️', termos: 'lapis escrever' },
             { emoji: '😊', termos: 'sorriso feliz' },
-            { emoji: '❤️', termos: 'coracao amor' },
+            { emoji: '❤️️', termos: 'coracao amor' },
             { emoji: '🚀', termos: 'foguete' }
         ];
 
@@ -573,9 +563,55 @@
             renderizarGridEmojis(filtrados);
         }
 
-        // ================= FORMATAÇÃO E TAMANHO DE LETRA DEFINITIVO =================
+        // ================= FORMATAÇÃO E TAMANHO DE LETRA =================
         function formatar(cmd) {
             document.execCommand(cmd, false, null);
             salvarEstadoGlobal();
         }
-        function
+        function mudarCorTexto(cor) {
+            document.execCommand('foreColor', false, cor);
+            salvarEstadoGlobal();
+        }
+        function mudarFonte() {
+            const fonte = document.getElementById('fontSelector').value;
+            document.execCommand('fontName', false, fonte);
+            salvarEstadoGlobal();
+        }
+        
+        function mudarTamanho(tamanhoPx) {
+            const selection = window.getSelection();
+            if (selection.rangeCount && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.fontSize = tamanhoPx;
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+                selection.removeAllRanges();
+            } else {
+                let tamanhoMap = '3';
+                if(tamanhoPx === '28px') tamanhoMap = '5';
+                if(tamanhoPx === '32px') tamanhoMap = '6';
+                if(tamanhoPx === '36px' || tamanhoPx === '40px') tamanhoMap = '7';
+                document.execCommand('fontSize', false, tamanhoMap);
+            }
+            salvarEstadoGlobal();
+        }
+
+        function limparFolha() {
+            if(confirm("Tens a certeza que pretendes limpar toda a folha?")) {
+                document.getElementById('editorTexto').innerHTML = '';
+                document.getElementById('editorTexto2').innerHTML = '';
+                document.getElementById('tituloColoridinho').innerText = '';
+                document.getElementById('postItsContainer').innerHTML = '';
+                document.getElementById('containerFormasIA').innerHTML = '';
+                const canvas = document.getElementById('canvasDesenho');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                historicoGlobal = [];
+                indiceHistorico = -1;
+                salvarEstadoGlobal();
+            }
+        }
+    </script>
+</body>
+</html>

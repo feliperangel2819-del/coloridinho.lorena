@@ -150,7 +150,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
                 <div class="flex items-center gap-3">
                     <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs shrink-0 text-xl flex items-center justify-center">
-                        ❤️️
+                        ❤️
                     </div>
                     <div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs md:text-sm text-pink-600 font-bold uppercase tracking-wider mb-1">
@@ -199,7 +199,7 @@
 
                 <div class="flex items-center gap-2 bg-white px-2.5 py-1 rounded-xl border border-pink-200">
                     <span class="text-xs font-bold text-slate-700">Cor Texto</span>
-                    <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#881337" class="w-6 h-6 cursor-pointer p-0 border-none bg-transparent">
+                    <input type="color" id="textColorPicker" oninput="mudarCorTexto(this.value)" onchange="salvarEstadoGlobal()" value="#881337" class="w-6 h-6 cursor-pointer p-0 border-none bg-transparent">
                 </div>
             </div>
 
@@ -565,14 +565,24 @@
             renderizarGridEmojis(filtrados);
         }
 
-        // ================= FORMATAÇÃO E TAMANHO DE LETRA (BLINDADO PARA TOUCH) =================
+        // ================= FORMATAÇÃO E COR DO TEXTO =================
         function formatar(cmd) {
             document.execCommand(cmd, false, null);
             salvarEstadoGlobal();
         }
         
         function mudarCorTexto(cor) {
-            document.execCommand('foreColor', false, cor);
+            const selection = window.getSelection();
+            if (selection.rangeCount && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.color = cor;
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+                selection.removeAllRanges();
+            } else {
+                document.execCommand('foreColor', false, cor);
+            }
             salvarEstadoGlobal();
         }
         

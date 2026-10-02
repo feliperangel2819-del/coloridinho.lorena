@@ -12,9 +12,8 @@
     <style>
         body { 
             font-family: 'Quicksand', sans-serif; 
-            position: relative;
-            overflow-x: hidden;
             background-color: #FCE8ED;
+            overflow-x: hidden;
         }
         
         .side-text-left, .side-text-right {
@@ -34,7 +33,7 @@
         .side-text-left { left: 15px; }
         .side-text-right { right: 15px; transform: translateY(-50%) rotate(180deg); }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
             .side-text-left, .side-text-right { display: none; }
         }
 
@@ -51,30 +50,20 @@
             display: block;
         }
 
-        .post-it {
-            box-shadow: 4px 4px 15px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
-        }
-        .post-it:hover {
-            transform: scale(1.01);
-        }
-
+        /* Canvas de Desenho Corrigido */
         #canvasDesenho {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            pointer-events: none; 
             z-index: 20;
         }
         #canvasDesenho.ativo {
             pointer-events: auto;
+            touch-action: none;
             cursor: crosshair;
-        }
-        #canvasDesenho.modo-selecao {
-            pointer-events: auto;
-            cursor: pointer;
         }
 
         @media print {
@@ -85,211 +74,139 @@
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-700 flex flex-col items-center justify-between p-3 md:p-8" id="corpoGeral">
+<body class="min-h-screen text-slate-700 flex flex-col items-center justify-between p-3 md:p-8">
 
     <div class="side-text-left">Boa aula de português</div>
     <div class="side-text-right">Boa aula de português</div>
 
+    <!-- Modal de Emojis -->
+    <div id="modalEmojis" class="hidden fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl border border-pink-200 w-full max-w-lg p-5 flex flex-col max-h-[80vh]">
+            <div class="flex justify-between items-center mb-3 border-b border-pink-100 pb-2">
+                <h3 class="font-extrabold text-pink-700 text-lg flex items-center gap-2">✨ Escolher Emoji</h3>
+                <button onclick="fecharModalEmojis()" class="text-slate-400 hover:text-slate-600 font-bold text-lg px-2 cursor-pointer">✕</button>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="inputBuscaEmoji" oninput="filtrarEmojis(this.value)" placeholder="Pesquisar emoji (ex: estrela, coracao, livro...)" class="w-full bg-pink-50/60 border border-pink-200 rounded-xl px-3 py-2 text-sm text-slate-700 focus:outline-none font-medium">
+            </div>
+            <div id="listaGridEmojis" class="grid grid-cols-6 sm:grid-cols-8 gap-2 overflow-y-auto p-1 flex-1"></div>
+        </div>
+    </div>
+
     <!-- Barra de Zoom Flutuante -->
     <div class="fixed bottom-4 right-4 bg-white/90 backdrop-blur-md border border-pink-200 shadow-xl rounded-2xl p-2 z-50 flex items-center gap-2 no-print">
-        <button onclick="ajustarZoom(-0.1)" class="w-8 h-8 bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold rounded-xl flex items-center justify-center cursor-pointer transition" title="Diminuir Zoom">🔍-</button>
+        <button onclick="ajustarZoom(-0.1)" class="w-8 h-8 bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold rounded-xl flex items-center justify-center cursor-pointer">🔍-</button>
         <span id="zoomLabel" class="text-xs font-bold text-slate-700 w-12 text-center">100%</span>
-        <button onclick="ajustarZoom(0.1)" class="w-8 h-8 bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold rounded-xl flex items-center justify-center cursor-pointer transition" title="Aumentar Zoom">🔍+</button>
+        <button onclick="ajustarZoom(0.1)" class="w-8 h-8 bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold rounded-xl flex items-center justify-center cursor-pointer">🔍+</button>
         <div class="h-4 w-[1px] bg-pink-200 mx-1"></div>
         <button onclick="resetarZoom()" class="text-xs font-bold text-pink-600 hover:text-pink-800 px-2 py-1 cursor-pointer">Reset</button>
     </div>
 
-    <div id="viewportZoom" class="w-full flex justify-center main-container-zoom">
+    <div id="viewportZoom" class="w-full flex justify-center main-container-zoom z-10">
         <div id="conteudoParaPdf" class="main-content w-full max-w-6xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-pink-200 p-4 md:p-10 relative">
             
             <canvas id="canvasDesenho"></canvas>
 
-            <!-- Painel de Manipulação de Forma Selecionada -->
-            <div id="painelFormaSelecionada" class="hidden absolute top-4 right-4 bg-white/95 border-2 border-pink-400 shadow-xl rounded-2xl p-3 z-30 flex items-center gap-3 no-print">
-                <span class="text-xs font-extrabold text-pink-700">📐 Forma Selecionada</span>
-                <div class="flex items-center gap-1">
-                    <button onclick="redimensionarFormaSelecionada(-15, 0)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded-lg font-bold" title="Estreitar">◀ ▶</button>
-                    <button onclick="redimensionarFormaSelecionada(15, 0)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded-lg font-bold" title="Alargar">▶ ◀</button>
-                    <button onclick="redimensionarFormaSelecionada(0, 15)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded-lg font-bold" title="Aumentar Altura">▲ ▼</button>
-                    <button onclick="redimensionarFormaSelecionada(0, -15)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs px-2 py-1 rounded-lg font-bold" title="Diminuir Altura">▼ ▲</button>
-                </div>
-                <button onclick="excluirFormaSelecionada()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer">
-                    🗑️ Excluir
-                </button>
-                <button onclick="desselecionarForma()" class="text-slate-400 hover:text-slate-600 font-bold text-sm px-1">✕</button>
-            </div>
-
             <!-- Cabeçalho -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 border-b border-pink-100 pb-4">
                 <div class="flex items-center gap-3">
                     <div class="bg-pink-100 text-pink-700 p-3 rounded-2xl shadow-xs shrink-0">
-                        <i data-lucide="heart" class="w-6 h-6 md:w-7 md:h-7 fill-pink-500 text-pink-500"></i>
+                        <i data-lucide="heart" class="w-6 h-6 fill-pink-500 text-pink-500"></i>
                     </div>
                     <div>
                         <div class="flex flex-wrap items-center gap-1.5 text-xs md:text-sm text-pink-600 font-bold uppercase tracking-wider mb-1">
                             <span>✨ Criado com carinho para</span>
-                            <span class="hidden sm:inline">•</span>
-                            <span class="bg-pink-100 px-2.5 py-0.5 rounded-full text-pink-700 font-extrabold text-xs md:text-sm">Professora Lorena</span>
+                            <span class="bg-pink-100 px-2.5 py-0.5 rounded-full text-pink-700 font-extrabold text-xs">Professora Lorena</span>
                         </div>
                         <h1 class="text-xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
-                            Coloridinho da Prof <i data-lucide="sparkles" class="w-5 h-5 md:w-6 md:h-6 text-pink-500 inline-block"></i>
+                            Coloridinho da Prof <i data-lucide="sparkles" class="w-5 h-5 text-pink-500 inline-block"></i>
                         </h1>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3 w-full md:w-auto justify-end flex-wrap">
-                    <!-- BOTÃO DE BAIXAR O APK ADICIONADO AQUI COM SEGURANÇA -->
-                    <a href="./app.apk" download class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold px-3 py-2 rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                <div class="flex items-center gap-3 justify-end flex-wrap">
+                    <a href="./app.apk" download class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold px-3 py-2 rounded-xl shadow-md transition cursor-pointer flex items-center gap-1.5">
                         📲 Baixar App da Prof
                     </a>
-                    <span id="statusSalvo" class="text-[11px] md:text-xs font-bold text-pink-600 bg-pink-50 px-3 py-1.5 rounded-full border border-pink-200 flex items-center gap-1">
-                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo automaticamente
-                    </span>
                 </div>
             </div>
 
-            <!-- Barra de Ferramentas -->
-            <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 md:p-4 mb-6 flex flex-wrap items-center gap-2.5 md:gap-4 shadow-xs no-print relative z-30">
+            <!-- Barra de Ferramentas de Texto -->
+            <div class="bg-[#FFF0F3] border border-pink-200 rounded-2xl p-3 mb-3 flex flex-wrap items-center gap-2 shadow-xs no-print relative z-30">
+                <div class="flex items-center gap-1 bg-white border border-pink-200 px-2 py-1 rounded-xl">
+                    <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs cursor-pointer">↩ Desfazer</button>
+                    <button onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2 py-1 rounded-lg text-xs cursor-pointer">↪ Refazer</button>
+                </div>
                 
-                <div class="flex items-center gap-1.5 bg-white border border-pink-200 px-2 py-1 rounded-xl shadow-xs">
-                    <button onclick="desfazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Desfazer">
-                        ↩ Desfazer
-                    </button>
-                    <div class="h-4 w-[1px] bg-pink-200"></div>
-                    <button onclick="refazerAcao()" class="hover:bg-pink-100 text-pink-700 font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm transition flex items-center gap-1 cursor-pointer" title="Refazer">
-                        ↪ Refazer
-                    </button>
+                <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-xl px-2 py-1.5 text-xs font-semibold cursor-pointer">
+                    <option value="Quicksand, sans-serif">Padrão</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="Georgia, serif">Georgia</option>
+                </select>
+
+                <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-xl px-2 py-1.5 text-xs font-semibold cursor-pointer">
+                    <option value="14px">14</option>
+                    <option value="18px">18</option>
+                    <option value="24px" selected>24</option>
+                    <option value="32px">32</option>
+                </select>
+
+                <div class="flex items-center gap-1">
+                    <button onclick="formatar('bold')" class="hover:bg-pink-200 font-bold text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">N</button>
+                    <button onclick="formatar('italic')" class="hover:bg-pink-200 italic text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">I</button>
+                    <button onclick="formatar('underline')" class="hover:bg-pink-200 underline text-xs px-2.5 py-1 bg-white border border-pink-200 rounded-lg cursor-pointer">S</button>
                 </div>
 
-                <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
-
-                <!-- Fonte -->
-                <div class="flex items-center gap-1.5">
-                    <span class="text-xs md:text-sm font-bold text-slate-700">Fonte</span>
-                    <select id="fontSelector" onchange="mudarFonte()" class="bg-white border border-pink-200 rounded-xl px-2.5 py-1.5 text-xs md:text-sm text-slate-700 focus:outline-none font-semibold">
-                        <option value="Quicksand, sans-serif">Padrão</option>
-                        <option value="Arial, sans-serif">Arial</option>
-                        <option value="Georgia, serif">Georgia</option>
-                        <option value="'Times New Roman', serif">Times New Roman</option>
-                        <option value="'Courier New', monospace">Courier New</option>
-                    </select>
+                <div class="flex items-center gap-1 bg-white px-2 py-1 rounded-xl border border-pink-200">
+                    <span class="text-xs font-bold text-slate-700">Cor Texto</span>
+                    <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#881337" class="w-6 h-6 cursor-pointer p-0 border-none bg-transparent">
                 </div>
+            </div>
 
-                <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
+            <!-- Barra de Atalhos de Emojis -->
+            <div class="bg-white/80 border border-pink-200 rounded-2xl p-2.5 mb-3 flex items-center gap-2 overflow-x-auto shadow-xs no-print relative z-30">
+                <span class="text-xs font-bold text-pink-700 uppercase tracking-wider shrink-0 px-2">Atalhos:</span>
+                <div id="containerAtalhosEmojis" class="flex items-center gap-1.5 shrink-0"></div>
+                <button onclick="abrirModalEmojis()" class="bg-pink-100 hover:bg-pink-200 text-pink-700 font-extrabold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">Mais+</button>
+            </div>
 
-                <!-- Tamanho -->
-                <div class="flex items-center gap-1.5">
-                    <span class="text-xs md:text-sm font-bold text-slate-700">Tam</span>
-                    <select id="sizeSelector" onchange="mudarTamanho()" class="bg-white border border-pink-200 rounded-xl px-2.5 py-1.5 text-xs md:text-sm text-slate-700 focus:outline-none font-semibold">
-                        <option value="14px">14</option>
-                        <option value="16px" selected>16</option>
-                        <option value="18px">18</option>
-                        <option value="20px">20</option>
-                        <option value="24px">24</option>
-                        <option value="32px">32</option>
-                    </select>
-                </div>
-
-                <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
-
-                <!-- Formatação -->
-                <div class="flex items-center gap-1.5">
-                    <button onclick="formatar('bold')" class="hover:bg-pink-200 rounded-xl transition font-bold text-xs md:text-sm px-3 py-1.5 bg-white border border-pink-200 cursor-pointer">N</button>
-                    <button onclick="formatar('italic')" class="hover:bg-pink-200 rounded-xl transition italic text-xs md:text-sm px-3 py-1.5 bg-white border border-pink-200 cursor-pointer">I</button>
-                    <button onclick="formatar('underline')" class="hover:bg-pink-200 rounded-xl transition underline text-xs md:text-sm px-3 py-1.5 bg-white border border-pink-200 cursor-pointer">S</button>
-                </div>
-
-                <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
-
-                <!-- Cor do Texto -->
-                <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-bold text-slate-700">Texto</span>
-                    <input type="color" id="textColorPicker" onchange="mudarCorTexto(this.value)" value="#334155" class="w-8 h-8 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent">
-                </div>
-
-                <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
-
-                <!-- Cor do Desenho -->
-                <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-bold text-slate-700">Cor Desenho</span>
-                    <input type="color" id="corDesenhoPicker" onchange="mudarCorDesenho(this.value)" value="#db2777" class="w-8 h-8 rounded-lg border border-pink-200 cursor-pointer p-0 bg-transparent" title="Escolher cor">
-                </div>
-
-                <div class="hidden sm:block h-5 w-[1px] bg-pink-200"></div>
-
-                <button onclick="adicionarPostIt(); registrarHistorico();" class="bg-amber-200 hover:bg-amber-300 text-amber-900 border border-amber-300 font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-                    <span>📌 Novo Post-it</span>
+            <!-- Barra de Ações Especiais -->
+            <div class="bg-white/60 border border-pink-200 rounded-2xl p-2.5 mb-6 flex flex-wrap items-center gap-2 shadow-xs no-print relative z-30">
+                <button onclick="adicionarPostIt()" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
+                    📌 Novo Post-it
                 </button>
-
-                <button onclick="alternarLayoutColunas()" id="btnLayout" class="bg-pink-100 hover:bg-pink-200 text-pink-700 border border-pink-200 font-bold px-3 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-                    <span>📐 Dividir em 2 Colunas</span>
+                <button onclick="alternarColunas()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
+                    📐 Dividir em 2 Colunas
                 </button>
-
-                <button onclick="alternarModoDesenhoIA()" id="btnModoDesenho" class="bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-                    <i data-lucide="pencil" class="w-4 h-4 text-pink-600"></i>
-                    <span>Modo Desenho: <strong id="statusDesenhoLabel" class="text-red-500">Inativo</strong></span>
+                <button id="btnDesenho" onclick="alternarModoDesenho()" class="bg-white border border-pink-200 hover:bg-pink-100 text-pink-700 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
+                    ✏️ Modo Desenho: Inativo
                 </button>
-
-                <button onclick="alternarModoSelecao()" id="btnModoSelecao" class="bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-                    <i data-lucide="mouse-pointer" class="w-4 h-4 text-pink-600"></i>
-                    <span>Selecionar Formas: <strong id="statusSelecaoLabel" class="text-slate-500">Desligado</strong></span>
+                <button onclick="adicionarForma()" class="bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
+                    ⭐ Inserir Forma
                 </button>
-
             </div>
 
             <!-- Folha de Escrita -->
             <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-3xl p-4 md:p-10 min-h-[500px] shadow-md relative flex flex-col">
-                
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b border-pink-300/60 pb-3">
-                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 outline-none w-full sm:w-auto flex-1" 
-                        contenteditable="true" 
-                        id="tituloColoridinho" 
-                        data-placeholder="Título da Aula..."></h2>
-                
-                    <div id="dataHoraAtual" class="text-xs md:text-sm font-bold text-pink-800 bg-white/60 px-3 py-1.5 rounded-xl border border-pink-300/40 shrink-0">
-                        --/--/-- às --:--
-                    </div>
+                <div class="flex justify-between mb-4 border-b border-pink-300/60 pb-3">
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 outline-none w-full" contenteditable="true" id="tituloColoridinho" data-placeholder="Título da Aula..."></h2>
                 </div>
                 
-                <!-- Editor Dinâmico -->
                 <div id="wrapperEditor" class="flex flex-col md:flex-row gap-4 w-full flex-1">
-                    <div id="editorTexto" 
-                         contenteditable="true" 
-                         class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[400px] bg-[#FFE4E9]/80 p-4 md:p-6 rounded-2xl border border-pink-300/40 text-sm md:text-base shadow-inner" 
-                         data-placeholder="Clique aqui para escrever...">
-                    </div>
-                    
-                    <div id="editorTexto2" 
-                         contenteditable="true" 
-                         class="flex-1 outline-none text-slate-900 leading-relaxed min-h-[400px] bg-[#FFE4E9]/80 p-4 md:p-6 rounded-2xl border border-pink-300/40 text-sm md:text-base shadow-inner hidden" 
-                         data-placeholder="Coluna 2...">
-                    </div>
+                    <div id="editorTexto" contenteditable="true" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/80 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px]" data-placeholder="Escreva aqui..."></div>
+                    <div id="editorTexto2" contenteditable="true" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/80 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px] hidden" data-placeholder="Coluna 2..."></div>
                 </div>
 
-                <div id="postItsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6"></div>
-
-                <div class="flex justify-between items-center text-xs md:text-sm font-bold text-pink-900 mt-6 pt-3 border-t border-pink-300/50">
-                    <span id="contadorPalavras">0 palavras • 0 caracteres</span>
-                    <span class="text-[11px] text-pink-700 bg-white/50 px-3 py-1 rounded-lg">Dica: Use Ctrl + Scroll para zoom!</span>
-                </div>
+                <div id="postItsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6"></div>
             </div>
 
         </div>
     </div>
 
     <!-- Barra de Ações Inferior -->
-    <div class="main-content grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6 no-print w-full max-w-6xl">
-        <button onclick="gerarPDFParaSlide()" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-sm md:text-base font-bold py-3.5 px-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
-            <i data-lucide="file-down" class="w-5 h-5"></i> Salvar como PDF
-        </button>
-
-        <button onclick="baixarTxt()" class="w-full bg-white hover:bg-pink-50 text-slate-700 border-2 border-pink-300 text-sm md:text-base font-bold py-3.5 px-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-            <i data-lucide="download" class="w-5 h-5 text-pink-600"></i> Baixar .txt
-        </button>
-
-        <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 text-sm md:text-base font-bold py-3.5 px-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-            <i data-lucide="trash-2" class="w-5 h-5"></i> Limpar folha
-        </button>
+    <div class="main-content grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 no-print w-full max-w-6xl z-10">
+        <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition cursor-pointer">Salvar como PDF</button>
+        <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer">Limpar folha</button>
     </div>
 
     <script>
@@ -301,222 +218,220 @@
 
         function ajustarZoom(delta) {
             zoomAtual = Math.min(Math.max(0.5, zoomAtual + delta), 2.0);
-            aplicarZoom();
-        }
-        function resetarZoom() {
-            zoomAtual = 1.0;
-            aplicarZoom();
-        }
-        function aplicarZoom() {
             viewportZoom.style.transform = `scale(${zoomAtual})`;
             zoomLabel.innerText = `${Math.round(zoomAtual * 100)}%`;
         }
-
-        window.addEventListener('wheel', (e) => {
-            if (e.ctrlKey) {
-                e.preventDefault();
-                if (e.deltaY < 0) ajustarZoom(0.1);
-                else ajustarZoom(-0.1);
-            }
-        }, { passive: false });
-
-        const editor = document.getElementById('editorTexto');
-        const editor2 = document.getElementById('editorTexto2');
-        const titulo = document.getElementById('tituloColoridinho');
-        const contador = document.getElementById('contadorPalavras');
-        const statusSalvo = document.getElementById('statusSalvo');
-        const elementoDataHora = document.getElementById('dataHoraAtual');
-        const postItsContainer = document.getElementById('postItsContainer');
-
-        function atualizarDataHora() {
-            const agora = new Date();
-            const dia = String(agora.getDate()).padStart(2, '0');
-            const mes = String(agora.getMonth() + 1).padStart(2, '0');
-            const ano = String(agora.getFullYear()).slice(-2);
-            const hora = String(agora.getHours()).padStart(2, '0');
-            const minuto = String(agora.getMinutes()).padStart(2, '0');
-            elementoDataHora.innerText = `${dia}/${mes}/${ano} às ${hora}:${minuto}`;
+        function resetarZoom() {
+            zoomAtual = 1.0;
+            viewportZoom.style.transform = `scale(1)`;
+            zoomLabel.innerText = `100%`;
         }
-        atualizarDataHora();
-        setInterval(atualizarDataHora, 30000);
 
-        let pilhaHistorico = [];
-        let indiceHistorico = -1;
-        let bloquearRegistroHistorico = false;
+        // ================= DESENHO =================
+        const canvas = document.getElementById('canvasDesenho');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let modoDesenhoAtivo = false;
+        
+        function redimensionarCanvas() {
+            const wrapper = document.getElementById('conteudoParaPdf');
+            canvas.width = wrapper.offsetWidth;
+            canvas.height = wrapper.offsetHeight;
+        }
+        window.addEventListener('resize', redimensionarCanvas);
+        setTimeout(redimensionarCanvas, 300);
 
-        function capturarEstadoAtual() {
-            const postItsData = [];
-            document.querySelectorAll('.post-it').forEach(card => {
-                const html = card.querySelector('[contenteditable]').innerHTML;
-                const classes = card.className;
-                let bg = 'bg-amber-100', border = 'border-amber-300', text = 'text-amber-900';
-                if (classes.includes('pink')) { bg = 'bg-pink-100'; border = 'border-pink-300'; text = 'text-pink-900'; }
-                if (classes.includes('sky')) { bg = 'bg-sky-100'; border = 'border-sky-300'; text = 'text-sky-900'; }
-                if (classes.includes('emerald')) { bg = 'bg-emerald-100'; border = 'border-emerald-300'; text = 'text-emerald-900'; }
-                postItsData.push({ html, bg, border, text });
-            });
-
+        function obterPosicao(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
             return {
-                ed1: editor.innerHTML,
-                ed2: editor2.innerHTML,
-                tit: titulo.innerText,
-                colunas: !editor2.classList.contains('hidden'),
-                postIts: postItsData,
-                formas: JSON.parse(JSON.stringify(formasSalvas))
+                x: (clientX - rect.left) / zoomAtual,
+                y: (clientY - rect.top) / zoomAtual
             };
         }
 
-        function registrarHistorico() {
-            if (bloquearRegistroHistorico) return;
-            const estado = capturarEstadoAtual();
-            
-            if (indiceHistorico < pilhaHistorico.length - 1) {
-                pilhaHistorico = pilhaHistorico.slice(0, indiceHistorico + 1);
-            }
-            
-            if (pilhaHistorico.length > 0) {
-                const ultimoEstado = pilhaHistorico[pilhaHistorico.length - 1];
-                if (JSON.stringify(ultimoEstado) === JSON.stringify(estado)) return;
-            }
-
-            pilhaHistorico.push(estado);
-            if (pilhaHistorico.length > 30) {
-                pilhaHistorico.shift();
-            } else {
-                indiceHistorico++;
-            }
-            salvarAutomaticamente();
+        function iniciarDesenho(e) {
+            if (!modoDesenhoAtivo) return;
+            isDrawing = true;
+            const pos = obterPosicao(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            ctx.strokeStyle = document.getElementById('textColorPicker').value;
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
         }
 
-        function restaurarEstado(estado) {
-            bloquearRegistroHistorico = true;
-            editor.innerHTML = estado.ed1;
-            editor2.innerHTML = estado.ed2;
-            titulo.innerText = estado.tit;
-            
-            if (estado.colunas) {
-                editor2.classList.remove('hidden');
-                document.getElementById('btnLayout').innerHTML = `<span>📐 Coluna Única</span>`;
-                colunasAtivas = true;
-            } else {
-                editor2.classList.add('hidden');
-                document.getElementById('btnLayout').innerHTML = `<span>📐 Dividir em 2 Colunas</span>`;
-                colunasAtivas = false;
-            }
-
-            postItsContainer.innerHTML = '';
-            estado.postIts.forEach(p => adicionarPostIt(p.html, p.bg, p.border, p.text, true));
-
-            formasSalvas = JSON.parse(JSON.stringify(estado.formas));
-            formaSelecionadaIndex = null;
-            document.getElementById('painelFormaSelecionada').classList.add('hidden');
-            redesenharHistorico();
-            ajustarTamanhoCanvas();
-            atualizarContador();
-
-            setTimeout(() => { bloquearRegistroHistorico = false; }, 50);
-            salvarAutomaticamente();
+        function desenhar(e) {
+            if (!isDrawing || !modoDesenhoAtivo) return;
+            e.preventDefault();
+            const pos = obterPosicao(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
         }
 
-        function desfazerAcao() {
-            if (indiceHistorico > 0) {
-                indiceHistorico--;
-                restaurarEstado(pilhaHistorico[indiceHistorico]);
-            }
+        function pararDesenho() {
+            isDrawing = false;
+            ctx.closePath();
         }
 
-        function refazerAcao() {
-            if (indiceHistorico < pilhaHistorico.length - 1) {
-                indiceHistorico++;
-                restaurarEstado(pilhaHistorico[indiceHistorico]);
-            }
-        }
+        canvas.addEventListener('mousedown', iniciarDesenho);
+        canvas.addEventListener('mousemove', desenhar);
+        canvas.addEventListener('mouseup', pararDesenho);
+        canvas.addEventListener('mouseout', pararDesenho);
+        canvas.addEventListener('touchstart', iniciarDesenho, {passive: false});
+        canvas.addEventListener('touchmove', desenhar, {passive: false});
+        canvas.addEventListener('touchend', pararDesenho);
 
-        let modoDesenhoAtivo = false;
-        let modoSelecaoAtivo = false;
-        const canvas = document.getElementById('canvasDesenho');
-        const ctx = canvas.getContext('2d');
-        let desenhando = false;
-        let pontosRascunho = [];
-        let corAtualDesenho = "#db2777";
-        let formasSalvas = [];
-        let formaSelecionadaIndex = null;
-
-        function mudarCorDesenho(novaCor) {
-            corAtualDesenho = novaCor;
-        }
-
-        function atualizarEstadosBotoesCanvas() {
-            const statusDesenhoLabel = document.getElementById('statusDesenhoLabel');
-            const btnDesenho = document.getElementById('btnModoDesenho');
-            const statusSelecaoLabel = document.getElementById('statusSelecaoLabel');
-            const btnSelecao = document.getElementById('btnModoSelecao');
-
-            if (modoDesenhoAtivo) {
-                canvas.classList.add('ativo');
-                canvas.classList.remove('modo-selecao');
-                statusDesenhoLabel.innerText = "Ativo";
-                statusDesenhoLabel.className = "text-emerald-600 font-extrabold";
-                btnDesenho.className = "bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-2 border-emerald-400 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs";
-            } else {
-                statusDesenhoLabel.innerText = "Inativo";
-                statusDesenhoLabel.className = "text-red-500 font-extrabold";
-                btnDesenho.className = "bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs";
-            }
-
-            if (modoSelecaoAtivo) {
-                canvas.classList.add('modo-selecao');
-                canvas.classList.remove('ativo');
-                statusSelecaoLabel.innerText = "Ligado";
-                statusSelecaoLabel.className = "text-blue-600 font-extrabold";
-                btnSelecao.className = "bg-blue-100 hover:bg-blue-200 text-blue-800 border-2 border-blue-400 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs";
-            } else {
-                statusSelecaoLabel.innerText = "Desligado";
-                statusSelecaoLabel.className = "text-slate-500 font-extrabold";
-                btnSelecao.className = "bg-white hover:bg-pink-100 text-pink-700 border-2 border-pink-300 font-bold px-3.5 py-1.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 cursor-pointer shadow-xs";
-            }
-
-            if (!modoDesenhoAtivo && !modoSelecaoAtivo) {
-                canvas.classList.remove('ativo', 'modo-selecao');
-                canvas.style.pointerEvents = 'none';
-            } else {
-                canvas.style.pointerEvents = 'auto';
-            }
-        }
-
-        function alternarModoDesenhoIA() {
+        function alternarModoDesenho() {
+            const btn = document.getElementById('btnDesenho');
             modoDesenhoAtivo = !modoDesenhoAtivo;
-            if (modoDesenhoAtivo) modoSelecaoAtivo = false;
-            atualizarEstadosBotoesCanvas();
+            if(modoDesenhoAtivo) {
+                canvas.classList.add('ativo');
+                btn.classList.add('bg-pink-200');
+                btn.innerText = '✏️ Modo Desenho: Ativo';
+                redimensionarCanvas();
+            } else {
+                canvas.classList.remove('ativo');
+                btn.classList.remove('bg-pink-200');
+                btn.innerText = '✏️ Modo Desenho: Inativo';
+            }
         }
 
-        function alternarModoSelecao() {
-            modoSelecaoAtivo = !modoSelecaoAtivo;
-            if (modoSelecaoAtivo) modoDesenhoAtivo = false;
-            atualizarEstadosBotoesCanvas();
+        // ================= FUNÇÕES DOS BOTÕES =================
+        function adicionarPostIt() {
+            const container = document.getElementById('postItsContainer');
+            const postit = document.createElement('div');
+            postit.className = 'post-it bg-yellow-200 p-4 rounded-xl shadow-md relative min-h-[120px] w-full z-30';
+            postit.innerHTML = `
+                <button onclick="this.parentElement.remove()" class="absolute top-1 right-2 text-yellow-700 hover:text-red-500 font-extrabold px-1 cursor-pointer">✕</button>
+                <div contenteditable="true" class="w-full h-full outline-none text-sm font-semibold text-yellow-900 mt-2" data-placeholder="Escreva a nota..."></div>
+            `;
+            container.appendChild(postit);
         }
 
-        function ajustarTamanhoCanvas() {
-            const container = document.getElementById('conteudoParaPdf');
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
+        function alternarColunas() {
+            const ed2 = document.getElementById('editorTexto2');
+            ed2.classList.toggle('hidden');
         }
-        window.addEventListener('resize', ajustarTamanhoCanvas);
-        setTimeout(ajustarTamanhoCanvas, 100);
 
-        function atualizarContador() {
-            const textoTotal = editor.innerText + " " + editor2.innerText;
-            const palavras = textoTotal.trim() ? textoTotal.trim().split(/\s+/).length : 0;
-            const caracteres = textoTotal.length;
-            contador.innerText = `${palavras} palavras • ${caracteres} caracteres`;
+        function adicionarForma() {
+            const container = document.getElementById('postItsContainer');
+            const forma = document.createElement('div');
+            forma.className = 'w-24 h-24 bg-purple-300 rounded-xl cursor-pointer relative shadow-md z-30 flex items-center justify-center text-purple-900 font-bold text-xs p-2 text-center border-2 border-purple-400';
+            forma.innerText = "Forma Mágica";
+            forma.onclick = () => {
+                if(confirm("Deseja excluir esta forma?")) forma.remove();
+            };
+            container.appendChild(forma);
         }
-        editor.addEventListener('input', () => { atualizarContador(); registrarHistorico(); });
-        editor2.addEventListener('input', () => { atualizarContador(); registrarHistorico(); });
-        titulo.addEventListener('input', () => { registrarHistorico(); });
-        
-        function salvarAutomaticamente() {
-            statusSalvo.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Salvo`;
-            lucide.createIcons();
+
+        // ================= EMOJIS =================
+        const listaEmojis = [
+            { emoji: '📌', termos: 'alfinete tachinha fixar' },
+            { emoji: '📍', termos: 'localizacao mapa marcador' },
+            { emoji: '👍', termos: 'joia positivo sim ok' },
+            { emoji: '⭐', termos: 'estrela favorito brilho' },
+            { emoji: '✨', termos: 'brilho magica sparkles' },
+            { emoji: '❤', termos: 'coracao amor vermelho' },
+            { emoji: '✅', termos: 'certo check ok' },
+            { emoji: '💡', termos: 'ideia lampada' },
+            { emoji: '📚', termos: 'livro estudo escola' },
+            { emoji: '✏️', termos: 'lapis escrever' },
+            { emoji: '😊', termos: 'sorriso feliz' },
+            { emoji: '🚀', termos: 'foguete rapido' }
+        ];
+
+        function renderizarAtalhosEmojis() {
+            const container = document.getElementById('containerAtalhosEmojis');
+            container.innerHTML = '';
+            listaEmojis.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'w-8 h-8 bg-white hover:bg-pink-100 border border-pink-200 rounded-xl text-sm flex items-center justify-center cursor-pointer transition shadow-xs';
+                btn.innerText = item.emoji;
+                btn.onclick = () => document.execCommand('insertText', false, item.emoji);
+                container.appendChild(btn);
+            });
+        }
+        renderizarAtalhosEmojis();
+
+        function abrirModalEmojis() {
+            document.getElementById('modalEmojis').classList.remove('hidden');
+            renderizarGridEmojis(listaEmojis);
+        }
+        function fecharModalEmojis() {
+            document.getElementById('modalEmojis').classList.add('hidden');
+        }
+        function renderizarGridEmojis(arr) {
+            const grid = document.getElementById('listaGridEmojis');
+            grid.innerHTML = '';
+            arr.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'h-11 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-xl text-xl flex items-center justify-center cursor-pointer';
+                btn.innerText = item.emoji;
+                btn.onclick = () => {
+                    document.execCommand('insertText', false, item.emoji);
+                    fecharModalEmojis();
+                };
+                grid.appendChild(btn);
+            });
+        }
+        function filtrarEmojis(termo) {
+            const t = termo.toLowerCase().trim();
+            if (!t) { renderizarGridEmojis(listaEmojis); return; }
+            const filtrados = listaEmojis.filter(item => item.termos.includes(t));
+            renderizarGridEmojis(filtrados);
+        }
+
+        // ================= TEXTO E FORMATAÇÃO =================
+        let historico = [];
+        const editor = document.getElementById('editorTexto');
+
+        function salvarEstado() {
+            historico.push(editor.innerHTML);
+            if(historico.length > 20) historico.shift();
+        }
+        function desfazerAcao() {
+            if(historico.length > 0) editor.innerHTML = historico.pop();
+        }
+        function refazerAcao() {
+            document.execCommand('redo', false, null);
+        }
+        function formatar(cmd) {
+            document.execCommand(cmd, false, null);
+            salvarEstado();
+        }
+        function mudarCorTexto(cor) {
+            document.execCommand('foreColor', false, cor);
+        }
+        function mudarFonte() {
+            const fonte = document.getElementById('fontSelector').value;
+            document.execCommand('fontName', false, fonte);
+        }
+        function mudarTamanho() {
+            const tam = document.getElementById('sizeSelector').value;
+            let val = '3';
+            if(tam === '14px') val = '2';
+            if(tam === '18px') val = '4';
+            if(tam === '24px') val = '6';
+            if(tam === '32px') val = '7';
+            document.execCommand('fontSize', false, val);
+        }
+
+        function limparFolha() {
+            if(confirm("Tens a certeza que pretendes limpar toda a folha?")) {
+                editor.innerHTML = '';
+                document.getElementById('editorTexto2').innerHTML = '';
+                document.getElementById('tituloColoridinho').innerText = '';
+                document.getElementById('postItsContainer').innerHTML = '';
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                historico = [];
+            }
         }
     </script>
 </body>

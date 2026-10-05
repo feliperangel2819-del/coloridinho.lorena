@@ -40,8 +40,6 @@
         }
 
         .main-container-zoom {
-            transition: transform 0.2s ease;
-            transform-origin: top center;
             width: 100%;
             display: flex;
             justify-content: center;
@@ -276,7 +274,7 @@
         </div>
     </div>
 
-    <!-- Barra de Ações Inferior (Fixa fora do zoom para não subir) -->
+    <!-- Barra de Ações Inferior -->
     <div class="w-full flex justify-center mt-6 no-print z-20">
         <div class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition cursor-pointer">Salvar como PDF</button>
@@ -286,17 +284,16 @@
 
     <script>
         let zoomAtual = 1.0;
-        const viewportZoom = document.getElementById('viewportZoom');
         const zoomLabel = document.getElementById('zoomLabel');
 
         function ajustarZoom(delta) {
             zoomAtual = Math.min(Math.max(0.5, zoomAtual + delta), 2.0);
-            viewportZoom.style.transform = `scale(${zoomAtual})`;
+            document.body.style.zoom = zoomAtual;
             zoomLabel.innerText = `${Math.round(zoomAtual * 100)}%`;
         }
         function resetarZoom() {
             zoomAtual = 1.0;
-            viewportZoom.style.transform = `scale(1)`;
+            document.body.style.zoom = 1.0;
             zoomLabel.innerText = `100%`;
         }
 
@@ -390,8 +387,8 @@
                 clientY = e.touches[0].clientY;
             }
             return {
-                x: (clientX - rect.left) / zoomAtual,
-                y: (clientY - rect.top) / zoomAtual
+                x: clientX - rect.left,
+                y: clientY - rect.top
             };
         }
 
@@ -473,7 +470,7 @@
                     <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), -15)" title="Diminuir" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➖</button>
                     <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), 15)" title="Aumentar" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➕</button>
                     <input type="color" value="${corAtual}" onchange="mudarCorForma(this, this.value); salvarEstadoGlobal();" title="Mudar Cor" class="w-5 h-5 cursor-pointer p-0 border-none bg-transparent">
-                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1 py-0.5 rounded text-[10px] font-bold cursor-pointer">🗑️️</button>
+                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1 py-0.5 rounded text-[10px] font-bold cursor-pointer">🗑</button>
                 </div>
             `;
             

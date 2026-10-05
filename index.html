@@ -103,7 +103,7 @@
             display: flex;
         }
 
-        /* Post-it flutuante móvel com arraste livre */
+        /* Post-it flutuante: move apenas pela barra superior */
         .post-it {
             background-color: #fef08a;
             padding: 14px;
@@ -112,8 +112,14 @@
             position: absolute;
             width: 280px;
             z-index: 30;
-            touch-action: none;
+        }
+        .post-it-header {
             cursor: move;
+            touch-action: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
         }
 
         @media print {
@@ -246,7 +252,7 @@
                     📐 Dividir em 2 Colunas
                 </button>
                 <button type="button" id="btnDesenho" onmousedown="event.preventDefault()" onclick="alternarModoDesenho()" class="bg-white border border-pink-200 hover:bg-pink-100 text-pink-700 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
-                    ✏️ Modo Desenho & IA: Inativo
+                    ✏️️ Modo Desenho & IA: Inativo
                 </button>
             </div>
 
@@ -457,7 +463,6 @@
             forma.style.borderColor = corAtual;
             forma.style.backgroundColor = hexToRgba(corAtual, 0.15);
 
-            // Botões internos no canto superior direito da forma
             forma.innerHTML = `
                 <div class="botoes-forma-internos">
                     <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), -15)" title="Diminuir" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➖</button>
@@ -467,7 +472,7 @@
                 </div>
             `;
             
-            tornarMovel(forma);
+            tornarMovelGeral(forma);
             container.appendChild(forma);
         }
 
@@ -481,10 +486,58 @@
             }
         }
 
-        function tornarMovel(elemento) {
+        function tornarMovelGeral(elemento) {
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
             elemento.onmousedown = iniciarArrasto;
             elemento.ontouchstart = iniciarArrasto;
+
+            function iniciarArrasto(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+                e.preventDefault();
+                if (e.type === 'touchstart') {
+                    pos3 = e.touches[0].clientX;
+                    pos4 = e.touches[0].clientY;
+                } else {
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                }
+                document.onmouseup = fecharArrasto;
+                document.ontouchend = fecharArrasto;
+                document.onmousemove = arrastando;
+                document.ontouchmove = arrastando;
+            }
+
+            function arrastando(e) {
+                e.preventDefault();
+                let clientX, clientY;
+                if (e.type === 'touchmove') {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                pos1 = pos3 - clientX;
+                pos2 = pos4 - clientY;
+                pos3 = clientX;
+                pos4 = clientY;
+                elemento.style.top = (elemento.offsetTop - pos2) + "px";
+                elemento.style.left = (elemento.offsetLeft - pos1) + "px";
+            }
+
+            function fecharArrasto() {
+                document.onmouseup = null;
+                document.ontouchend = null;
+                document.onmousemove = null;
+                document.ontouchmove = null;
+                salvarEstadoGlobal();
+            }
+        }
+
+        function tornarMovelCabecalho(elemento, cabecalho) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            cabecalho.onmousedown = iniciarArrasto;
+            cabecalho.ontouchstart = iniciarArrasto;
 
             function iniciarArrasto(e) {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
@@ -542,7 +595,34 @@
             return `rgba(${num>>16},${(num>>8)&255},${num&255},${alpha})`;
         }
 
-        // ================= POST-IT FLUTUANTE LIVRE (MÓVEL) =================
+        const canvasInicial = document.getElementById('canvasDesenho');
+        if(canvasInicial) {
+            canvasInicial.addEventListener('mousedown', iniciarDesenho);
+            canvasInicial.addEventListener('mousemove', desenhar);
+            canvasInicial.addEventListener('mouseup', pararDesenho);
+            canvasInicial.addEventListener('mouseout', pararDesenho);
+            canvasInicial.addEventListener('touchstart', iniciarDesenho, {passive: false});
+            canvasInicial.addEventListener('touchmove', desenhar, {passive: false});
+            canvasInicial.addEventListener('touchend', pararDesenho);
+        }
+
+        function alternarModoDesenho() {
+            const btn = document.getElementById('btnDesenho');
+            const canvas = document.getElementById('canvasDesenho');
+            modoDesenhoAtivo = !modoDesenhoAtivo;
+            if(modoDesenhoAtivo) {
+                canvas.classList.add('ativo');
+                btn.classList.add('bg-pink-200');
+                btn.innerText = '✏️️ Modo Desenho & IA: Ativo';
+                redimensionarCanvas();
+            } else {
+                canvas.classList.remove('ativo');
+                btn.classList.remove('bg-pink-200');
+                btn.innerText = '✏️ Modo Desenho & IA: Inativo';
+            }
+        }
+
+        // ================= POST-IT MÓVEL (APENAS PELA BARRA SUPERIOR) =================
         function adicionarPostIt() {
             const container = document.getElementById('conteudoParaPdf');
             if(!container) return;
@@ -551,14 +631,15 @@
             postit.style.left = '100px';
             postit.style.top = '250px';
             postit.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
+                <div class="post-it-header">
                     <input type="color" value="#fef08a" oninput="this.closest('.post-it').style.backgroundColor = this.value" onchange="salvarEstadoGlobal()" title="Mudar Cor" class="w-5 h-5 cursor-pointer p-0 border-none bg-transparent">
                     <button type="button" onclick="this.closest('.post-it').remove(); salvarEstadoGlobal();" class="text-yellow-800 hover:text-red-500 font-extrabold px-1 cursor-pointer text-sm">✕</button>
                 </div>
                 <div contenteditable="true" oninput="salvarEstadoGlobal()" class="w-full outline-none text-sm font-semibold text-yellow-950" data-placeholder="Escreva a nota..."></div>
             `;
             
-            tornarMovel(postit);
+            const header = postit.querySelector('.post-it-header');
+            tornarMovelCabecalho(postit, header);
             container.appendChild(postit);
             salvarEstadoGlobal();
         }
@@ -684,7 +765,6 @@
                 document.getElementById('editorTexto2').innerHTML = '';
                 document.getElementById('tituloColoridinho').innerText = '';
                 document.getElementById('containerFormasIA').innerHTML = '';
-                document.getElementById('containerPostIts').innerHTML = '';
                 const canvas = document.getElementById('canvasDesenho');
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);

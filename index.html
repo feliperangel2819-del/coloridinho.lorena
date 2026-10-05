@@ -149,7 +149,7 @@
 
     <!-- Versão -->
     <div class="fixed top-2 right-4 text-[11px] font-bold text-pink-600 bg-white/80 px-2.5 py-1 rounded-full border border-pink-200 z-50 no-print shadow-xs">
-        v1.0.6 beta
+        v1.0.7 beta
     </div>
 
     <!-- Modal de Emojis -->
@@ -261,8 +261,9 @@
 
             <!-- Folha de Escrita -->
             <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-3xl p-6 md:p-12 min-h-[550px] shadow-md relative flex flex-col overflow-hidden">
-                <div class="flex justify-between mb-4 border-b border-pink-300/60 pb-3">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b border-pink-300/60 pb-3 gap-2">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-900 outline-none w-full" contenteditable="true" id="tituloColoridinho" oninput="salvarEstadoGlobal()" data-placeholder="Título da Aula..."></h2>
+                    <div id="relogioData" class="text-xs md:text-sm font-bold text-pink-700 bg-white/60 px-3 py-1 rounded-xl border border-pink-200 shrink-0 select-none"></div>
                 </div>
                 
                 <div id="wrapperEditor" class="flex flex-col md:flex-row gap-6 w-full flex-1">
@@ -278,11 +279,37 @@
     <div class="w-full flex justify-center mt-6 no-print z-20">
         <div class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition cursor-pointer">Salvar como PDF</button>
-            <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer">Limpar folha</button>
+            <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer flex items-center justify-center gap-2">🗑️ Limpar folha</button>
         </div>
     </div>
 
     <script>
+        // ================= RELÓGIO & DATA AUTOMÁTICOS (MEIA-NOITE) =================
+        function atualizarRelogioData() {
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleDateString('pt-BR');
+            const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const elemento = document.getElementById('relogioData');
+            if (elemento) {
+                elemento.innerText = `${dataFormatada}, ${horaFormatada}`;
+            }
+        }
+        atualizarRelogioData();
+        setInterval(atualizarRelogioData, 1000);
+
+        // Agendar atualização automática exata para a virada da meia-noite
+        function agendarViradaMeiaNoite() {
+            const agora = new Date();
+            const proximaMeiaNoite = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() + 1, 0, 0, 0);
+            const tempoAteMeiaNoite = proximaMeiaNoite - agora;
+            setTimeout(() => {
+                atualizarRelogioData();
+                setInterval(atualizarRelogioData, 86400000); // repete a cada 24 horas
+            }, tempoAteMeiaNoite);
+        }
+        agendarViradaMeiaNoite();
+
+        // ================= ZOOM =================
         let zoomAtual = 1.0;
         const zoomLabel = document.getElementById('zoomLabel');
 
@@ -363,7 +390,7 @@
 
         setTimeout(() => { salvarEstadoGlobal(); }, 200);
 
-        // ================= DESENHO & IA (BOTÕES INTERNOS) =================
+        // ================= DESENHO & IA (CORRIGIDO PARA ZOOM) =================
         let isDrawing = false;
         let modoDesenhoAtivo = false;
         let pontosDesenho = [];
@@ -386,9 +413,10 @@
                 clientX = e.touches[0].clientX;
                 clientY = e.touches[0].clientY;
             }
+            // Ajuste corrigido considerando o zoom da página
             return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
+                x: (clientX - rect.left) / zoomAtual,
+                y: (clientY - rect.top) / zoomAtual
             };
         }
 
@@ -470,7 +498,7 @@
                     <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), -15)" title="Diminuir" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➖</button>
                     <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), 15)" title="Aumentar" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➕</button>
                     <input type="color" value="${corAtual}" onchange="mudarCorForma(this, this.value); salvarEstadoGlobal();" title="Mudar Cor" class="w-5 h-5 cursor-pointer p-0 border-none bg-transparent">
-                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1 py-0.5 rounded text-[10px] font-bold cursor-pointer">🗑</button>
+                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1.5 py-0.5 rounded text-xs font-bold cursor-pointer">🗑️</button>
                 </div>
             `;
             
@@ -519,8 +547,8 @@
                     clientX = e.clientX;
                     clientY = e.clientY;
                 }
-                pos1 = pos3 - clientX;
-                pos2 = pos4 - clientY;
+                pos1 = (pos3 - clientX) / zoomAtual;
+                pos2 = (pos4 - clientY) / zoomAtual;
                 pos3 = clientX;
                 pos4 = clientY;
                 elemento.style.top = (elemento.offsetTop - pos2) + "px";
@@ -567,8 +595,8 @@
                     clientX = e.clientX;
                     clientY = e.clientY;
                 }
-                pos1 = pos3 - clientX;
-                pos2 = pos4 - clientY;
+                pos1 = (pos3 - clientX) / zoomAtual;
+                pos2 = (pos4 - clientY) / zoomAtual;
                 pos3 = clientX;
                 pos4 = clientY;
                 elemento.style.top = (elemento.offsetTop - pos2) + "px";
@@ -635,7 +663,7 @@
             postit.innerHTML = `
                 <div class="post-it-header">
                     <input type="color" value="#fef08a" oninput="this.closest('.post-it').style.backgroundColor = this.value" onchange="salvarEstadoGlobal()" title="Mudar Cor" class="w-5 h-5 cursor-pointer p-0 border-none bg-transparent">
-                    <button type="button" onclick="this.closest('.post-it').remove(); salvarEstadoGlobal();" class="text-yellow-800 hover:text-red-500 font-extrabold px-1 cursor-pointer text-sm">✕</button>
+                    <button type="button" onclick="this.closest('.post-it').remove(); salvarEstadoGlobal();" class="text-yellow-800 hover:text-red-500 font-extrabold px-1.5 py-0.5 rounded text-xs cursor-pointer">🗑️</button>
                 </div>
                 <div contenteditable="true" oninput="salvarEstadoGlobal()" class="w-full outline-none text-sm font-semibold text-yellow-950" data-placeholder="Escreva a nota..."></div>
             `;

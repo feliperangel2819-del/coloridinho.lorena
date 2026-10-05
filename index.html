@@ -12,6 +12,10 @@
             font-family: 'Quicksand', sans-serif; 
             background-color: #FCE8ED;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: space-between;
         }
         
         .side-text-left, .side-text-right {
@@ -41,6 +45,7 @@
             width: 100%;
             display: flex;
             justify-content: center;
+            flex: 1;
         }
         
         [contenteditable][data-placeholder]:empty:before {
@@ -139,7 +144,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-700 flex flex-col items-center justify-between p-4 md:p-8">
+<body class="p-4 md:p-8">
 
     <div class="side-text-left">Boa aula de português</div>
     <div class="side-text-right">Boa aula de português</div>
@@ -252,7 +257,7 @@
                     📐 Dividir em 2 Colunas
                 </button>
                 <button type="button" id="btnDesenho" onmousedown="event.preventDefault()" onclick="alternarModoDesenho()" class="bg-white border border-pink-200 hover:bg-pink-100 text-pink-700 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
-                    ✏️️ Modo Desenho & IA: Inativo
+                    ✏️ Modo Desenho & IA: Inativo
                 </button>
             </div>
 
@@ -271,8 +276,8 @@
         </div>
     </div>
 
-    <!-- Barra de Ações Inferior -->
-    <div class="w-full flex justify-center mt-6 no-print z-10">
+    <!-- Barra de Ações Inferior (Fixa fora do zoom para não subir) -->
+    <div class="w-full flex justify-center mt-6 no-print z-20">
         <div class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition cursor-pointer">Salvar como PDF</button>
             <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer">Limpar folha</button>
@@ -468,7 +473,7 @@
                     <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), -15)" title="Diminuir" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➖</button>
                     <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), 15)" title="Aumentar" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➕</button>
                     <input type="color" value="${corAtual}" onchange="mudarCorForma(this, this.value); salvarEstadoGlobal();" title="Mudar Cor" class="w-5 h-5 cursor-pointer p-0 border-none bg-transparent">
-                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1 py-0.5 rounded text-[10px] font-bold cursor-pointer">🗑️</button>
+                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1 py-0.5 rounded text-[10px] font-bold cursor-pointer">🗑️️</button>
                 </div>
             `;
             
@@ -613,7 +618,7 @@
             if(modoDesenhoAtivo) {
                 canvas.classList.add('ativo');
                 btn.classList.add('bg-pink-200');
-                btn.innerText = '✏️️ Modo Desenho & IA: Ativo';
+                btn.innerText = '✏️ Modo Desenho & IA: Ativo';
                 redimensionarCanvas();
             } else {
                 canvas.classList.remove('ativo');
@@ -622,7 +627,7 @@
             }
         }
 
-        // ================= POST-IT MÓVEL (APENAS PELA BARRA SUPERIOR) =================
+        // ================= POST-IT MÓVEL =================
         function adicionarPostIt() {
             const container = document.getElementById('conteudoParaPdf');
             if(!container) return;

@@ -31,7 +31,7 @@
         .side-text-left { left: 15px; }
         .side-text-right { right: 15px; transform: translateY(-50%) rotate(180deg); }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1300px) {
             .side-text-left, .side-text-right { display: none; }
         }
 
@@ -71,6 +71,7 @@
             cursor: crosshair;
         }
 
+        /* Formas IA com redimensionamento livre em todos os lados e cantos */
         .forma-ia {
             position: absolute;
             border: 3px solid #be185d;
@@ -80,12 +81,20 @@
             align-items: center;
             justify-content: center;
             resize: both;
-            overflow: hidden;
+            overflow: auto;
             touch-action: none;
             cursor: move;
+            border-radius: 24px;
+            padding: 10px;
+            min-width: 80px;
+            min-height: 50px;
         }
         .forma-ia.circulo {
             border-radius: 50%;
+        }
+        .forma-ia.losango {
+            border-radius: 20px;
+            transform: rotate(0deg);
         }
         .forma-ia .botoes-forma {
             position: absolute;
@@ -104,11 +113,34 @@
             display: flex;
         }
 
+        /* Post-it móvel e seguro para impressão */
+        .post-it {
+            background-color: #fef08a;
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+            min-height: 120px;
+            width: 100%;
+            z-index: 30;
+            resize: both;
+            overflow: auto;
+        }
+
         @media print {
-            body { background: white !important; padding: 0 !important; }
+            body { background: white !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             button, .no-print, .forma-ia .botoes-forma { display: none !important; }
             .side-text-left, .side-text-right { display: none !important; }
-            #conteudoParaPdf { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; transform: none !important; }
+            #conteudoParaPdf { 
+                box-shadow: none !important; 
+                border: 2px solid #f472b6 !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                transform: none !important; 
+                background-color: #FFD1DC !important;
+            }
+            .bg-\[\#FFD1DC\] { background-color: #FFD1DC !important; }
+            .bg-\[\#FFE4E9\]\/90 { background-color: #FFE4E9 !important; }
         }
     </style>
 </head>
@@ -116,6 +148,11 @@
 
     <div class="side-text-left">Boa aula de português</div>
     <div class="side-text-right">Boa aula de português</div>
+
+    <!-- Indicador de Versão -->
+    <div class="fixed top-2 right-4 text-[11px] font-bold text-pink-600 bg-white/80 px-2.5 py-1 rounded-full border border-pink-200 z-50 no-print shadow-xs">
+        v1.0.6 beta
+    </div>
 
     <!-- Modal de Emojis -->
     <div id="modalEmojis" class="hidden fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
@@ -141,7 +178,7 @@
     </div>
 
     <div id="viewportZoom" class="main-container-zoom z-10">
-        <div id="conteudoParaPdf" class="w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-pink-200 p-6 md:p-10 relative">
+        <div id="conteudoParaPdf" class="w-full max-w-6xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-pink-200 p-6 md:p-12 relative">
             
             <canvas id="canvasDesenho"></canvas>
             <div id="containerFormasIA"></div>
@@ -224,14 +261,14 @@
             </div>
 
             <!-- Folha de Escrita -->
-            <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-3xl p-6 md:p-10 min-h-[500px] shadow-md relative flex flex-col overflow-hidden">
+            <div class="bg-[#FFD1DC] border-2 border-pink-300 rounded-3xl p-6 md:p-12 min-h-[550px] shadow-md relative flex flex-col overflow-hidden">
                 <div class="flex justify-between mb-4 border-b border-pink-300/60 pb-3">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-900 outline-none w-full" contenteditable="true" id="tituloColoridinho" oninput="salvarEstadoGlobal()" data-placeholder="Título da Aula..."></h2>
                 </div>
                 
-                <div id="wrapperEditor" class="flex flex-col md:flex-row gap-4 w-full flex-1">
-                    <div id="editorTexto" contenteditable="true" oninput="salvarEstadoGlobal()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px]" data-placeholder="Escreva aqui..."></div>
-                    <div id="editorTexto2" contenteditable="true" oninput="salvarEstadoGlobal()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-4 rounded-2xl border border-pink-300/40 shadow-inner min-h-[400px] hidden" data-placeholder="Coluna 2..."></div>
+                <div id="wrapperEditor" class="flex flex-col md:flex-row gap-6 w-full flex-1">
+                    <div id="editorTexto" contenteditable="true" oninput="salvarEstadoGlobal()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-5 rounded-2xl border border-pink-300/40 shadow-inner min-h-[450px]" data-placeholder="Escreva aqui..."></div>
+                    <div id="editorTexto2" contenteditable="true" oninput="salvarEstadoGlobal()" class="flex-1 outline-none text-slate-900 bg-[#FFE4E9]/90 p-5 rounded-2xl border border-pink-300/40 shadow-inner min-h-[450px] hidden" data-placeholder="Coluna 2..."></div>
                 </div>
 
                 <div id="postItsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6"></div>
@@ -242,8 +279,8 @@
 
     <!-- Barra de Ações Inferior -->
     <div class="w-full flex justify-center mt-6 no-print z-10">
-        <div class="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer">Salvar como PDF</button>
+        <div class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button onclick="window.print()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition cursor-pointer">Salvar como PDF</button>
             <button onclick="limparFolha()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 font-bold py-3.5 px-4 rounded-2xl transition cursor-pointer">Limpar folha</button>
         </div>
     </div>
@@ -330,7 +367,7 @@
 
         setTimeout(() => { salvarEstadoGlobal(); }, 200);
 
-        // ================= DESENHO & IA =================
+        // ================= DESENHO & IA (FORMAS INTELIGENTES COM DRAG & DROP) =================
         let isDrawing = false;
         let modoDesenhoAtivo = false;
         let pontosDesenho = [];
@@ -338,7 +375,6 @@
         function redimensionarCanvas() {
             const canvas = document.getElementById('canvasDesenho');
             if(!canvas) return;
-            const ctx = canvas.getContext('2d');
             const wrapper = document.getElementById('conteudoParaPdf');
             canvas.width = wrapper.offsetWidth;
             canvas.height = wrapper.offsetHeight;
@@ -412,37 +448,93 @@
 
             const largura = maxX - minX;
             const altura = maxY - minY;
-            if (largura < 20 || altura < 20) return;
+            if (largura < 25 || altura < 25) return;
 
             const proporcao = largura / altura;
-            const ehCirculo = proporcao > 0.7 && proporcao < 1.3;
+            let tipoForma = 'losango'; // Padrão com bordas arredondadas para destacar palavras
+            if (proporcao > 0.75 && proporcao < 1.25) {
+                tipoForma = 'circulo';
+            }
 
             const container = document.getElementById('containerFormasIA');
             if(!container) return;
             const forma = document.createElement('div');
-            forma.className = `forma-ia ${ehCirculo ? 'circulo' : ''}`;
+            forma.className = `forma-ia ${tipoForma}`;
             forma.style.left = `${minX}px`;
             forma.style.top = `${minY}px`;
-            forma.style.width = `${largura}px`;
-            forma.style.height = `${altura}px`;
+            forma.style.width = `${Math.max(largura, 120)}px`;
+            forma.style.height = `${Math.max(altura, 70)}px`;
             
             const corAtual = document.getElementById('textColorPicker').value;
             forma.style.borderColor = corAtual;
-            forma.style.backgroundColor = hexToRgba(corAtual, 0.2);
+            forma.style.backgroundColor = hexToRgba(corAtual, 0.15);
 
             forma.innerHTML = `
                 <div class="botoes-forma">
                     <input type="color" value="${corAtual}" onchange="mudarCorForma(this, this.value); salvarEstadoGlobal();" title="Mudar Cor" class="w-6 h-6 cursor-pointer p-0 border-none bg-transparent">
                     <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1.5 py-0.5 rounded text-xs font-bold cursor-pointer">🗑️</button>
                 </div>
+                <div contenteditable="true" oninput="salvarEstadoGlobal()" class="w-full h-full outline-none text-center flex items-center justify-center font-semibold text-slate-800" data-placeholder="Escreva aqui..."></div>
             `;
+            
+            // Torna a forma móvel (Drag and Drop fluido)
+            tornarMovel(forma);
             container.appendChild(forma);
+        }
+
+        function tornarMovel(elemento) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            elemento.onmousedown = iniciarArrasto;
+            elemento.ontouchstart = iniciarArrasto;
+
+            function iniciarArrasto(e) {
+                // Se clicar nos botões ou no texto editável, não arrasta
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.getAttribute('contenteditable') === 'true') return;
+                e.preventDefault();
+                if (e.type === 'touchstart') {
+                    pos3 = e.touches[0].clientX;
+                    pos4 = e.touches[0].clientY;
+                } else {
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                }
+                document.onmouseup = fecharArrasto;
+                document.ontouchend = fecharArrasto;
+                document.onmousemove = arrastando;
+                document.ontouchmove = arrastando;
+            }
+
+            function arrastando(e) {
+                e.preventDefault();
+                let clientX, clientY;
+                if (e.type === 'touchmove') {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                pos1 = pos3 - clientX;
+                pos2 = pos4 - clientY;
+                pos3 = clientX;
+                pos4 = clientY;
+                elemento.style.top = (elemento.offsetTop - pos2) + "px";
+                elemento.style.left = (elemento.offsetLeft - pos1) + "px";
+            }
+
+            function fecharArrasto() {
+                document.onmouseup = null;
+                document.ontouchend = null;
+                document.onmousemove = null;
+                document.ontouchmove = null;
+                salvarEstadoGlobal();
+            }
         }
 
         function mudarCorForma(input, cor) {
             const forma = input.closest('.forma-ia');
             forma.style.borderColor = cor;
-            forma.style.backgroundColor = hexToRgba(cor, 0.2);
+            forma.style.backgroundColor = hexToRgba(cor, 0.15);
         }
 
         function hexToRgba(hex, alpha) {
@@ -565,7 +657,7 @@
             renderizarGridEmojis(filtrados);
         }
 
-        // ================= FORMATAÇÃO E COR DO TEXTO (BLINDADO PARA PC E MOBILE) =================
+        // ================= FORMATAÇÃO E TAMANHO DE LETRA INTELIGENTE =================
         function formatar(cmd) {
             document.execCommand(cmd, false, null);
             salvarEstadoGlobal();
@@ -574,7 +666,6 @@
         function mudarCorTexto(cor) {
             const selection = window.getSelection();
             if (selection.rangeCount && !selection.isCollapsed) {
-                // Se o usuário selecionou um texto, envolve com um span colorido (funciona perfeito no mobile)
                 const range = selection.getRangeAt(0);
                 const span = document.createElement('span');
                 span.style.color = cor;
@@ -582,7 +673,6 @@
                 range.insertNode(span);
                 selection.removeAllRanges();
             } else {
-                // Se não há seleção, aplica o comando nativo e também injeta na seleção atual se possível
                 document.execCommand('foreColor', false, cor);
             }
             salvarEstadoGlobal();

@@ -71,7 +71,7 @@
             cursor: crosshair;
         }
 
-        /* Formas IA apenas para circular texto, com botões e redimensionamento externo */
+        /* Formas IA com botões internos e arredondados */
         .forma-ia {
             position: absolute;
             border: 3px solid #be185d;
@@ -80,47 +80,45 @@
             touch-action: none;
             cursor: move;
             border-radius: 30px;
-            min-width: 70px;
-            min-height: 40px;
+            min-width: 90px;
+            min-height: 50px;
         }
         .forma-ia.circulo {
             border-radius: 50%;
         }
-        .forma-ia .botoes-forma-externos {
+        .forma-ia .botoes-forma-internos {
             position: absolute;
-            top: -38px;
-            right: 0;
+            top: 6px;
+            right: 6px;
             display: none;
-            gap: 4px;
-            background: white;
-            padding: 4px;
-            border-radius: 10px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            gap: 3px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
             align-items: center;
             z-index: 35;
-            white-space: nowrap;
         }
-        .forma-ia:hover .botoes-forma-externos, .forma-ia:focus-within .botoes-forma-externos {
+        .forma-ia:hover .botoes-forma-internos, .forma-ia:focus-within .botoes-forma-internos {
             display: flex;
         }
 
-        /* Post-it fluído que cresce com o texto sem barra de rolagem */
+        /* Post-it flutuante móvel com arraste livre */
         .post-it {
             background-color: #fef08a;
-            padding: 16px;
+            padding: 14px;
             border-radius: 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            position: relative;
-            width: 100%;
-            max-width: 320px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            position: absolute;
+            width: 280px;
             z-index: 30;
-            margin: 10px 0;
+            touch-action: none;
             cursor: move;
         }
 
         @media print {
             body { background: white !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            button, .no-print, .forma-ia .botoes-forma-externos { display: none !important; }
+            button, .no-print, .forma-ia .botoes-forma-internos, .post-it button, .post-it input { display: none !important; }
             .side-text-left, .side-text-right { display: none !important; }
             #conteudoParaPdf { 
                 box-shadow: none !important; 
@@ -173,6 +171,7 @@
             
             <canvas id="canvasDesenho"></canvas>
             <div id="containerFormasIA"></div>
+            <div id="containerPostIts"></div>
 
             <!-- Cabeçalho -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-pink-100 pb-4">
@@ -240,14 +239,14 @@
 
             <!-- Barra de Ações Especiais -->
             <div class="bg-white/70 border border-pink-200 rounded-2xl p-2.5 mb-6 flex flex-wrap items-center gap-2 shadow-xs no-print relative z-30">
-                <button type="button" onmousedown="event.preventDefault()" onclick="inserirPostItNoTexto()" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
-                    📌 Inserir Post-it no Texto
+                <button type="button" onmousedown="event.preventDefault()" onclick="adicionarPostIt()" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
+                    📌 Novo Post-it
                 </button>
                 <button type="button" onmousedown="event.preventDefault()" onclick="alternarColunas()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
                     📐 Dividir em 2 Colunas
                 </button>
                 <button type="button" id="btnDesenho" onmousedown="event.preventDefault()" onclick="alternarModoDesenho()" class="bg-white border border-pink-200 hover:bg-pink-100 text-pink-700 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer shadow-xs">
-                    ✏️️ Modo Desenho & IA: Inativo
+                    ✏️ Modo Desenho & IA: Inativo
                 </button>
             </div>
 
@@ -356,7 +355,7 @@
 
         setTimeout(() => { salvarEstadoGlobal(); }, 200);
 
-        // ================= DESENHO & IA (FORMAS INTELIGENTES PARA CIRCULAR TEXTO) =================
+        // ================= DESENHO & IA (BOTÕES INTERNOS) =================
         let isDrawing = false;
         let modoDesenhoAtivo = false;
         let pontosDesenho = [];
@@ -458,13 +457,13 @@
             forma.style.borderColor = corAtual;
             forma.style.backgroundColor = hexToRgba(corAtual, 0.15);
 
-            // Botões externos para Lixeira, Cor e Ajuste de Tamanho (+ / -)
+            // Botões internos no canto superior direito da forma
             forma.innerHTML = `
-                <div class="botoes-forma-externos">
-                    <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), -15)" title="Diminuir" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-2 py-0.5 rounded text-xs font-bold cursor-pointer">➖</button>
-                    <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), 15)" title="Aumentar" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-2 py-0.5 rounded text-xs font-bold cursor-pointer">➕</button>
-                    <input type="color" value="${corAtual}" onchange="mudarCorForma(this, this.value); salvarEstadoGlobal();" title="Mudar Cor" class="w-6 h-6 cursor-pointer p-0 border-none bg-transparent">
-                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1.5 py-0.5 rounded text-xs font-bold cursor-pointer">🗑️</button>
+                <div class="botoes-forma-internos">
+                    <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), -15)" title="Diminuir" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➖</button>
+                    <button type="button" onclick="ajustarTamanhoForma(this.closest('.forma-ia'), 15)" title="Aumentar" class="bg-pink-100 text-pink-700 hover:bg-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer">➕</button>
+                    <input type="color" value="${corAtual}" onchange="mudarCorForma(this, this.value); salvarEstadoGlobal();" title="Mudar Cor" class="w-5 h-5 cursor-pointer p-0 border-none bg-transparent">
+                    <button type="button" onclick="this.closest('.forma-ia').remove(); salvarEstadoGlobal();" title="Excluir" class="bg-red-100 text-red-600 hover:bg-red-200 px-1 py-0.5 rounded text-[10px] font-bold cursor-pointer">🗑️</button>
                 </div>
             `;
             
@@ -543,41 +542,14 @@
             return `rgba(${num>>16},${(num>>8)&255},${num&255},${alpha})`;
         }
 
-        const canvasInicial = document.getElementById('canvasDesenho');
-        if(canvasInicial) {
-            canvasInicial.addEventListener('mousedown', iniciarDesenho);
-            canvasInicial.addEventListener('mousemove', desenhar);
-            canvasInicial.addEventListener('mouseup', pararDesenho);
-            canvasInicial.addEventListener('mouseout', pararDesenho);
-            canvasInicial.addEventListener('touchstart', iniciarDesenho, {passive: false});
-            canvasInicial.addEventListener('touchmove', desenhar, {passive: false});
-            canvasInicial.addEventListener('touchend', pararDesenho);
-        }
-
-        function alternarModoDesenho() {
-            const btn = document.getElementById('btnDesenho');
-            const canvas = document.getElementById('canvasDesenho');
-            modoDesenhoAtivo = !modoDesenhoAtivo;
-            if(modoDesenhoAtivo) {
-                canvas.classList.add('ativo');
-                btn.classList.add('bg-pink-200');
-                btn.innerText = '✏️ Modo Desenho & IA: Ativo';
-                redimensionarCanvas();
-            } else {
-                canvas.classList.remove('ativo');
-                btn.classList.remove('bg-pink-200');
-                btn.innerText = '✏️ Modo Desenho & IA: Inativo';
-            }
-        }
-
-        // ================= POST-IT INSERIDO DIRETAMENTE NO TEXTO =================
-        function inserirPostItNoTexto() {
-            const selection = window.getSelection();
-            if (!selection.rangeCount) return;
-            const range = selection.getRangeAt(0);
-
+        // ================= POST-IT FLUTUANTE LIVRE (MÓVEL) =================
+        function adicionarPostIt() {
+            const container = document.getElementById('conteudoParaPdf');
+            if(!container) return;
             const postit = document.createElement('div');
             postit.className = 'post-it';
+            postit.style.left = '100px';
+            postit.style.top = '250px';
             postit.innerHTML = `
                 <div class="flex justify-between items-center mb-2">
                     <input type="color" value="#fef08a" oninput="this.closest('.post-it').style.backgroundColor = this.value" onchange="salvarEstadoGlobal()" title="Mudar Cor" class="w-5 h-5 cursor-pointer p-0 border-none bg-transparent">
@@ -586,8 +558,8 @@
                 <div contenteditable="true" oninput="salvarEstadoGlobal()" class="w-full outline-none text-sm font-semibold text-yellow-950" data-placeholder="Escreva a nota..."></div>
             `;
             
-            range.insertNode(postit);
-            selection.removeAllRanges();
+            tornarMovel(postit);
+            container.appendChild(postit);
             salvarEstadoGlobal();
         }
 
@@ -601,7 +573,7 @@
         const listaEmojis = [
             { emoji: '📍', termos: 'alfinete tachinha fixar map' },
             { emoji: '✅', termos: 'certo check ok verificado' },
-            { emoji: '👩🏽‍‍🏫', termos: 'professora professora negra quadro' },
+            { emoji: '👩🏽‍🏫', termos: 'professora professora negra quadro' },
             { emoji: '⭐', termos: 'estrela favorito brilho' },
             { emoji: '💡', termos: 'ideia lampada' },
             { emoji: '📚', termos: 'livro estudo escola' },
@@ -712,6 +684,7 @@
                 document.getElementById('editorTexto2').innerHTML = '';
                 document.getElementById('tituloColoridinho').innerText = '';
                 document.getElementById('containerFormasIA').innerHTML = '';
+                document.getElementById('containerPostIts').innerHTML = '';
                 const canvas = document.getElementById('canvasDesenho');
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
